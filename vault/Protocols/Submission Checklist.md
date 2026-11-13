@@ -12,11 +12,13 @@ Target: submitted by **Sun 15 Nov 21:00 CET**. Hard deadline Mon 05:59 CET (Sun 
 - [ ] README says in five lines what it is and how to run it, and the placeholder comments are gone
 - [ ] No full names, school, phone numbers, emails, private links or secrets anywhere in the repo: check notebook outputs and search `vault/`
 - [ ] `main` is green: the latest code commit on GitHub has a ✓
-- [ ] Every line in the repo was written after Sat 06:00 CET
+- [ ] Every line of project code (`notebooks/`, `src/`, `tests/`) was written after Sat 06:00 CET. Commits from before that are docs and config only
 
 ## 2. Write-up
-- [ ] One page. See the structure in [[Write-up]]
-- [ ] Problem, approach, results with baseline, limits
+- [ ] One page, in the official template. See [[Write-up]]
+- [ ] Problem, what we built, how it works, results vs baseline with failures and results by group, next steps, sources
+- [ ] Lists the AI tools we used, and says what we learned
+- [ ] Health or finance track: states it is a prototype, not medical or financial advice
 - [ ] The numbers match Evaluation exactly
 - [ ] Credits for datasets, models and libraries, copied from Credits
 - [ ] Read aloud once by someone who didn't write it
@@ -25,10 +27,10 @@ Target: submitted by **Sun 15 Nov 21:00 CET**. Hard deadline Mon 05:59 CET (Sun 
 
 ## 3. Video
 - [ ] 2:00 or under. Check the exact length of the final file
-- [ ] Follows [[Demo Script]]: problem, demo, how well it works, limits
+- [ ] Follows [[Demo Script]]: problem, real input to result, data + model + baseline, one limitation
 - [ ] The screen text is readable at 720p, the voice is clear
 - [ ] No names, school, or faces
-- [ ] Uploaded as **unlisted** on YouTube, and the link plays in a private browser window
+- [ ] Uploaded as **unlisted** on YouTube (or on Drive, shared with anyone who has the link), and the link plays in a private browser window
 
 ## 4. Submit
 - [ ] The submission form link from the starter kit email is open
@@ -36,7 +38,7 @@ Target: submitted by **Sun 15 Nov 21:00 CET**. Hard deadline Mon 05:59 CET (Sun 
 - [ ] Track is selected correctly
 - [ ] Repo link, write-up and video link pasted, each one clicked once to test
 - [ ] Submitted by: ______ at: ______
-- [ ] Confirmation page or email screenshot saved to `Log/`
+- [ ] Confirmation page or email screenshot posted in the WhatsApp group (not in the repo: we don't push after submitting)
 - [ ] `SUBMITTED` posted in the chat
 
 ## 5. After

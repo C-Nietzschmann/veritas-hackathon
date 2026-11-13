@@ -5,16 +5,19 @@ Ten minutes, once, before kickoff. When you're done, claim your Setup task on th
 ## 1. Install
 - [Git](https://git-scm.com/downloads) and [Obsidian](https://obsidian.md)
 - A GitHub account. Send your username to the repo owner and accept the invite you get by email.
+- The [GitHub CLI](https://cli.github.com), then run `gh auth login` once. It signs Git in to GitHub (a password doesn't work for pushing), and Claude Code uses it to check CI after a push.
 
 ## 2. Get the repo
 ```bash
 git clone https://github.com/C-Nietzschmann/veritas-hackathon.git
 cd veritas-hackathon
 git config --local include.path ../.gitalias
+git config user.name "<your handle>"
+git config user.email "<your GitHub no-reply address>"
 ```
-The last line switches on our `git sync` shortcut.
+The third line switches on our `git sync` shortcut. The last two say who your commits are from. Without them a fresh Git install refuses to commit, and `git sync` stops halfway. Your no-reply address is on GitHub under Settings → Emails.
 
-If the clone asks for a password and refuses yours: install [GitHub Desktop](https://desktop.github.com), sign in, and clone with *File → Clone repository*. Then run the `git config` line in the repo folder (*Repository → Open in Terminal*).
+If the clone asks for a password and refuses yours: run `gh auth login` (step 1) and try again. Or install [GitHub Desktop](https://desktop.github.com), sign in, and clone with *File → Clone repository*. Then run the `git config` lines in the repo folder (*Repository → Open in Terminal*).
 
 ## 3. Open the vault
 Obsidian → **Open folder as vault** → choose the `veritas-hackathon` folder you just cloned.

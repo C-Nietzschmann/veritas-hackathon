@@ -10,6 +10,7 @@
 5. **Tune on validation only.** Choosing models or settings by test score makes the test score a lie.
 6. **Test once, at the end.** After feature freeze, run the chosen model on the test set. That number goes in the write-up, whatever it is.
 7. **Look at the failures.** Take 10 to 20 examples the model got wrong and read them. Group them. This becomes the "where it fails" section.
+8. **Check across groups.** Report the main metric for each group in the data (for example sex, age band, region, language or source), with how many examples each group has. Say plainly if it's uneven and what that means for the user. It's a hackathon rule, and judges reward it.
 
 ## Checks that catch the classic mistakes
 - **Leakage:** is there a feature that secretly contains the answer, or do near-identical rows sit in both train and test? A score that looks too good usually is.
@@ -30,3 +31,4 @@ What we write is what we measured.
 - Report the failures and limits: what data it wasn't tested on, who it might not work for.
 - A modest result that is explained well scores higher than an impressive one nobody can verify.
 - If something doesn't work by the deadline, say so in the write-up and say what we'd try next.
+- Health or finance project: say it is a prototype, not medical or financial advice. That's a hackathon rule.

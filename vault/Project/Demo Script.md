@@ -4,14 +4,14 @@ The 2-minute video. Owner: Product and story lead. Write the script at feature f
 Two minutes is about 280 spoken words. Write it out, time it, cut it.
 
 ## Structure
+The shape the organisers recommend in the Hacker Guide.
 
 | Time | Part | What we show | What we say |
 |---|---|---|---|
 | 0:00–0:15 | **The problem** | One concrete situation or number | |
-| 0:15–0:30 | **What we built** | The project in one sentence, the title on screen | |
-| 0:30–1:15 | **It working** | The real thing running on a real example. Then a second, different example | |
-| 1:15–1:40 | **How well it works** | Our score next to the baseline. One failure case | |
-| 1:40–2:00 | **Why it matters, what's next** | The user again, and the next step | |
+| 0:15–1:15 | **Real input in, result out** | The title on screen, then the real thing running on a real example. Then a second, different example | |
+| 1:15–1:45 | **Data, model, baseline** | The dataset and the model in one line each. Our score next to the baseline | |
+| 1:45–2:00 | **One limitation, next step** | One failure case, and what we'd do about it | |
 
 ## Script
 Write the full text here, sentence by sentence.
@@ -24,7 +24,7 @@ Write the full text here, sentence by sentence.
 - One voice, a quiet room, a headset microphone if there is one. Record the voice separately if that's easier.
 - No names, no school, no faces: Round 1 is judged blind.
 - Record a full take early, even a rough one. A rough video that exists beats a perfect one that isn't finished.
-- Upload to YouTube as **unlisted**, then open the link in a private window to check.
+- Upload to YouTube as **unlisted** (or put it on Drive, shared with anyone who has the link), then open the link in a private window to check.
 
 ## For the finals (if we get in)
 The live demo is 5 minutes plus questions. Extend each part, keep this video as the backup if the live demo fails, and prepare the Q&A answers listed in Rubric.

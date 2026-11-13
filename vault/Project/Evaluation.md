@@ -22,6 +22,13 @@ Filled in after feature freeze, from the one test-set run.
 - **Our model:**
 - **In plain words:**
 
+## By group
+The main metric for each group on the test set. Hackathon rule: say so if it's uneven.
+
+| Group | Examples | Baseline | Our model |
+|---|---|---|---|
+| | | | |
+
 ## Where it fails
 From reading 10 to 20 wrong predictions.
 

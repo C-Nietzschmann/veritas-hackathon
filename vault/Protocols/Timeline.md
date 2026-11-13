@@ -15,9 +15,9 @@ If the team wants a different rhythm, change the times here and on Home before k
 
 | Time | What | Gate: we don't move on until |
 |---|---|---|
-| 06:00 | Briefs arrive by email. Read them alone when you wake up. Note your top two tracks. | |
+| 06:00 | The official kickoff call runs live (the recording comes by email) and the briefs arrive by email. Read them alone when you wake up. Note your top two tracks. | |
 | **08:00** | **Kickoff call.** Compare notes, pick a track, brainstorm 20 minutes, choose one idea. | Track and idea chosen, written in `Decisions/` |
-| 08:45–10:00 | **Scope.** Fill in [[Idea]] together. Find the dataset. Choose the metric. Split the first tasks. | |
+| 08:45–10:00 | **Scope.** Fill in [[Idea]] together. Find the dataset. Choose the metric. Split the first tasks. 30-minute rule: no usable data within 30 minutes means we change the question. | |
 | **10:00** | **Scope lock.** | [[Idea]] is complete. A dataset loads in a notebook. Each person has a P0 task. |
 | 10:00–14:00 | **Skeleton.** The ugliest possible version of the whole pipeline: data in, baseline model, one metric out. | |
 | **14:00** | **Check-in: skeleton.** | A notebook on `main` runs end to end and prints a baseline number, recorded in Evaluation. |
@@ -36,7 +36,7 @@ If the team wants a different rhythm, change the times here and on Home before k
 | **18:00** | **Check-in: fresh-run test.** Someone who didn't write the notebook opens it from the repo link in a fresh Colab session and runs it. | It runs without help. Write-up and video are done. |
 | 18:00–20:00 | Fix what the fresh run exposed. Upload the video as unlisted. Read the write-up aloud once. | |
 | **20:00** | **Submission call.** Go through [[Submission Checklist]] line by line, together. | |
-| **21:00** | **Submitted.** Screenshot the confirmation into `Log/`. | |
+| **21:00** | **Submitted.** Post a screenshot of the confirmation in the WhatsApp group. | |
 | 21:00–05:59 | Buffer. Only used if something went badly wrong. | |
 
 ## Check-in times at a glance

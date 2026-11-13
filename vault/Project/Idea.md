@@ -4,13 +4,15 @@ Filled in together on the kickoff call, Sat 08:00–10:00 CET. Locked at 10:00. 
 Owner after lock: the coordinator.
 
 ## Track and challenge
-- **Track:**
+- **Track:** (Health, Finance, Climate or Languages)
 - **Challenge brief** (paste it from the email):
 
 >
 
 ## The problem, in one sentence
 _Who_ has _what problem_ in _which situation_?
+
+The organisers' test: "Our project helps [a specific person] by taking [an input] and giving back [an output]."
 
 ## Our user
 One real person or group. What do they do today without our project, and what does a mistake cost them?
@@ -27,6 +29,8 @@ The angle that isn't the first idea everyone has. Why hasn't the obvious solutio
 | | | | | |
 
 Checked: it downloads from a public URL inside a notebook ☐ · it has enough examples ☐ · we're allowed to use it ☐
+
+**30-minute rule** (from the workshops): no usable data within 30 minutes means we change the question.
 
 ## Model
 - **Baseline:**

@@ -9,10 +9,27 @@ How we are scored, and what we do to earn each point. Owners are in Team.
 | Technical execution | 30 | Does it work, and is it well built? | The notebook runs top to bottom from a fresh start. Clear structure, no dead cells. See Colab Workflow. |
 | Originality | 20 | Is this a fresh take on the problem? | Decide the angle at kickoff and write it in Idea. A new combination of data, a new user, or a new way to use the model counts. A bigger model does not. |
 | Impact and track fit | 20 | Does it solve a real problem in the track? | One real user and one real situation, named in Idea. Every feature must serve that user. |
-| Testing and honesty | 15 | Did you measure how well it works, and do you know where it fails? | Baseline, held-out test set, one main metric, a failure list. See Evaluation Protocol. |
+| Testing and honesty | 15 | Did you measure how well it works, and do you know where it fails? | Baseline, held-out test set, one main metric, a failure list, results by group. See Evaluation Protocol. |
 | Communication | 15 | Are the write-up and video clear? | Write-up and Demo Script start at feature freeze, not in the last hour. |
 
 Technical execution and testing together are 45 points. A small model that works and is measured honestly beats an ambitious one that half works.
+
+## What judges reward, and the red flags
+From the judges page and the workshops. Each one is a cheap point won or lost.
+
+**They reward**
+- A comparison against a simple baseline
+- Results on held-out test data
+- Showing where it fails, with concrete cases
+- Checking how well it works across groups
+- Explaining why this problem, why this model, and what the results mean
+- A demo that runs from start to finish
+
+**Red flags**
+- Results that look too good to be true (test leakage)
+- A tutorial dataset with no new question
+- A write-up that lists tools but not what we learned
+- Links the judges can't open. Test every link in a logged-out browser.
 
 ## Finals: live demo (100 points)
 
@@ -21,6 +38,6 @@ Technical execution and testing together are 45 points. A small model that works
 | Demo and clarity | 30 | Rehearse the 5-minute demo twice. Keep a recorded backup in case the live demo breaks. |
 | Technical depth | 30 | Every member can explain every part: the data, the model, the metric, the trade-offs. |
 | Impact | 20 | Lead with the user and the problem, not the model. |
-| Q&A | 20 | Prepare answers to "why this model?", "how do you know it works?", "where does it fail?", "what would you do with another month?". |
+| Q&A | 20 | Prepare answers to "how do you know it works?", "what would cause it to fail?", "who would use this?", "why this model?", "what would you do with another month?". Agree beforehand who answers which kind of question. |
 
 Final ranking = 70% finals + 30% Round 1.

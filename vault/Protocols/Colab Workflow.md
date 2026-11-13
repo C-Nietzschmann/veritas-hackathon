@@ -11,10 +11,14 @@ We build in Google Colab so nobody's laptop is a bottleneck and the reviewers ca
 ## First cell of every notebook
 So that a fresh session has the repo's code and packages:
 ```python
-!git clone -q https://github.com/C-Nietzschmann/veritas-hackathon.git 2>/dev/null || git -C veritas-hackathon pull -q
-%cd veritas-hackathon
+!git clone -q https://github.com/C-Nietzschmann/veritas-hackathon.git /content/veritas-hackathon 2>/dev/null || git -C /content/veritas-hackathon pull -q
+%cd /content/veritas-hackathon
 !pip install -q -r requirements.txt
+%load_ext autoreload
+%autoreload 2
 ```
+The full paths mean that running the cell twice doesn't put a second clone inside the first. `autoreload` picks up changes to `src/` after a pull, without restarting the session.
+
 This works without a login once the repo is public. While it is private, keep everything the notebook needs inside the notebook, or switch the repo to public first.
 
 ## Rules for notebooks
@@ -23,7 +27,7 @@ This works without a login once the repo is public. While it is private, keep ev
 - **Set the seed** in the second cell and use it everywhere (`random`, `numpy`, the framework, the train/test split). Results must be repeatable.
 - **Data comes from its source.** Download it in a cell from the public URL. Never from your own Drive, because the reviewers don't have your Drive.
 - **Headings and one sentence per section.** The notebook is read by a reviewer: Problem → Data → Baseline → Model → Evaluation → Demo.
-- **Keep outputs in `main.ipynb`**, so results are visible without running. Clear outputs in personal scratch notebooks before committing if they are large.
+- **Keep outputs in `main.ipynb`**, so results are visible without running. The check allows notebooks up to 25 MB. Clear outputs in personal scratch notebooks before committing if they are large.
 - **No secrets in cells.** Use the key icon in the left sidebar (Secrets) and `from google.colab import userdata; userdata.get("NAME")`.
 
 ## GPU and sessions
