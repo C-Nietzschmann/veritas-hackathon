@@ -35,7 +35,7 @@ share_on_branch() {
     echo "Nothing to share: this branch has no changes compared with main."
     return 1
   fi
-  git push -q -u origin HEAD || { echo "Could not push the branch. Someone else may have pushed to it: git pull --rebase, then try again."; return 1; }
+  git push -q -u origin HEAD 2>/dev/null || { echo "Could not push the branch. Someone else may have pushed to it: git pull --rebase, then try again."; return 1; }
   pr=$(gh pr view --json number,state -q 'select(.state == "OPEN") | .number' 2>/dev/null)
   if [ -z "$pr" ]; then
     title=$(gh issue view "$n" -R "$REPO" --json title -q .title) || return 1
