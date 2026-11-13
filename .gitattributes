@@ -1,0 +1,3 @@
+# Obsidian rewrites its settings files by itself (graph zoom, bookmarks). If two people
+# changed the same one, keep the version already on GitHub instead of stopping with a conflict.
+.obsidian/*.json merge=ours

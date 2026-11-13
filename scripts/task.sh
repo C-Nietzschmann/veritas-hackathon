@@ -4,7 +4,9 @@
 #   sh scripts/task.sh start 12                            assign it to you, move the card to In Progress
 #   sh scripts/task.sh block 12 "waiting for the dataset"  label it blocked and say why
 #   sh scripts/task.sh unblock 12
+#   sh scripts/task.sh note 12 "How it works: ..."         add a comment
 #   sh scripts/task.sh done 12 "How it works: ..."         comment and close; the board moves it to Done
+# A push whose message contains "closes #12" also closes task 12, so "done" is only for tasks with nothing to push.
 REPO=C-Nietzschmann/veritas-hackathon
 BOARD=https://github.com/users/C-Nietzschmann/projects/3
 PROJECT=PVT_kwHOEwA5us4BrclP
@@ -36,10 +38,14 @@ case "$cmd" in
   unblock)
     gh issue edit "$n" -R "$REPO" --remove-label blocked >/dev/null && echo "#$n unblocked"
     ;;
+  note)
+    [ -n "$text" ] || { echo "usage: task.sh note <number> \"text\""; exit 1; }
+    gh issue comment "$n" -R "$REPO" --body "$text" >/dev/null && echo "comment added to #$n"
+    ;;
   done)
     if [ -n "$text" ]; then gh issue close "$n" -R "$REPO" --comment "$text"; else gh issue close "$n" -R "$REPO"; fi
     ;;
   *)
-    sed -n '2,8p' "$0"; exit 1
+    sed -n '2,10p' "$0"; exit 1
     ;;
 esac

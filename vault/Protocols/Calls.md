@@ -22,7 +22,7 @@ Then together:
 5. Is `main` green?
 6. Are we on track for the next gate? If not, what do we cut?
 
-The coordinator writes three lines per check-in in [[Sync notes]]. Problems that need more than two minutes are solved after the check-in by the people involved.
+The coordinator writes three lines per check-in in [[Sync notes]]. With Claude Code, say **check-in** a minute before: it collects what was finished and pushed since the last one, who is on what, what is blocked and whether `main` is green, and drafts the entry for you to correct. Problems that need more than two minutes are solved after the check-in by the people involved.
 
 ## Chat rules
 Start messages with a tag so they can be found later:

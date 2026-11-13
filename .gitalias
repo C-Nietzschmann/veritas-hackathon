@@ -7,3 +7,8 @@
 [alias]
 	sync = "!f() { sh scripts/check.sh || return 1; git add -A && git commit -q -m \"${1:-sync}\"; git pull -q --rebase && git push -q && echo synced; }; f"
 	board = "!sh scripts/board.sh"
+
+# Used by .gitattributes for Obsidian's settings files: on a clash, keep the version already on GitHub.
+[merge "ours"]
+	name = keep the version already on GitHub
+	driver = true

@@ -11,6 +11,10 @@ It saves everything you changed, fetches what the others changed, and uploads yo
 ```bash
 git sync "Add baseline model"
 ```
+If the push finishes a task, say so and the card moves to Done by itself:
+```bash
+git sync "Add baseline model, closes #12"
+```
 First time on a computer, switch the shortcut on (see [[Setup]]): `git config --local include.path ../.gitalias`
 
 Using Claude Code? Say **push**. It does the bookkeeping too (your card on the board, your log), then syncs and confirms GitHub's checks.

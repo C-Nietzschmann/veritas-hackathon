@@ -47,7 +47,7 @@ Every task is an issue in this repo, shown as a card on the board: https://githu
 - New task: `sh scripts/task.sh new "Verb and object" P1 [technical|originality|impact|testing|communication]`. It lands in Todo by itself.
 - Start: `sh scripts/task.sh start <number>` assigns it to the user and moves the card to In Progress. Do this before writing code. One card In Progress per person.
 - Blocked: `sh scripts/task.sh block <number> "<on what>"`, and tell the user to say it on the call.
-- Finished: draft the "How it works" comment (five plain bullets at most: what it does, why this way, where it could be wrong), have the owner confirm they can explain it, then `sh scripts/task.sh done <number> "<comment>"`. Closing moves the card to Done.
+- Finished: draft the "How it works" comment (five plain bullets at most: what it does, why this way, where it could be wrong) and have the owner confirm they can explain it. End the push message with `closes #<number>`: GitHub closes the issue and the card moves to Done. Then `sh scripts/task.sh note <number> "<comment>"`. With nothing to push: `sh scripts/task.sh done <number> "<comment>"`.
 - Never reassign, relabel or close a teammate's card.
 - These need the GitHub CLI (`gh auth login`). If it is missing, say so and ask the user to make the change on the board in the browser.
 - Details: `vault/Protocols/Task Protocol.md`.
@@ -58,9 +58,13 @@ Baseline first, fixed seed, held-out test set used once at the end, results logg
 ## Sharing work: always the push skill
 Whenever the user says push, sync, share, save or "done", and at the end of every session, run the `push` skill (`.claude/skills/push/SKILL.md`). It checks the work, updates the task's card and the log, runs `git sync`, and confirms GitHub's checks passed. Don't run a bare `git push`.
 
+## Check-ins
+When the user says "check-in", run the `checkin` skill (`.claude/skills/checkin/SKILL.md`): it gathers the facts since the last check-in and drafts the entry for `vault/Log/Sync notes.md`.
+
 ## Commands
 - Install: `pip install -r requirements.txt`
 - Test: `pytest -q`
 - Share: `git sync "message"` (runs `scripts/check.sh` first)
 - Board in the terminal: `git board` or `sh scripts/board.sh`
-- Move a task: `sh scripts/task.sh new|start|block|unblock|done …`
+- Move a task: `sh scripts/task.sh new|start|block|unblock|note|done …`
+- Facts for a check-in: `sh scripts/checkin.sh [hours]`

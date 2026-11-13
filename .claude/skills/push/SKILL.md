@@ -21,13 +21,13 @@ Everyone shares `main`, so only code that runs may be pushed.
 
 ## 3. Bookkeeping
 Do what applies, then show the user a two-line summary of what you did.
-- **The task's card** (GitHub board, see `sh scripts/board.sh`): still working on it → leave it In Progress. Blocked → `sh scripts/task.sh block <number> "<on what>"`. Finished → draft the "How it works" comment in at most five plain bullets, and ask the owner to read it and say whether they could explain it out loud. If they can't, explain it to them first. That is a hackathon rule, not a formality. Then `sh scripts/task.sh done <number> "<comment>"`, which closes the issue and moves the card to Done. Do this only after step 4 succeeded, so a card is never Done before its code is on `main`. No `gh` on this computer? Ask the user to do it on the board in the browser.
+- **The task's card** (GitHub board, see `sh scripts/board.sh`): still working on it → leave it In Progress. Blocked → `sh scripts/task.sh block <number> "<on what>"`. Finished → draft the "How it works" comment in at most five plain bullets, and ask the owner to read it and say whether they could explain it out loud. If they can't, explain it to them first. That is a hackathon rule, not a formality. Then let the push close it: end the message in step 4 with `closes #<number>`. GitHub closes the issue the moment the commit is on `main`, and the board moves the card to Done by itself. After the push, add the explanation: `sh scripts/task.sh note <number> "<How it works …>"`. A finished task with nothing to push (for example "Register the team"): `sh scripts/task.sh done <number> "<comment>"`. No `gh` on this computer? The `closes #<number>` part still works; ask the user to paste the comment on the board in the browser.
 - **Log** (`vault/Log/<handle>.md`): append an entry from `vault/Templates/Session Log.md`, including the "AI used for" line, honestly.
 - **Credits** (`vault/Project/Credits.md`): any new dataset, pre-trained model or library.
 - **Evaluation** (`vault/Project/Evaluation.md`): one row per new result. Only numbers that came from code that was run in this session or that the user gives you. Never estimate.
 
 ## 4. Share
-Run `git sync "<message>"`. The message says what changed, in the imperative ("Add baseline model"). For a notes push, "Update board and log" is fine.
+Run `git sync "<message>"`. The message says what changed, in the imperative ("Add baseline model"). If this push finishes a task, end it with `closes #<number>` ("Add baseline model, closes #12"). Only do that when the task really is finished: the card moves to Done at once. For a notes push, "Update log" is fine.
 
 `git sync` first runs `scripts/check.sh`. If it reports a problem (a secret, a conflict marker, a file too big, a broken notebook), fix the cause and run it again. Never work around the check.
 
