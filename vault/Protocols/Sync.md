@@ -13,9 +13,9 @@ git sync "Add baseline model"
 ```
 First time on a computer, switch the shortcut on (see [[Setup]]): `git config --local include.path ../.gitalias`
 
-Using Claude Code? Say **push**. It does the bookkeeping too (task note, log), then syncs and confirms GitHub's checks.
+Using Claude Code? Say **push**. It does the bookkeeping too (your card on the board, your log), then syncs and confirms GitHub's checks.
 
-Want to see the board without opening Obsidian? `git board`
+Tasks are on GitHub and need no sync. To see the board in the terminal: `git board`
 
 ## What sync checks first
 Before anything is shared, `git sync` looks through your files and stops if it finds:
@@ -28,12 +28,10 @@ It tells you which file. Fix it and run `git sync` again. GitHub runs the same c
 
 ## When to sync
 - **Before you start working**, so you have the latest.
-- **Right after changing a task** (claimed it, blocked, done). The board is only as fresh as everyone's last sync.
 - **When a piece of code works.** Every 30 to 60 minutes while building.
 - **Before every check-in** and before you go offline.
 
 ## Why conflicts are rare here
-- Tasks are one file each, and only the owner edits a task.
 - Each person has their own log file in `Log/` and their own notebooks.
 - Sync notes and the Phase line on Home are written by the coordinator only.
 - Idea, Evaluation, Write-up and Demo Script each have one owner (see Team). To change someone else's note, tell them, or add a line starting with your handle at the bottom.

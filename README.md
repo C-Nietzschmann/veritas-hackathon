@@ -40,7 +40,8 @@ git sync "what I changed"
 ```
 
 - Everyone works on `main`. Push only what runs.
-- One owner per notebook, one file per task, so two people never edit the same file.
+- Tasks are issues on the [project board](https://github.com/users/C-Nietzschmann/projects/3): Todo, In Progress, Done.
+- One owner per notebook, so two people never edit the same file.
 - No secrets, no full names, no school anywhere in this repo. It becomes public for the judges.
-- With Claude Code, say "push" instead: it also updates your task and log and confirms the checks on GitHub.
+- With Claude Code, say "push" instead: it also updates your card on the board and your log, and confirms the checks on GitHub.
 - AI agents: read `CLAUDE.md` first.

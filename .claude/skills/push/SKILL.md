@@ -1,6 +1,6 @@
 ---
 name: push
-description: Share the current work with the team the proper way - checks, task note, log, git sync, then confirm GitHub's checks passed. Use whenever the user says push, sync, share, save, upload, ship, "I'm done", or finishes a task, and at the end of every working session.
+description: Share the current work with the team the proper way - checks, the task's card on GitHub, log, git sync, then confirm GitHub's checks passed. Use whenever the user says push, sync, share, save, upload, ship, "I'm done", or finishes a task, and at the end of every working session.
 ---
 
 # Push
@@ -11,7 +11,7 @@ One routine for sharing work. Do the steps in order and don't skip any. Keep the
 Run `git status --short`.
 - Nothing changed: run `git sync` anyway to fetch the team's changes, report, stop.
 - Only files in `vault/` changed: this is a notes push. Skip steps 2 and 5.
-- Files changed that are not part of the user's task, or belong to a teammate (their notebook, their task note, their log): stop and ask the user before going on.
+- Files changed that are not part of the user's task, or belong to a teammate (their notebook, their log): stop and ask the user before going on.
 
 ## 2. Is the code ready? (code pushes only)
 Everyone shares `main`, so only code that runs may be pushed.
@@ -19,9 +19,9 @@ Everyone shares `main`, so only code that runs may be pushed.
 - If a notebook changed, ask the user: "Did it run top to bottom with Restart and run all?" If not, wait.
 - If the work is unfinished, it may only be pushed when it can't break anything (a new file, a function nothing calls yet). Otherwise offer to push the notes only.
 
-## 3. Bookkeeping in the vault
-Do what applies, then show the user a two-line summary of what you wrote.
-- **Task note** (`vault/Tasks/`): set `status` (`doing`, `blocked` or `done`) and `link`. For a finished task, draft "How it works" in at most five plain bullets, and ask the owner to read it and say whether they could explain it out loud. If they can't, explain it to them first. That is a hackathon rule, not a formality.
+## 3. Bookkeeping
+Do what applies, then show the user a two-line summary of what you did.
+- **The task's card** (GitHub board, see `sh scripts/board.sh`): still working on it → leave it In Progress. Blocked → `sh scripts/task.sh block <number> "<on what>"`. Finished → draft the "How it works" comment in at most five plain bullets, and ask the owner to read it and say whether they could explain it out loud. If they can't, explain it to them first. That is a hackathon rule, not a formality. Then `sh scripts/task.sh done <number> "<comment>"`, which closes the issue and moves the card to Done. Do this only after step 4 succeeded, so a card is never Done before its code is on `main`. No `gh` on this computer? Ask the user to do it on the board in the browser.
 - **Log** (`vault/Log/<handle>.md`): append an entry from `vault/Templates/Session Log.md`, including the "AI used for" line, honestly.
 - **Credits** (`vault/Project/Credits.md`): any new dataset, pre-trained model or library.
 - **Evaluation** (`vault/Project/Evaluation.md`): one row per new result. Only numbers that came from code that was run in this session or that the user gives you. Never estimate.

@@ -18,7 +18,7 @@ Each person, one minute, three sentences:
 3. **Blocked** by anything?
 
 Then together:
-4. Look at the [[Board.base|Board]]. Is it true? Fix it now.
+4. Look at the [board](https://github.com/users/C-Nietzschmann/projects/3). Is it true? Fix it now.
 5. Is `main` green?
 6. Are we on track for the next gate? If not, what do we cut?
 
@@ -38,7 +38,7 @@ Start messages with a tag so they can be found later:
 What does **not** live in WhatsApp:
 - **Code.** It goes in the repo.
 - **Decisions.** The chat is where we agree, `Decisions/` is where it counts.
-- **Tasks.** "Can you do X?" becomes a task note or it will be forgotten.
+- **Tasks.** "Can you do X?" becomes a card on the board or it will be forgotten.
 - **Keys and passwords.** Never.
 
 ## When someone goes quiet

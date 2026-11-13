@@ -19,16 +19,14 @@ Veritas AI International High School Hackathon. 48 hours, team of 3, fully remot
 
 ## Board
 
-![[Board.base#Open]]
-
-Open the full board: [[Board.base|Board]]
+**[Open the board on GitHub](https://github.com/users/C-Nietzschmann/projects/3)**: who is doing what, right now. In the terminal: `git board`
 
 ## Where everything is
 
 | Hub | What you find there |
 |---|---|
 | [[Protocols]] | How we work: rules, timeline, calls, tasks, git, Colab, AI, evaluation, submission |
-| [[Tasks]] | Who is doing what |
+| [[Tasks]] | The way to the task board on GitHub |
 | [[Project]] | The idea, the results, credits, write-up and demo script |
 | [[Decisions]] | What we decided and why |
 | [[Brief]] | What the hackathon asks for, and the rubric |

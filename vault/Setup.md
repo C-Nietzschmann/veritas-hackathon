@@ -1,6 +1,6 @@
 # Setup
 
-Ten minutes, once, before kickoff. When you're done, claim your Setup task on the [[Board.base|Board]].
+Ten minutes, once, before kickoff. Your checklist for this is your Setup card on the [board](https://github.com/users/C-Nietzschmann/projects/3). Tick its boxes as you go and close it when you're done.
 
 ## 1. Install
 - [Git](https://git-scm.com/downloads) and [Obsidian](https://obsidian.md)
@@ -21,15 +21,16 @@ If the clone asks for a password and refuses yours: run `gh auth login` (step 1)
 
 ## 3. Open the vault
 Obsidian → **Open folder as vault** → choose the `veritas-hackathon` folder you just cloned.
-The notes are in the `vault` folder in the left sidebar. Click the bookmark icon for the shortcuts: Home, Board, Workflow map, Rules, Timeline, Idea.
+The notes are in the `vault` folder in the left sidebar. Click the bookmark icon for the shortcuts: Home, Workflow map, Rules, Timeline, Idea, and the board on GitHub.
 
 ## 4. Try the loop once
-1. Open your Setup task in `Tasks/`, put your handle in `owner`, set `status` to `doing`.
+1. Open your log file in `vault/Log/` (create `<handle>.md` starting with the line `Up: [[Log]]`) and write one line.
 2. In the terminal, inside `veritas-hackathon`:
    ```bash
    git sync
    ```
-3. Ask a teammate to run `git sync` too. Your name should now be on their board.
+3. Look at the repo on github.com: your file is there. Ask a teammate to run `git sync`, and it appears in their Obsidian.
+4. Open the [board](https://github.com/users/C-Nietzschmann/projects/3), assign your Setup card to yourself and drag it to In Progress.
 
 That is the whole workflow: change something, `git sync`. More in [[Sync]], and the big picture is on the [[Workflow map.canvas|Workflow map]].
 

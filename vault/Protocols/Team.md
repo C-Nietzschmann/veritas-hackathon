@@ -1,6 +1,6 @@
 # Team
 
-Fill this in before kickoff. Your handle is your initials or a nickname, in lowercase. No full names: this repo becomes public for the judges. The handle is used in task notes (`owner:`) and for your log file.
+Fill this in before kickoff. Your handle is your initials or a nickname, in lowercase. No full names: this repo becomes public for the judges. The handle is the name of your log file and your Git author name. On the task board you appear under your GitHub username.
 
 | Handle | Role | Owns | Leads these rubric points |
 |---|---|---|---|

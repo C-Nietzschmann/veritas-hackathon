@@ -7,10 +7,10 @@
       "title": "Home"
     },
     {
-      "type": "file",
+      "type": "url",
       "ctime": 1794565200001,
-      "path": "vault/Tasks/Board.base",
-      "title": "Board"
+      "url": "https://github.com/users/C-Nietzschmann/projects/3",
+      "title": "Board (GitHub)"
     },
     {
       "type": "file",

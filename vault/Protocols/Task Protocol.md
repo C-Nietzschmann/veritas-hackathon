@@ -1,46 +1,47 @@
 # Task Protocol
 
-Every piece of work is one note in `Tasks/`. One file per task means two people never edit the same file, so the board never has merge conflicts.
+Tasks live on GitHub, not in the vault. Every piece of work is one **issue**, and the **[board](https://github.com/users/C-Nietzschmann/projects/3)** shows the issues as cards in three columns: Todo, In Progress, Done. A change there is visible to everyone at once.
+
+The vault keeps what does not change by the minute: how we work, the project notes, decisions and logs.
 
 ## Create a task
-1. Right-click the `Tasks` folder → **New note**. Name it with a verb: `Load and clean dataset`, `Train baseline`, `Record demo video`.
-2. Insert the template: command palette (`Cmd/Ctrl + P`) → **Templates: Insert template** → `Task`.
-3. Fill in the properties at the top and one sentence under Goal. Leave the `Up: [[Tasks]]` line: it connects the task to the [[Tasks]] hub in the graph.
+On the board, click **+ Add item** at the bottom of the Todo column, type a title, press Enter, then choose **Create new issue** in `veritas-hackathon` with the **Task** template.
+Or in the repo: Issues → New issue → Task. It shows up on the board by itself.
 
+Name it with a verb: "Load and clean dataset", "Train baseline", "Record demo video".
 A good task takes 1 to 3 hours and has a result you can show. Bigger than that: split it.
 
-## Properties
+## What a card carries
 
-| Property | Values | Meaning |
+| What | Where on GitHub | Meaning |
 |---|---|---|
-| `status` | `todo` `doing` `blocked` `done` | Where it is |
-| `owner` | your handle from Team | Exactly one person. Empty means free to claim |
-| `priority` | `P0` `P1` `P2` | P0: no demo without it. P1: makes it clearly better. P2: stretch |
-| `rubric` | `technical` `originality` `impact` `testing` `communication` | Which criterion in Rubric it earns points for |
-| `link` | link | The notebook or commit on GitHub, once there is one |
+| Status | The column | Todo, In Progress or Done |
+| Owner | Assignee | Exactly one person. Nobody assigned means free to claim |
+| Priority | Label `P0` `P1` `P2` | P0: no demo without it. P1: makes it clearly better. P2: stretch |
+| Rubric | Label `technical` `originality` `impact` `testing` `communication` | Which criterion it earns points for |
+| Blocked | Label `blocked` | Cannot continue without help |
 
 ## The flow
 
-`todo` → `doing` → `done`, with `blocked` as a side exit. After every change of status: `git sync`, so the others see it.
+- **Claim:** assign yourself and drag the card to **In Progress**. Do this before you start, not after.
+- **One card In Progress per person.** Finish or hand back before starting the next.
+- **Blocked:** add the `blocked` label, write one comment saying on what, and say it on the call.
+- **Done:** it's on `main` and `main` still runs. Write the "How it works" comment (below), then close the issue. The card moves to Done by itself.
+- **Handing back:** unassign yourself, drag the card back to Todo, and comment how far you got.
 
-- **Claim:** put your handle in `owner`, set `status: doing`. Do this before you start, not after.
-- **One `doing` per person.** Finish or hand back before starting the next.
-- **Blocked:** set `status: blocked`, write one line under Notes saying on what, and say it on the call.
-- **Done:** it's on `main` and `main` still runs. Set `status: done` and paste the notebook or commit link in `link`.
-- **Handing back:** clear `owner`, set `status: todo`, and leave a note on how far you got.
+With Claude Code you can say it instead: "start task 12", "I'm blocked on 12 because …", "push". Claude moves the card for you.
 
 ## Definition of done
 - [ ] Pushed to `main`, CI shows ✓
 - [ ] Runs in a fresh Colab session, not only on your machine
-- [ ] "How it works" in the task note is filled in and you can say it out loud (see AI Agent Protocol)
+- [ ] The closing comment says **how it works**, in your own words, in five bullets at most: what it does, why this way, where it could be wrong. You can say it out loud (see AI Agent Protocol)
 - [ ] New data, models or libraries are in Credits
 - [ ] Any new result is in Evaluation
 
 ## Priorities at the gates
 - Before the MVP gate (Sat 21:00): P0 only.
 - After the MVP gate: P1, most rubric points first.
-- After feature freeze (Sun 14:00): only tasks with rubric `testing` or `communication`, and bug fixes.
-- P2 tasks that are still `todo` at freeze are dropped. Mention them in the write-up as next steps.
+- After feature freeze (Sun 14:00): only tasks labelled `testing` or `communication`, and bug fixes.
+- P2 tasks still in Todo at freeze are dropped. Mention them in the write-up as next steps.
 
-## The board
-[[Board.base|Board]] reads these properties. It has three views: **Open** (grouped by status), **By owner**, and **Done**. You can also change `status` and `owner` directly in the board table.
+Up: [[Tasks]]

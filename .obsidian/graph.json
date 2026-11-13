@@ -15,6 +15,13 @@
       }
     },
     {
+      "query": "path:Decisions",
+      "color": {
+        "a": 1,
+        "rgb": 11032055
+      }
+    },
+    {
       "query": "path:Protocols",
       "color": {
         "a": 1,
@@ -22,24 +29,10 @@
       }
     },
     {
-      "query": "path:Tasks",
-      "color": {
-        "a": 1,
-        "rgb": 2278750
-      }
-    },
-    {
       "query": "path:Project",
       "color": {
         "a": 1,
         "rgb": 16096779
-      }
-    },
-    {
-      "query": "path:Decisions",
-      "color": {
-        "a": 1,
-        "rgb": 11032055
       }
     },
     {
@@ -54,6 +47,13 @@
       "color": {
         "a": 1,
         "rgb": 10265519
+      }
+    },
+    {
+      "query": "path:Tasks",
+      "color": {
+        "a": 1,
+        "rgb": 2278750
       }
     }
   ],

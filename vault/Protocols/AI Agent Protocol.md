@@ -22,7 +22,7 @@ So the AI is a fast colleague, not the author. The ideas, the design decisions a
 - Letting the AI write the write-up from nothing. Draft it yourself, then let it edit.
 
 **The explain-back rule**
-Before a task is `done`, its owner fills in "How it works" in the task note, in their own words, and can answer on the call:
+Before a task is `done`, its owner writes the "How it works" comment on the issue, in their own words, and can answer on the call:
 1. What does this code do, step by step?
 2. Why this approach and not the obvious alternative?
 3. Where could it be wrong?
@@ -33,8 +33,8 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 
 **Start of a session**
 1. Get the latest: `git pull --rebase --autostash`
-2. Read Home, Idea, the open tasks in `Tasks/`, and everything in `Decisions/`.
-3. Confirm with your human which task you're on. If it has no task note, create one from the template. Set `status: doing` and the owner's handle.
+2. Read Home, Idea, everything in `Decisions/`, and the open tasks on the board (`sh scripts/board.sh`).
+3. Confirm with your human which task you're on. If it has no card on the board, create one (`sh scripts/task.sh new "Title" P1`). Then claim it: `sh scripts/task.sh start <number>` assigns it to your human and moves the card to In Progress.
 
 **While working**
 - One task. Don't fix or refactor things outside it. Note them as new `todo` tasks instead.
@@ -51,12 +51,12 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 - Push only what runs. `main` is shared by everyone the moment you sync.
 - `git sync` commits everything in the folder. Run `git status` first. If there are changes that aren't from your task or aren't ready, ask your human, or commit only your files.
 - If a pull stops with a conflict, show your human. Don't resolve someone else's file by guessing.
-- Don't edit another person's notebook, task note or log.
+- Don't edit another person's notebook or log, and don't reassign or close a card that isn't your human's.
 - No secrets in any file. No full names, school, phone numbers, emails or private links anywhere: the repo becomes public.
 - Don't submit, publish, or change repo settings unless your human asks in that session.
 
 **End of a session**
 Claude Code: run the `push` skill, which does all of this. Other tools, by hand:
-1. Task note: update `status`, add the `link`, and draft "How it works" for the owner to check and rewrite in their own words.
+1. The card: if the task is finished, draft the "How it works" comment for the owner to check and put in their own words, then `sh scripts/task.sh done <number> "<comment>"`. If it is blocked: `sh scripts/task.sh block <number> "<why>"`. No `gh`? Ask your human to do it on the board in the browser.
 2. Log: append an entry to `Log/<handle>.md` using the [[Session Log]] template, including the line "AI used for".
 3. Share: `git status`, then `git sync "<what changed>"`. If the code isn't in a state that runs, sync only the notes (`git add vault && git commit -m "notes" && git pull --rebase && git push`) and say so.

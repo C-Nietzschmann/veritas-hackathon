@@ -6,7 +6,7 @@ If the team wants a different rhythm, change the times here and on Home before k
 
 ## Before kickoff (Fri 13 Nov)
 - [ ] All three of us are on the registration (closes Sat 05:59 CET)
-- [ ] Everyone has done their Setup task on the [[Board.base|Board]]
+- [ ] Everyone has closed their Setup task on the [board](https://github.com/users/C-Nietzschmann/projects/3)
 - [ ] Roles agreed in Team
 - [ ] Everyone has read Rules
 - [ ] Sleep plan agreed: who is online when

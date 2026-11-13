@@ -1,13 +1,11 @@
 # Tasks
 
-Every piece of work is one note in the `Tasks` folder. How it works: [[Task Protocol]]
+Tasks live on GitHub, so the board is live for everyone and works on a phone.
 
-## Who is doing what
+- **[The board](https://github.com/users/C-Nietzschmann/projects/3)**: one card per task, in Todo, In Progress or Done
+- [All issues](https://github.com/C-Nietzschmann/veritas-hackathon/issues)
+- In the terminal: `git board`
 
-![[Board.base#By owner]]
-
-Full board with all views: [[Board.base|Board]]
-
-Every task note starts with the line `Up: [[Tasks]]`. The template adds it. That line is what ties the task to this hub in the graph view.
+How we use it: [[Task Protocol]]
 
 Up: [[Home]]

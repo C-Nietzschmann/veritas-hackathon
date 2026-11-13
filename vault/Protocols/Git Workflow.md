@@ -12,7 +12,7 @@ How `git sync` works and what to do when it complains: [[Sync]]
 
 ## Rules
 - **Push only what runs.** Unfinished work is fine as long as it can't break anyone: a new file, a function nobody calls yet, your own scratch notebook. If it could break `main.ipynb` or `src/`, finish it first.
-- **Stay in your lane.** Your notebook, your task note, your log, your part of `src/`. Two people editing one file is where conflicts come from. Need a change in someone else's file? Ask them.
+- **Stay in your lane.** Your notebook, your log, your part of `src/`. Two people editing one file is where conflicts come from. Need a change in someone else's file? Ask them.
 - **Sync often.** Small changes merge cleanly. A day of unshared work does not.
 - **Say what changed** in the message, in the imperative: "Add test split", "Fix label leak in features".
 - **Never `git push --force`.** It deletes other people's work.
