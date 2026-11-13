@@ -32,9 +32,9 @@ git clone https://github.com/C-Nietzschmann/veritas-hackathon.git
 cd veritas-hackathon
 git config --local include.path ../.gitalias
 ```
-Then open the `vault` folder in Obsidian (*Open folder as vault*) and start at `Home`. Full steps: `vault/Setup.md`.
+Then open the `veritas-hackathon` folder in Obsidian (*Open folder as vault*) and start at `vault/Home`. Full steps: `vault/Setup.md`.
 
-Day to day there is one command. It saves your changes, gets everyone else's and uploads yours:
+Day to day there is one command. It checks your files, saves your changes, gets everyone else's and uploads yours:
 ```bash
 git sync "what I changed"
 ```
@@ -42,4 +42,5 @@ git sync "what I changed"
 - Everyone works on `main`. Push only what runs.
 - One owner per notebook, one file per task, so two people never edit the same file.
 - No secrets, no full names, no school anywhere in this repo. It becomes public for the judges.
+- With Claude Code, say "push" instead: it also updates your task and log and confirms the checks on GitHub.
 - AI agents: read `CLAUDE.md` first.

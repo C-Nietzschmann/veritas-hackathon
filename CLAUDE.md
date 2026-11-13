@@ -5,10 +5,10 @@ Repo of a team of 3 in the Veritas AI International High School Hackathon.
 Stack: Python, Jupyter notebooks run in Google Colab.
 
 ## The vault comes first
-`vault/` is the team's shared Obsidian vault: plan, tasks, decisions, protocols. It is plain Markdown in this repo.
+`vault/` holds the team's shared notes: plan, tasks, decisions, protocols. Plain Markdown, opened in Obsidian (the repo folder itself is the Obsidian vault; shared settings are in `.obsidian/`).
 
-Every session:
-1. `git pull --rebase --autostash`
+Every session, before anything else:
+1. `git pull --rebase --autostash`, then `sh scripts/board.sh` to see the task board. If `git sync` is not a known command yet: `git config --local include.path ../.gitalias`
 2. Read `vault/Home.md`, `vault/Project/Idea.md`, the open notes in `vault/Tasks/`, and `vault/Decisions/`.
 3. Follow `vault/Protocols/AI Agent Protocol.md`. It is binding. The rest of `vault/Protocols/` explains the team's workflow: read the note that matches what you are doing (`Git Workflow`, `Colab Workflow`, `Evaluation Protocol`, `Task Protocol`, `Submission Checklist`).
 4. Confirm the task with the user before writing code. Work on one task.
@@ -39,11 +39,11 @@ Every session:
 ## Evaluation
 Baseline first, fixed seed, held-out test set used once at the end, results logged in `vault/Project/Evaluation.md`. Details: `vault/Protocols/Evaluation Protocol.md`.
 
-## End of a session
-1. Update the task note (`status`, `link`) and append to `vault/Log/<handle>.md`.
-2. `git status`, then `git sync "<what changed>"`.
+## Sharing work: always the push skill
+Whenever the user says push, sync, share, save or "done", and at the end of every session, run the `push` skill (`.claude/skills/push/SKILL.md`). It checks the work, updates the task note and log, runs `git sync`, and confirms GitHub's checks passed. Don't run a bare `git push`.
 
 ## Commands
 - Install: `pip install -r requirements.txt`
 - Test: `pytest -q`
-- Share: `git sync "message"` (once per clone: `git config --local include.path ../.gitalias`)
+- Share: `git sync "message"` (runs `scripts/check.sh` first)
+- Board in the terminal: `git board` or `sh scripts/board.sh`

@@ -34,8 +34,8 @@ More in [[Colab Workflow]].
 - Full names, school, phone numbers, emails, private links. The repo becomes public.
 
 ## CI: is main green?
-Every push that changes code is checked automatically (notes-only pushes are skipped). On github.com the latest commit shows ✓ or ✗, and GitHub emails whoever pushed a failure.
-It checks: no `.env` committed, every notebook is valid, and `pytest` passes once `tests/` exists.
+`git sync` checks your files on your computer before sharing them (see [[Sync]]). Then every push that changes code is checked again on GitHub (notes-only pushes are skipped). On github.com the latest commit shows ✓ or ✗, and GitHub emails whoever pushed a failure.
+It checks: no secrets, no conflict markers, no huge files, every notebook valid, and `pytest` passes once `tests/` exists.
 
 ## MAIN BROKEN
 `main.ipynb` doesn't run, or CI shows ✗.

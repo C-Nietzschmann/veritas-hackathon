@@ -1,1 +1,13 @@
-{}
+{
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "vault/Attachments",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "vault",
+  "userIgnoreFilters": [
+    "notebooks/",
+    "src/",
+    "tests/",
+    "scripts/",
+    "data/"
+  ]
+}

@@ -18,3 +18,10 @@ data/raw/
 
 # OS
 .DS_Store
+
+# Obsidian: the repo folder is the vault. Shared settings are tracked,
+# per-person window state and look-and-feel are not.
+.obsidian/workspace*.json
+.obsidian/appearance.json
+.obsidian/cache
+.trash/

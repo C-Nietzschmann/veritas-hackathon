@@ -17,6 +17,8 @@ Veritas AI International High School Hackathon. 48 hours, team of 3, fully remot
 
 Full schedule with check-in times: [[Timeline]]
 
+**The whole workflow on one page:** [[Workflow map.canvas|Workflow map]]
+
 ## Board
 
 ![[Board.base#Open]]
@@ -45,6 +47,8 @@ Read these once, in this order. They are short.
 11. [[Sync]]: sharing your changes with `git sync`
 
 New here? Start with [[Setup]].
+
+**Graph view** (`Cmd/Ctrl + G`) is colour-coded: white Home, blue protocols, green tasks, orange project notes, purple decisions, red brief, grey logs.
 
 ## The hackathon
 - [[Hackathon Brief]]: dates, rules, what to submit

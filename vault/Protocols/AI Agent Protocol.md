@@ -56,6 +56,7 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 - Don't submit, publish, or change repo settings unless your human asks in that session.
 
 **End of a session**
+Claude Code: run the `push` skill, which does all of this. Other tools, by hand:
 1. Task note: update `status`, add the `link`, and draft "How it works" for the owner to check and rewrite in their own words.
 2. Log: append an entry to `Log/<handle>.md` using the [[Session Log]] template, including the line "AI used for".
 3. Share: `git status`, then `git sync "<what changed>"`. If the code isn't in a state that runs, sync only the notes (`git add vault && git commit -m "notes" && git pull --rebase && git push`) and say so.

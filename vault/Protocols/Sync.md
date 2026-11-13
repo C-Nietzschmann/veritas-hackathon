@@ -13,7 +13,18 @@ git sync "Add baseline model"
 ```
 First time on a computer, switch the shortcut on (see [[Setup]]): `git config --local include.path ../.gitalias`
 
-Using an AI agent? "Sync" is enough.
+Using Claude Code? Say **push**. It does the bookkeeping too (task note, log), then syncs and confirms GitHub's checks.
+
+Want to see the board without opening Obsidian? `git board`
+
+## What sync checks first
+Before anything is shared, `git sync` looks through your files and stops if it finds:
+- a secrets file (`.env`) or something that looks like an API key
+- leftover conflict markers from a merge
+- a file over 5 MB (datasets and model weights don't belong in git)
+- a notebook that is broken
+
+It tells you which file. Fix it and run `git sync` again. GitHub runs the same check after every code push, plus the tests.
 
 ## When to sync
 - **Before you start working**, so you have the latest.
@@ -41,6 +52,7 @@ If it's a notebook, or it looks scary: run `git rebase --abort` (this puts every
 
 ## What the shortcut runs
 ```bash
+sh scripts/check.sh
 git add -A
 git commit -m "sync"
 git pull --rebase

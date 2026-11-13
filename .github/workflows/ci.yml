@@ -1,6 +1,6 @@
 name: CI
 
-# Notes-only pushes (vault/) don't trigger a run.
+# Runs when code is pushed. Notes-only pushes (vault/) don't trigger a run.
 on:
   pull_request:
     paths-ignore: ['vault/**']
@@ -18,12 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: No secrets committed
-        run: |
-          if git ls-files | grep -E '(^|/)\.env$'; then echo "::error::.env is committed"; exit 1; fi
-
-      - name: Notebooks are valid JSON (catches broken merges)
-        run: git ls-files -z '*.ipynb' | xargs -0 -r -n1 jq empty
+      # The same check that runs on everyone's computer before `git sync`
+      - name: No secrets, conflicts, huge files or broken notebooks
+        run: sh scripts/check.sh
 
       - if: hashFiles('requirements.txt') != ''
         uses: actions/setup-python@v5

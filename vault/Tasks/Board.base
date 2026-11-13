@@ -1,6 +1,6 @@
 filters:
   and:
-    - 'file.inFolder("Tasks")'
+    - 'file.path.contains("Tasks/")'
     - 'file.ext == "md"'
 properties:
   file.name:

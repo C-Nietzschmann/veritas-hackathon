@@ -17,8 +17,8 @@ The last line switches on our `git sync` shortcut.
 If the clone asks for a password and refuses yours: install [GitHub Desktop](https://desktop.github.com), sign in, and clone with *File → Clone repository*. Then run the `git config` line in the repo folder (*Repository → Open in Terminal*).
 
 ## 3. Open the vault
-Obsidian → **Open folder as vault** → choose the `vault` folder **inside** `veritas-hackathon`.
-You now see this note. The folder around it holds the code.
+Obsidian → **Open folder as vault** → choose the `veritas-hackathon` folder you just cloned.
+The notes are in the `vault` folder in the left sidebar. Click the bookmark icon for the shortcuts: Home, Board, Workflow map, Rules, Timeline, Idea.
 
 ## 4. Try the loop once
 1. Open your Setup task in `Tasks/`, put your handle in `owner`, set `status` to `doing`.
@@ -28,7 +28,10 @@ You now see this note. The folder around it holds the code.
    ```
 3. Ask a teammate to run `git sync` too. Your name should now be on their board.
 
-That is the whole workflow: change something, `git sync`. More in [[Sync]].
+That is the whole workflow: change something, `git sync`. More in [[Sync]], and the big picture is on the [[Workflow map.canvas|Workflow map]].
+
+## Using Claude Code?
+Open it in the `veritas-hackathon` folder. It reads `CLAUDE.md` and follows our protocols. When you want to share your work, say **push**: it checks the work, updates your task and log, syncs, and tells you whether GitHub's checks passed.
 
 ## 5. Read
 [[Home]] → [[Rules]] → [[Timeline]] → [[Calls]] → [[Task Protocol]]. Fifteen minutes in total.

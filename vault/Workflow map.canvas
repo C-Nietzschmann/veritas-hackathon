@@ -1,0 +1,403 @@
+{
+ "nodes": [
+  {
+   "id": "g-weekend",
+   "type": "group",
+   "x": -30,
+   "y": -70,
+   "width": 2250,
+   "height": 340,
+   "label": "1 · The weekend: phases and gates (times in CET)"
+  },
+  {
+   "id": "g-loop",
+   "type": "group",
+   "x": 530,
+   "y": 400,
+   "width": 1440,
+   "height": 670,
+   "label": "2 · The build loop: repeat for every task",
+   "color": "4"
+  },
+  {
+   "id": "g-push",
+   "type": "group",
+   "x": 220,
+   "y": 1150,
+   "width": 1730,
+   "height": 460,
+   "label": "3 · Every push, automatically",
+   "color": "5"
+  },
+  {
+   "id": "title",
+   "type": "text",
+   "text": "# Workflow map\nThe whole weekend on one page. Every blue link opens the note behind it.\n\nStart: [[Home]] · Rules: [[Rules]] · Board: [[Board.base|Board]]",
+   "x": -30,
+   "y": -330,
+   "width": 620,
+   "height": 200
+  },
+  {
+   "id": "p1",
+   "type": "text",
+   "text": "## Before kickoff\nFri 13 Nov\n\n[[Setup]] · [[Rules]] · [[Team]]\nRegister by Sat 05:59",
+   "x": 0,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "5"
+  },
+  {
+   "id": "p2",
+   "type": "text",
+   "text": "## Kickoff call\nSat 08:00\n\nPick a track and one idea\n→ [[Idea]]",
+   "x": 320,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "1"
+  },
+  {
+   "id": "p3",
+   "type": "text",
+   "text": "## Scope lock\nSat 10:00\n\n[[Idea]] complete, the dataset loads, everyone has a P0 task",
+   "x": 640,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "1"
+  },
+  {
+   "id": "p4",
+   "type": "text",
+   "text": "## Skeleton\nSat 14:00\n\nA baseline runs end to end. First number in [[Evaluation]]",
+   "x": 960,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "1"
+  },
+  {
+   "id": "p5",
+   "type": "text",
+   "text": "## MVP gate\nSat 21:00\n\nThe demo path works, or we cut features until it does",
+   "x": 1280,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "1"
+  },
+  {
+   "id": "p6",
+   "type": "text",
+   "text": "## Feature freeze\nSun 14:00\n\nFrom here only [[Evaluation]], [[Write-up]], [[Demo Script]] and bug fixes",
+   "x": 1600,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "1"
+  },
+  {
+   "id": "p7",
+   "type": "text",
+   "text": "## Submit\nSun 21:00\n\n[[Submission Checklist]], together on the call",
+   "x": 1920,
+   "y": 0,
+   "width": 270,
+   "height": 230,
+   "color": "6"
+  },
+  {
+   "id": "l1",
+   "type": "text",
+   "text": "### 1 · Pick a task\nOn the [[Board.base|Board]]: your handle in `owner`, status `doing`\n\n[[Task Protocol]]",
+   "x": 560,
+   "y": 460,
+   "width": 300,
+   "height": 230,
+   "color": "4"
+  },
+  {
+   "id": "l2",
+   "type": "text",
+   "text": "### 2 · Build it\nIn your own notebook, in Colab\n\n[[Colab Workflow]]",
+   "x": 920,
+   "y": 460,
+   "width": 300,
+   "height": 230,
+   "color": "4"
+  },
+  {
+   "id": "l3",
+   "type": "text",
+   "text": "### 3 · Measure it\nA number next to the baseline, logged in [[Evaluation]]\n\n[[Evaluation Protocol]]",
+   "x": 1280,
+   "y": 460,
+   "width": 300,
+   "height": 230,
+   "color": "4"
+  },
+  {
+   "id": "l4",
+   "type": "text",
+   "text": "### 4 · Explain it\nWrite \"How it works\" in your own words. If you can't, it isn't done\n\n[[AI Agent Protocol]]",
+   "x": 1280,
+   "y": 780,
+   "width": 300,
+   "height": 230,
+   "color": "4"
+  },
+  {
+   "id": "l5",
+   "type": "text",
+   "text": "### 5 · Push it\n`git sync \"what changed\"`\nor tell Claude: **push**\n\n[[Sync]]",
+   "x": 920,
+   "y": 780,
+   "width": 300,
+   "height": 230,
+   "color": "4"
+  },
+  {
+   "id": "l6",
+   "type": "text",
+   "text": "### 6 · Done\nStatus `done` on the board, then pick the next task",
+   "x": 560,
+   "y": 780,
+   "width": 300,
+   "height": 230,
+   "color": "4"
+  },
+  {
+   "id": "s1",
+   "type": "text",
+   "text": "### Stuck for 20 minutes?\nUnmute and say it. Set the task to `blocked`\n\n[[Calls]]",
+   "x": 1660,
+   "y": 460,
+   "width": 280,
+   "height": 230,
+   "color": "3"
+  },
+  {
+   "id": "s2",
+   "type": "text",
+   "text": "### Check-ins, 10 minutes\nSat 08 · 10 · 14 · 18 · 21\nSun 09 · 14 · 18 · 20\n\n[[Timeline]] · [[Sync notes]]",
+   "x": 1660,
+   "y": 780,
+   "width": 280,
+   "height": 230,
+   "color": "3"
+  },
+  {
+   "id": "a1",
+   "type": "text",
+   "text": "### You or Claude\n`git sync`\nor say **push** to Claude",
+   "x": 250,
+   "y": 1250,
+   "width": 280,
+   "height": 220,
+   "color": "4"
+  },
+  {
+   "id": "a2",
+   "type": "text",
+   "text": "### Check on your computer\nNo secrets, no merge leftovers, no huge files, notebooks valid\n\nStops here if something is wrong",
+   "x": 580,
+   "y": 1250,
+   "width": 280,
+   "height": 220
+  },
+  {
+   "id": "a3",
+   "type": "text",
+   "text": "### Share\nSave your changes → get your teammates' → upload yours",
+   "x": 910,
+   "y": 1250,
+   "width": 280,
+   "height": 220
+  },
+  {
+   "id": "a4",
+   "type": "text",
+   "text": "### GitHub checks again\nThe same check, plus the tests\n\nCode pushes only",
+   "x": 1240,
+   "y": 1250,
+   "width": 280,
+   "height": 220
+  },
+  {
+   "id": "a5",
+   "type": "text",
+   "text": "### ✓ main is green\nCarry on",
+   "x": 1620,
+   "y": 1200,
+   "width": 280,
+   "height": 120,
+   "color": "4"
+  },
+  {
+   "id": "a6",
+   "type": "text",
+   "text": "### ✗ MAIN BROKEN\nNobody pushes code. Fix it, or revert within 15 minutes\n\n[[Git Workflow]]",
+   "x": 1620,
+   "y": 1360,
+   "width": 280,
+   "height": 210,
+   "color": "1"
+  }
+ ],
+ "edges": [
+  {
+   "id": "e-p1-p2",
+   "fromNode": "p1",
+   "fromSide": "right",
+   "toNode": "p2",
+   "toSide": "left"
+  },
+  {
+   "id": "e-p2-p3",
+   "fromNode": "p2",
+   "fromSide": "right",
+   "toNode": "p3",
+   "toSide": "left",
+   "label": "scope"
+  },
+  {
+   "id": "e-p3-p4",
+   "fromNode": "p3",
+   "fromSide": "right",
+   "toNode": "p4",
+   "toSide": "left",
+   "label": "ugly first version"
+  },
+  {
+   "id": "e-p4-p5",
+   "fromNode": "p4",
+   "fromSide": "right",
+   "toNode": "p5",
+   "toSide": "left",
+   "label": "build"
+  },
+  {
+   "id": "e-p5-p6",
+   "fromNode": "p5",
+   "fromSide": "right",
+   "toNode": "p6",
+   "toSide": "left",
+   "label": "build"
+  },
+  {
+   "id": "e-p6-p7",
+   "fromNode": "p6",
+   "fromSide": "right",
+   "toNode": "p7",
+   "toSide": "left",
+   "label": "evaluate, write, record"
+  },
+  {
+   "id": "e-l1-l2",
+   "fromNode": "l1",
+   "fromSide": "right",
+   "toNode": "l2",
+   "toSide": "left"
+  },
+  {
+   "id": "e-l2-l3",
+   "fromNode": "l2",
+   "fromSide": "right",
+   "toNode": "l3",
+   "toSide": "left"
+  },
+  {
+   "id": "e-l3-l4",
+   "fromNode": "l3",
+   "fromSide": "bottom",
+   "toNode": "l4",
+   "toSide": "top"
+  },
+  {
+   "id": "e-l4-l5",
+   "fromNode": "l4",
+   "fromSide": "left",
+   "toNode": "l5",
+   "toSide": "right"
+  },
+  {
+   "id": "e-l5-l6",
+   "fromNode": "l5",
+   "fromSide": "left",
+   "toNode": "l6",
+   "toSide": "right"
+  },
+  {
+   "id": "e-l6-l1",
+   "fromNode": "l6",
+   "fromSide": "top",
+   "toNode": "l1",
+   "toSide": "bottom",
+   "label": "next task"
+  },
+  {
+   "id": "e-l3-s1",
+   "fromNode": "l3",
+   "fromSide": "right",
+   "toNode": "s1",
+   "toSide": "left",
+   "label": "blocked"
+  },
+  {
+   "id": "e-p4-g-loop",
+   "fromNode": "p4",
+   "fromSide": "bottom",
+   "toNode": "g-loop",
+   "toSide": "top",
+   "label": "Sat 14:00 → Sun 14:00"
+  },
+  {
+   "id": "e-a1-a2",
+   "fromNode": "a1",
+   "fromSide": "right",
+   "toNode": "a2",
+   "toSide": "left"
+  },
+  {
+   "id": "e-a2-a3",
+   "fromNode": "a2",
+   "fromSide": "right",
+   "toNode": "a3",
+   "toSide": "left",
+   "label": "ok"
+  },
+  {
+   "id": "e-a3-a4",
+   "fromNode": "a3",
+   "fromSide": "right",
+   "toNode": "a4",
+   "toSide": "left"
+  },
+  {
+   "id": "e-a4-a5",
+   "fromNode": "a4",
+   "fromSide": "right",
+   "toNode": "a5",
+   "toSide": "left",
+   "label": "pass"
+  },
+  {
+   "id": "e-a4-a6",
+   "fromNode": "a4",
+   "fromSide": "right",
+   "toNode": "a6",
+   "toSide": "left",
+   "label": "fail"
+  },
+  {
+   "id": "e-l5-g-push",
+   "fromNode": "l5",
+   "fromSide": "bottom",
+   "toNode": "g-push",
+   "toSide": "top",
+   "label": "what happens when you push"
+  }
+ ]
+}
