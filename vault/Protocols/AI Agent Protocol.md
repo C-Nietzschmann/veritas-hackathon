@@ -48,6 +48,7 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 
 **Hard limits**
 - No force-push, no rewriting pushed history.
+- Code never goes to `main` directly from an agent: always through a pull request linked to its task (`sh scripts/task.sh ship` or `pr`). Notes in `vault/` may go straight to `main`.
 - Push only what runs. `main` is shared by everyone the moment you sync.
 - `git sync` commits everything in the folder. Run `git status` first. If there are changes that aren't from your task or aren't ready, ask your human, or commit only your files.
 - If a pull stops with a conflict, show your human. Don't resolve someone else's file by guessing.
@@ -57,6 +58,6 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 
 **End of a session**
 Claude Code: run the `push` skill, which does all of this. Other tools, by hand:
-1. The card: if the task is finished, draft the "How it works" comment for the owner to check and put in their own words, then `sh scripts/task.sh done <number> "<comment>"`. If it is blocked: `sh scripts/task.sh block <number> "<why>"`. No `gh`? Ask your human to do it on the board in the browser.
+1. The card: if the task is finished, draft the "How it works" comment for the owner to check and put in their own words, then share the code with `sh scripts/task.sh ship <number> "<what changed>"` (a pull request linked to the task, merged when the checks pass) and add the comment with `sh scripts/task.sh note <number> "<comment>"`. If it is blocked: `sh scripts/task.sh block <number> "<why>"`. No `gh`? Ask your human to do it on the board in the browser.
 2. Log: append an entry to `Log/<handle>.md` using the [[Session Log]] template, including the line "AI used for".
 3. Share: `git status`, then `git sync "<what changed>"`. If the code isn't in a state that runs, sync only the notes (`git add vault && git commit -m "notes" && git pull --rebase && git push`) and say so.

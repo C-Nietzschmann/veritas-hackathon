@@ -26,7 +26,7 @@ A good task takes 1 to 3 hours and has a result you can show. Bigger than that: 
 - **Claim:** assign yourself and drag the card to **In Progress**. Do this before you start, not after.
 - **One card In Progress per person.** Finish or hand back before starting the next.
 - **Blocked:** add the `blocked` label, write one comment saying on what, and say it on the call.
-- **Done:** put `closes #12` in the message of the push that finishes it: `git sync "Add baseline, closes #12"`. GitHub closes the issue and the card moves to Done by itself. Then add your "How it works" comment (below) on the issue. A task with nothing to push: close the issue by hand.
+- **Done:** the task's pull request is merged. That closes the issue and moves the card to Done by itself, with the pull request shown next to it. With Claude Code, say "push". By hand: `sh scripts/task.sh ship 12 "Add baseline"`, or `git sync "Add baseline, closes #12"` for a direct push. Then add your "How it works" comment (below) on the issue. A task with nothing to push: close the issue by hand.
 - **Pull request?** Its description starts with `Closes #12`. This is a rule: it links the pull request to the card and closes the task when it is merged. See Git Workflow.
 - **Handing back:** unassign yourself, drag the card back to Todo, and comment how far you got.
 
