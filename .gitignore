@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+.venv/
+.ipynb_checkpoints/
+*.pyc
+
+# big data / model files: link or download in code instead
+data/raw/
+*.pt
+*.pth
+*.ckpt
+*.h5
+
+# OS
+.DS_Store
+
+# the team vault is its own private repo, cloned here (see README)
+/vault/

@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: No secrets committed
+        run: |
+          if git ls-files | grep -E '(^|/)\.env$'; then echo "::error::.env is committed"; exit 1; fi
+
+      - name: Notebooks are valid JSON (catches broken merges)
+        run: git ls-files -z '*.ipynb' | xargs -0 -r -n1 jq empty
+
+      - if: hashFiles('requirements.txt') != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install and test
+        if: hashFiles('requirements.txt') != ''
+        run: |
+          pip install -r requirements.txt pytest
+          if [ -d tests ]; then pytest -q; else echo "no tests/ yet"; fi
