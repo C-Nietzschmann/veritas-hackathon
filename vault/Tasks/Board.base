@@ -1,0 +1,63 @@
+filters:
+  and:
+    - 'file.inFolder("Tasks")'
+    - 'file.ext == "md"'
+properties:
+  file.name:
+    displayName: Task
+  note.status:
+    displayName: Status
+  note.owner:
+    displayName: Owner
+  note.priority:
+    displayName: Prio
+  note.rubric:
+    displayName: Rubric
+  note.link:
+    displayName: Link
+views:
+  - type: table
+    name: Open
+    filters:
+      and:
+        - 'status != "done"'
+    groupBy:
+      property: note.status
+      direction: ASC
+    groupOrder:
+      - doing
+      - blocked
+      - todo
+    order:
+      - file.name
+      - note.owner
+      - note.priority
+      - note.rubric
+    sort:
+      - property: note.priority
+        direction: ASC
+  - type: table
+    name: By owner
+    filters:
+      and:
+        - 'status != "done"'
+    groupBy:
+      property: note.owner
+      direction: ASC
+    order:
+      - file.name
+      - note.status
+      - note.priority
+    sort:
+      - property: note.priority
+        direction: ASC
+  - type: table
+    name: Done
+    filters:
+      and:
+        - 'status == "done"'
+    order:
+      - file.name
+      - note.owner
+      - note.rubric
+      - note.link
