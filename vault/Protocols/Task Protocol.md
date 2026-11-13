@@ -5,7 +5,7 @@ Every piece of work is one note in `Tasks/`. One file per task means two people 
 ## Create a task
 1. Right-click the `Tasks` folder → **New note**. Name it with a verb: `Load and clean dataset`, `Train baseline`, `Record demo video`.
 2. Insert the template: command palette (`Cmd/Ctrl + P`) → **Templates: Insert template** → `Task`.
-3. Fill in the properties at the top and one sentence under Goal.
+3. Fill in the properties at the top and one sentence under Goal. Leave the `Up: [[Tasks]]` line: it connects the task to the [[Tasks]] hub in the graph.
 
 A good task takes 1 to 3 hours and has a result you can show. Bigger than that: split it.
 
@@ -14,9 +14,9 @@ A good task takes 1 to 3 hours and has a result you can show. Bigger than that: 
 | Property | Values | Meaning |
 |---|---|---|
 | `status` | `todo` `doing` `blocked` `done` | Where it is |
-| `owner` | your handle from [[Team]] | Exactly one person. Empty means free to claim |
+| `owner` | your handle from Team | Exactly one person. Empty means free to claim |
 | `priority` | `P0` `P1` `P2` | P0: no demo without it. P1: makes it clearly better. P2: stretch |
-| `rubric` | `technical` `originality` `impact` `testing` `communication` | Which criterion in [[Rubric]] it earns points for |
+| `rubric` | `technical` `originality` `impact` `testing` `communication` | Which criterion in Rubric it earns points for |
 | `link` | link | The notebook or commit on GitHub, once there is one |
 
 ## The flow
@@ -32,9 +32,9 @@ A good task takes 1 to 3 hours and has a result you can show. Bigger than that: 
 ## Definition of done
 - [ ] Pushed to `main`, CI shows ✓
 - [ ] Runs in a fresh Colab session, not only on your machine
-- [ ] "How it works" in the task note is filled in and you can say it out loud (see [[AI Agent Protocol]])
-- [ ] New data, models or libraries are in [[Credits]]
-- [ ] Any new result is in [[Evaluation]]
+- [ ] "How it works" in the task note is filled in and you can say it out loud (see AI Agent Protocol)
+- [ ] New data, models or libraries are in Credits
+- [ ] Any new result is in Evaluation
 
 ## Priorities at the gates
 - Before the MVP gate (Sat 21:00): P0 only.

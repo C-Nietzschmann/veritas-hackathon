@@ -27,4 +27,4 @@ Write the full text here, sentence by sentence.
 - Upload to YouTube as **unlisted**, then open the link in a private window to check.
 
 ## For the finals (if we get in)
-The live demo is 5 minutes plus questions. Extend each part, keep this video as the backup if the live demo fails, and prepare the Q&A answers listed in [[Rubric]].
+The live demo is 5 minutes plus questions. Extend each part, keep this video as the backup if the live demo fails, and prepare the Q&A answers listed in Rubric.

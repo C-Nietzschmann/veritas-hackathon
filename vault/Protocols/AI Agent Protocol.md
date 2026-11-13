@@ -33,7 +33,7 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 
 **Start of a session**
 1. Get the latest: `git pull --rebase --autostash`
-2. Read [[Home]], [[Idea]], the open tasks in `Tasks/`, and everything in `Decisions/`.
+2. Read Home, Idea, the open tasks in `Tasks/`, and everything in `Decisions/`.
 3. Confirm with your human which task you're on. If it has no task note, create one from the template. Set `status: doing` and the owner's handle.
 
 **While working**
@@ -41,8 +41,8 @@ If you can't, ask the AI to teach it to you, or replace the code with something 
 - Prefer the simplest code that works. A beginner on the team must be able to read it. Plain functions, clear names, short cells, a comment where the *why* isn't obvious.
 - Explain as you go: what you're about to do and why, before the code.
 - Offer options for real design choices (model, metric, split, data source) and let the human pick. Record the choice in `Decisions/`.
-- Don't add a dependency without saying so. Add it to `requirements.txt` and [[Credits]].
-- **Never invent results.** Every number in [[Evaluation]], the write-up or the README comes from code that was actually run, and names the notebook and commit. If something wasn't run or tested, say so plainly.
+- Don't add a dependency without saying so. Add it to `requirements.txt` and Credits.
+- **Never invent results.** Every number in Evaluation, the write-up or the README comes from code that was actually run, and names the notebook and commit. If something wasn't run or tested, say so plainly.
 - Never tune on the test set. See [[Evaluation Protocol]].
 - No project code before kickoff (Sat 14 Nov 06:00 CET).
 

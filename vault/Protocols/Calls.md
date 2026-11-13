@@ -30,7 +30,7 @@ Start messages with a tag so they can be found later:
 | Tag | Meaning |
 |---|---|
 | `BLOCKED:` | I can't continue without help |
-| `MAIN BROKEN:` | Stop pushing code. See [[Git Workflow]] |
+| `MAIN BROKEN:` | Stop pushing code. See Git Workflow |
 | `PUSHED:` | I pushed something that changes what you use. Run `git sync` |
 | `DECISION?` | I need a quick yes or no from the team |
 | `AWAY until HH:MM` | Not reachable |

@@ -5,10 +5,10 @@ Fill this in before kickoff. Your handle is your initials or a nickname, in lowe
 | Handle | Role | Owns | Leads these rubric points |
 |---|---|---|---|
 | _handle_ | **Model lead** | Model choice, training, `src/` model code | Technical execution (30) |
-| _handle_ | **Data and evaluation lead** | Dataset, train/test split, metrics, [[Evaluation]], [[Credits]] | Testing and honesty (15) |
-| _handle_ | **Product and story lead**, also **coordinator** | Demo notebook or app, [[Write-up]], [[Demo Script]], the submission | Communication (15), Impact (20) |
+| _handle_ | **Data and evaluation lead** | Dataset, train/test split, metrics, Evaluation, Credits | Testing and honesty (15) |
+| _handle_ | **Product and story lead**, also **coordinator** | Demo notebook or app, Write-up, Demo Script, the submission | Communication (15), Impact (20) |
 
-Originality (20) belongs to all three and is settled at kickoff in [[Idea]].
+Originality (20) belongs to all three and is settled at kickoff in Idea.
 
 ## What the roles mean
 - Everyone writes code. A role says who decides and who is responsible, not who is allowed to touch what.
@@ -18,8 +18,8 @@ Originality (20) belongs to all three and is settled at kickoff in [[Idea]].
 ## The coordinator
 One person, for the whole weekend:
 - starts the check-ins on time and keeps them to ten minutes
-- updates the Phase line on [[Home]]
-- writes the check-in notes in [[Sync notes]]
+- updates the Phase line on Home
+- writes the check-in notes in Sync notes
 - calls the scope cut at a gate if the team can't agree in five minutes
 
 ## Availability

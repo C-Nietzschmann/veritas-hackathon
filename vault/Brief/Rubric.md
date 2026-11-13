@@ -1,16 +1,16 @@
 # Rubric
 
-How we are scored, and what we do to earn each point. Owners are in [[Team]].
+How we are scored, and what we do to earn each point. Owners are in Team.
 
 ## Round 1: project review (100 points, blind)
 
 | Criterion | Points | What the reviewer asks | What we do |
 |---|---|---|---|
-| Technical execution | 30 | Does it work, and is it well built? | The notebook runs top to bottom from a fresh start. Clear structure, no dead cells. See [[Colab Workflow]]. |
-| Originality | 20 | Is this a fresh take on the problem? | Decide the angle at kickoff and write it in [[Idea]]. A new combination of data, a new user, or a new way to use the model counts. A bigger model does not. |
-| Impact and track fit | 20 | Does it solve a real problem in the track? | One real user and one real situation, named in [[Idea]]. Every feature must serve that user. |
-| Testing and honesty | 15 | Did you measure how well it works, and do you know where it fails? | Baseline, held-out test set, one main metric, a failure list. See [[Evaluation Protocol]]. |
-| Communication | 15 | Are the write-up and video clear? | [[Write-up]] and [[Demo Script]] start at feature freeze, not in the last hour. |
+| Technical execution | 30 | Does it work, and is it well built? | The notebook runs top to bottom from a fresh start. Clear structure, no dead cells. See Colab Workflow. |
+| Originality | 20 | Is this a fresh take on the problem? | Decide the angle at kickoff and write it in Idea. A new combination of data, a new user, or a new way to use the model counts. A bigger model does not. |
+| Impact and track fit | 20 | Does it solve a real problem in the track? | One real user and one real situation, named in Idea. Every feature must serve that user. |
+| Testing and honesty | 15 | Did you measure how well it works, and do you know where it fails? | Baseline, held-out test set, one main metric, a failure list. See Evaluation Protocol. |
+| Communication | 15 | Are the write-up and video clear? | Write-up and Demo Script start at feature freeze, not in the last hour. |
 
 Technical execution and testing together are 45 points. A small model that works and is measured honestly beats an ambitious one that half works.
 

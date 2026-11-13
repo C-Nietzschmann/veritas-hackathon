@@ -1,5 +1,7 @@
 # {{title}}
 
+Up: [[Decisions]]
+
 - **Date:** {{date}} {{time}}
 - **Decided by:**
 - **Status:** decided

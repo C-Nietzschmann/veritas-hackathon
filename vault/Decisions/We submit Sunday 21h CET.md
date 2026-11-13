@@ -1,7 +1,9 @@
 # We submit Sunday 21h CET
 
+Up: [[Decisions]]
+
 - **Date:** 2026-11-13
-- **Decided by:** setup, before kickoff. Confirm or change in the task [[Agree roles and schedule]]
+- **Decided by:** setup, before kickoff. Confirm or change in the task Agree roles and schedule
 - **Status:** proposed
 
 ## Decision

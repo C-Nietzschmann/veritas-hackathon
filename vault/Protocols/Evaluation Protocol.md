@@ -3,7 +3,7 @@
 "Testing and honesty" is 15 points in Round 1, and "how do you know it works?" is the most likely question in the finals. This is how we make sure we have a real answer. Owner: Data and evaluation lead.
 
 ## In order
-1. **Choose one main metric** before training anything and write in [[Idea]] why it fits the problem. Accuracy is misleading when classes are unbalanced. Ask what a mistake costs the user.
+1. **Choose one main metric** before training anything and write in Idea why it fits the problem. Accuracy is misleading when classes are unbalanced. Ask what a mistake costs the user.
 2. **Split the data once.** Train, validation, test, with a fixed seed. Write the split in [[Evaluation]]. The test set is not looked at again until the end.
 3. **Build a baseline first.** The dumbest thing that produces an answer: always predict the most common class, predict the mean, or a simple linear model. Its score is the bar.
 4. **Log every experiment** as one row in the results table in [[Evaluation]]: what changed, validation score, notebook and commit.

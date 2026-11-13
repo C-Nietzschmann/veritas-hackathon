@@ -1,0 +1,18 @@
+filters:
+  and:
+    - file.path.contains("Decisions/")
+    - file.ext == "md"
+properties:
+  file.name:
+    displayName: Decision
+  file.mtime:
+    displayName: Last changed
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - file.mtime
+    sort:
+      - property: file.mtime
+        direction: DESC

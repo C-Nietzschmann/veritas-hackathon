@@ -36,6 +36,8 @@ Every session, before anything else:
 
 ## Vault conventions
 - `[[wikilinks]]` between notes. One task per file in `vault/Tasks/`, with the YAML properties from `vault/Templates/Task.md`.
+- The graph view is organised as hubs: `vault/Home.md` links to six hub notes (`Protocols`, `Tasks`, `Project`, `Decisions`, `Brief`, `Log`), and each hub links to its notes. New task and decision notes keep the `Up: [[...]]` line from their template; a new log file starts with `Up: [[Log]]`. Don't add links from Home to individual notes.
+- Link sparingly, so the graph stays readable: a note links up to its hub and sideways only to the note the reader goes to next. Mention other notes by name without brackets.
 - Only edit task notes the user owns, the user's log in `vault/Log/`, and notes you were asked to edit. Never delete or rewrite someone else's note.
 
 ## Evaluation

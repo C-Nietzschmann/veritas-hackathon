@@ -9,10 +9,10 @@ Ten rules. If a situation isn't covered, pick whatever keeps `main` working and 
 5. **Stuck for 20 minutes? Say so.** Unmute and ask. Being blocked quietly is the most expensive thing we can do.
 6. **Decisions get written down.** If it was agreed on the call and affects someone else's work, it goes in `Decisions/` or it didn't happen.
 7. **Baseline first, measure everything.** No model result counts without a number next to a baseline. See [[Evaluation Protocol]].
-8. **Credit as you go.** Every dataset, pre-trained model and library goes into [[Credits]] the moment you first use it.
+8. **Credit as you go.** Every dataset, pre-trained model and library goes into Credits the moment you first use it.
 9. **Cut scope, never the deadline.** We submit Sunday 21:00 CET with whatever works. P0 tasks only until the MVP gate.
 10. **Sleep and eat.** Nobody is expected online between 23:00 and 08:00. Tired people break `main`.
 
 Two housekeeping rules that protect us:
 - No API keys, passwords or tokens in git, ever. Use Colab Secrets or a local `.env`.
-- No full names, school, faces, phone numbers, emails or private links anywhere in the repo, the write-up or the video. That includes this vault: the repo becomes public for the judges, and Round 1 is judged blind. Use handles (see [[Team]]).
+- No full names, school, faces, phone numbers, emails or private links anywhere in the repo, the write-up or the video. That includes this vault: the repo becomes public for the judges, and Round 1 is judged blind. Use handles (see Team).

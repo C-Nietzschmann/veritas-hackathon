@@ -1,5 +1,7 @@
 # One repo, everyone works on main
 
+Up: [[Decisions]]
+
 - **Date:** 2026-11-13
 - **Decided by:** setup, before kickoff
 - **Status:** decided
@@ -16,4 +18,4 @@ The alternative was two repos (a private vault next to the code) with pull reque
 
 ## What we give up, and what replaces it
 - **Nothing checks code before it lands on `main`.** Replaced by: the rule "push only what runs", automatic checks after every code push, and `git revert` when something breaks. See [[Git Workflow]].
-- **The vault becomes public with the repo.** So: handles instead of full names, and no school, phone numbers, emails or private links in any note. See [[Rules]].
+- **The vault becomes public with the repo.** So: handles instead of full names, and no school, phone numbers, emails or private links in any note. See Rules.

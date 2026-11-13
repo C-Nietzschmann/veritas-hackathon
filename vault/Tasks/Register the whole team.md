@@ -5,6 +5,8 @@ priority: P0
 rubric: 
 link:
 ---
+Up: [[Tasks]]
+
 ## Goal
 All three of us are on one registration at https://highschoolhackathon.org before it closes.
 

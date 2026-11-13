@@ -23,7 +23,7 @@ The main metric, our score **next to the baseline**, on the held-out test set. O
 The kinds of mistakes it makes, what we didn't test, and the first thing we'd do with more time.
 
 ## Credits (about 40 words)
-Datasets, pre-trained models, key libraries, and how we used AI tools. From [[Credits]].
+Datasets, pre-trained models, key libraries, and how we used AI tools. From Credits.
 
 ---
 

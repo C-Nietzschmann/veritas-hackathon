@@ -35,8 +35,8 @@ It tells you which file. Fix it and run `git sync` again. GitHub runs the same c
 ## Why conflicts are rare here
 - Tasks are one file each, and only the owner edits a task.
 - Each person has their own log file in `Log/` and their own notebooks.
-- [[Sync notes]] and the Phase line on [[Home]] are written by the coordinator only.
-- [[Idea]], [[Evaluation]], [[Write-up]] and [[Demo Script]] each have one owner (see [[Team]]). To change someone else's note, tell them, or add a line starting with your handle at the bottom.
+- Sync notes and the Phase line on Home are written by the coordinator only.
+- Idea, Evaluation, Write-up and Demo Script each have one owner (see Team). To change someone else's note, tell them, or add a line starting with your handle at the bottom.
 
 ## If sync stops with a conflict
 Git says `CONFLICT` and names a file. Two people changed the same lines.

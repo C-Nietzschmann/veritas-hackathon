@@ -19,7 +19,7 @@ A free, online, 48-hour AI hackathon for high school students, run by Veritas AI
 ## Tracks
 Health, finance, climate and others. The actual challenge for each track is only revealed at kickoff. We choose a track on 14 Nov.
 
-> Paste the track list and our track's challenge brief into [[Idea]] at kickoff.
+> Paste the track list and our track's challenge brief into Idea at kickoff.
 
 ## What we submit
 1. **Working code.** A Google Colab notebook or a GitHub repo the reviewers can open and run.
