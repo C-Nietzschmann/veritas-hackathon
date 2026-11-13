@@ -50,14 +50,20 @@ It checks: no secrets, no conflict markers, no huge files, every notebook valid,
    Then repair in peace and push again when it works.
 4. Post `MAIN OK` when it runs again.
 
-## For something risky
-A big rewrite, or a library that might not work? Do it on a branch so `main` stays safe:
+## Pull requests
+Day to day we push straight to `main`. A pull request is for a big or risky change that should pass the checks before it reaches `main`.
+
+**The rule: every pull request is linked to its task.** Its description starts with `Closes #12`. That makes the pull request show up next to the card on the board (column *Linked pull requests*), and merging it closes the task and moves the card to Done. A pull request without a linked task fails the "Linked task" check.
+
 ```bash
-git switch -c <handle>/<idea>
-# ... work, commit ...
-git push -u origin HEAD
+git switch -c <handle>/<task>       # a branch for the task
+# ... work ...
+git sync "Add baseline model"       # on a branch this pushes the branch, not main
+sh scripts/task.sh pr 12            # opens the pull request, already linked to task 12
 ```
-When it works: `git switch main && git merge <handle>/<idea> && git sync`. If it doesn't: switch back to `main` and forget the branch. Remember that task and board updates made on a branch are invisible to the others until you merge.
+When the checks are green, merge it on GitHub with **Squash and merge**, then `git switch main && git sync`.
+
+No task yet? Create the card first, then the pull request. By hand on github.com: write `Closes #12` as the first line of the description.
 
 ## Kickoff setup (once, by the Model lead)
 After 06:00 CET on Saturday, the first push creates the structure:

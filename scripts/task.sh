@@ -6,6 +6,7 @@
 #   sh scripts/task.sh unblock 12
 #   sh scripts/task.sh note 12 "How it works: ..."         add a comment
 #   sh scripts/task.sh done 12 "How it works: ..."         comment and close; the board moves it to Done
+#   sh scripts/task.sh pr 12 ["what changed"]              open a pull request for the current branch, linked to task 12
 # A push whose message contains "closes #12" also closes task 12, so "done" is only for tasks with nothing to push.
 REPO=C-Nietzschmann/veritas-hackathon
 BOARD=https://github.com/users/C-Nietzschmann/projects/3
@@ -38,6 +39,13 @@ case "$cmd" in
   unblock)
     gh issue edit "$n" -R "$REPO" --remove-label blocked >/dev/null && echo "#$n unblocked"
     ;;
+  pr)
+    [ -n "$n" ] || { echo "usage: task.sh pr <task number> [\"what changed\"]"; exit 1; }
+    [ "$(git branch --show-current)" != main ] || { echo "You are on main. A pull request needs a branch: git switch -c <name>"; exit 1; }
+    title=$(gh issue view "$n" -R "$REPO" --json title -q .title) || exit 1
+    git push -q -u origin HEAD || exit 1
+    gh pr create -R "$REPO" --title "$title" --body "$(printf 'Closes #%s\n\n%s\n' "$n" "$text")"
+    ;;
   note)
     [ -n "$text" ] || { echo "usage: task.sh note <number> \"text\""; exit 1; }
     gh issue comment "$n" -R "$REPO" --body "$text" >/dev/null && echo "comment added to #$n"
@@ -46,6 +54,6 @@ case "$cmd" in
     if [ -n "$text" ]; then gh issue close "$n" -R "$REPO" --comment "$text"; else gh issue close "$n" -R "$REPO"; fi
     ;;
   *)
-    sed -n '2,10p' "$0"; exit 1
+    sed -n '2,11p' "$0"; exit 1
     ;;
 esac
