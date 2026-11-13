@@ -38,3 +38,8 @@ How we work here:
 - One owner per notebook.
 - No secrets, no names, no school in this repo.
 - AI agents: read `CLAUDE.md` first.
+
+`main` protection (pull request and green CI required) is defined in `.github/rulesets/main.json`. GitHub only enforces it on public repos, so apply it when the repo goes public:
+```bash
+gh api -X POST repos/C-Nietzschmann/veritas-hackathon/rulesets --input .github/rulesets/main.json
+```
