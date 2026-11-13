@@ -26,6 +26,7 @@ Every session, before anything else:
 - The team works on `main` and shares with `git sync "message"` (alias in `.gitalias`: add all, commit, pull --rebase, push).
 - **Before you sync, run `git status`.** `git sync` commits everything in the working tree. If there are changes that are not from your task or not ready, ask the user first, or commit only your files with `git add <paths>`.
 - **Push only what runs.** `notebooks/main.ipynb` must run top to bottom in a fresh Colab session at every moment.
+- Pull requests are optional, but **every pull request must be linked to its task**: open it with `sh scripts/task.sh pr <number>` (the description starts with `Closes #<number>`). No task yet: create the card first. The "Linked task" check fails an unlinked pull request.
 - Never force-push. Never rewrite pushed history. If a pull stops with a conflict, show the user; don't resolve someone else's file by guessing.
 - Stay in the user's lane: their notebook, their log, their part of `src/`, their cards on the board. Don't edit a file another teammate owns.
 - Shared logic goes in `src/*.py`, not copied between notebooks.
@@ -66,5 +67,5 @@ When the user says "check-in", run the `checkin` skill (`.claude/skills/checkin/
 - Test: `pytest -q`
 - Share: `git sync "message"` (runs `scripts/check.sh` first)
 - Board in the terminal: `git board` or `sh scripts/board.sh`
-- Move a task: `sh scripts/task.sh new|start|block|unblock|note|done …`
+- Move a task: `sh scripts/task.sh new|start|block|unblock|note|pr|done …`
 - Facts for a check-in: `sh scripts/checkin.sh [hours]`

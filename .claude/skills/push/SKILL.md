@@ -31,6 +31,8 @@ Run `git sync "<message>"`. The message says what changed, in the imperative ("A
 
 `git sync` first runs `scripts/check.sh`. If it reports a problem (a secret, a conflict marker, a file too big, a broken notebook), fix the cause and run it again. Never work around the check.
 
+**On a branch instead of `main`?** `git sync` pushes the branch. Then open the pull request with `sh scripts/task.sh pr <number>`: every pull request must be linked to its task. Wait for its checks (`gh pr checks --watch`), merge with `gh pr merge --squash --delete-branch`, and `git switch main && git pull`. The merge closes the task, so don't add `closes #` to the message as well.
+
 If `git sync` is not a known command, switch the shortcuts on once: `git config --local include.path ../.gitalias`
 
 If the pull stops with a conflict: stop. Show the user the file and follow `vault/Protocols/Sync.md`. Don't resolve a teammate's file by guessing; `git rebase --abort` is always safe.
