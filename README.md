@@ -42,7 +42,7 @@ git sync "what I changed"
 - Everyone works on `main`. Push only what runs.
 - Tasks are issues on the [project board](https://github.com/users/C-Nietzschmann/projects/3): Todo, In Progress, Done.
 - One owner per notebook, so two people never edit the same file.
-- Pull requests are optional, but each one must name its task (`Closes #12`), or its check fails.
+- Code goes through a pull request that names its task (`Closes #12`), or its check fails. `sh scripts/task.sh ship 12 "message"` does the whole chain.
 - No secrets, no full names, no school anywhere in this repo. It becomes public for the judges.
 - With Claude Code, say "push" instead: it also updates your card on the board and your log, and confirms the checks on GitHub.
 - AI agents: read `CLAUDE.md` first.

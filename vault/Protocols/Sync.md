@@ -17,7 +17,7 @@ git sync "Add baseline model, closes #12"
 ```
 First time on a computer, switch the shortcut on (see [[Setup]]): `git config --local include.path ../.gitalias`
 
-Using Claude Code? Say **push**. It does the bookkeeping too (your card on the board, your log), then syncs and confirms GitHub's checks.
+Using Claude Code? Say **push**. It does the bookkeeping too (your log, your card), shares notes straight to `main`, puts code through a pull request linked to its task, and confirms GitHub's checks.
 
 Tasks are on GitHub and need no sync. To see the board in the terminal: `git board`
 

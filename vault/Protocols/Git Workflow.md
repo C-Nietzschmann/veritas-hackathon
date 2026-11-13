@@ -1,6 +1,11 @@
 # Git Workflow
 
-One repo, one branch. Everyone works on `main` and shares small changes often. There are no pull requests to wait for, which keeps us fast and keeps the board current. The price is one rule: **push only what runs.**
+One repo, and `main` is what we submit. There are two ways in:
+
+- **Notes** (anything in `vault/`) go straight to `main` with `git sync`.
+- **Code** goes through a **pull request linked to its task**. With Claude Code you just say "push": it opens the pull request, waits for the checks and merges it. Every finished card on the board then shows its pull request.
+
+Working by hand, for example saving your own notebook from Colab, you may still push straight to `main`. Then one rule carries the weight: **push only what runs.**
 
 ## The loop
 ```bash
@@ -51,19 +56,23 @@ It checks: no secrets, no conflict markers, no huge files, every notebook valid,
 4. Post `MAIN OK` when it runs again.
 
 ## Pull requests
-Day to day we push straight to `main`. A pull request is for a big or risky change that should pass the checks before it reaches `main`.
-
 **The rule: every pull request is linked to its task.** Its description starts with `Closes #12`. That makes the pull request show up next to the card on the board (column *Linked pull requests*), and merging it closes the task and moves the card to Done. A pull request without a linked task fails the "Linked task" check.
 
+One command does the whole chain:
 ```bash
-git switch -c <handle>/<task>       # a branch for the task
-# ... work ...
-git sync "Add baseline model"       # on a branch this pushes the branch, not main
-sh scripts/task.sh pr 12            # opens the pull request, already linked to task 12
+sh scripts/task.sh ship 12 "Add baseline model"
 ```
-When the checks are green, merge it on GitHub with **Squash and merge**, then `git switch main && git sync`.
+It puts your changes on a branch for task 12, checks them, pushes, opens the linked pull request, waits for GitHub's checks, merges, and brings you back to an up-to-date `main`. If a check fails, nothing is merged: fix it and run the same command again.
 
-No task yet? Create the card first, then the pull request. By hand on github.com: write `Closes #12` as the first line of the description.
+Not finished yet, but want to share or stop for the day?
+```bash
+sh scripts/task.sh pr 12 "Add test split"
+```
+The same, but the pull request stays open and you stay on the task's branch (`task-12`). Run `ship` when it's done.
+
+Claude Code runs these for you when you say "push". By hand on github.com: write `Closes #12` as the first line of the pull request's description, and merge with **Squash and merge**.
+
+No task yet? Create the card first, then the pull request.
 
 ## Kickoff setup (once, by the Model lead)
 After 06:00 CET on Saturday, the first push creates the structure:

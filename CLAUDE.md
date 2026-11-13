@@ -23,10 +23,10 @@ Every session, before anything else:
 - **This repo becomes public for blind judging.** No full names, school, phone numbers, emails or private links anywhere, including `vault/` and commit messages. People are referred to by their handle from `vault/Protocols/Team.md`.
 
 ## Repo rules
-- The team works on `main` and shares with `git sync "message"` (alias in `.gitalias`: add all, commit, pull --rebase, push).
-- **Before you sync, run `git status`.** `git sync` commits everything in the working tree. If there are changes that are not from your task or not ready, ask the user first, or commit only your files with `git add <paths>`.
-- **Push only what runs.** `notebooks/main.ipynb` must run top to bottom in a fresh Colab session at every moment.
-- Pull requests are optional, but **every pull request must be linked to its task**: open it with `sh scripts/task.sh pr <number>` (the description starts with `Closes #<number>`). No task yet: create the card first. The "Linked task" check fails an unlinked pull request.
+- **Notes go straight to `main`:** changes that touch only `vault/` are shared with `git sync "message"` (alias in `.gitalias`: check, add all, commit, pull --rebase, push).
+- **Code goes through a pull request linked to its task:** anything outside `vault/` is shared with `sh scripts/task.sh ship <number> "message"` (finished) or `sh scripts/task.sh pr <number> "message"` (work in progress). The pull request's description starts with `Closes #<number>`; the "Linked task" check fails one that names no task. No task yet: create the card first. Never open a pull request by another route, and never push code to `main` directly.
+- **Before you share, run `git status`.** Both commands commit everything in the working tree. If there are changes that are not from your task or not ready, ask the user first.
+- **Only finished, running work is merged.** `notebooks/main.ipynb` must run top to bottom in a fresh Colab session at every moment.
 - Never force-push. Never rewrite pushed history. If a pull stops with a conflict, show the user; don't resolve someone else's file by guessing.
 - Stay in the user's lane: their notebook, their log, their part of `src/`, their cards on the board. Don't edit a file another teammate owns.
 - Shared logic goes in `src/*.py`, not copied between notebooks.
@@ -48,7 +48,7 @@ Every task is an issue in this repo, shown as a card on the board: https://githu
 - New task: `sh scripts/task.sh new "Verb and object" P1 [technical|originality|impact|testing|communication]`. It lands in Todo by itself.
 - Start: `sh scripts/task.sh start <number>` assigns it to the user and moves the card to In Progress. Do this before writing code. One card In Progress per person.
 - Blocked: `sh scripts/task.sh block <number> "<on what>"`, and tell the user to say it on the call.
-- Finished: draft the "How it works" comment (five plain bullets at most: what it does, why this way, where it could be wrong) and have the owner confirm they can explain it. End the push message with `closes #<number>`: GitHub closes the issue and the card moves to Done. Then `sh scripts/task.sh note <number> "<comment>"`. With nothing to push: `sh scripts/task.sh done <number> "<comment>"`.
+- Finished: draft the "How it works" comment (five plain bullets at most: what it does, why this way, where it could be wrong) and have the owner confirm they can explain it. `sh scripts/task.sh ship <number> "message"` merges the linked pull request, which closes the issue and moves the card to Done. Then `sh scripts/task.sh note <number> "<comment>"`. A task with nothing to push: `sh scripts/task.sh done <number> "<comment>"`.
 - Never reassign, relabel or close a teammate's card.
 - These need the GitHub CLI (`gh auth login`). If it is missing, say so and ask the user to make the change on the board in the browser.
 - Details: `vault/Protocols/Task Protocol.md`.
@@ -57,7 +57,7 @@ Every task is an issue in this repo, shown as a card on the board: https://githu
 Baseline first, fixed seed, held-out test set used once at the end, results logged in `vault/Project/Evaluation.md`. Details: `vault/Protocols/Evaluation Protocol.md`.
 
 ## Sharing work: always the push skill
-Whenever the user says push, sync, share, save or "done", and at the end of every session, run the `push` skill (`.claude/skills/push/SKILL.md`). It checks the work, updates the task's card and the log, runs `git sync`, and confirms GitHub's checks passed. Don't run a bare `git push`.
+Whenever the user says push, sync, share, save or "done", and at the end of every session, run the `push` skill (`.claude/skills/push/SKILL.md`). It checks the work, updates the log, shares notes straight to `main` and code through a pull request linked to its task, and confirms GitHub's checks passed. Don't run a bare `git push`.
 
 ## Check-ins
 When the user says "check-in", run the `checkin` skill (`.claude/skills/checkin/SKILL.md`): it gathers the facts since the last check-in and drafts the entry for `vault/Log/Sync notes.md`.
@@ -65,7 +65,7 @@ When the user says "check-in", run the `checkin` skill (`.claude/skills/checkin/
 ## Commands
 - Install: `pip install -r requirements.txt`
 - Test: `pytest -q`
-- Share: `git sync "message"` (runs `scripts/check.sh` first)
+- Share notes: `git sync "message"`. Share code: `sh scripts/task.sh ship <number> "message"`. Both run `scripts/check.sh` first.
 - Board in the terminal: `git board` or `sh scripts/board.sh`
-- Move a task: `sh scripts/task.sh new|start|block|unblock|note|pr|done …`
+- Move a task: `sh scripts/task.sh new|start|block|unblock|note|pr|ship|done …`
 - Facts for a check-in: `sh scripts/checkin.sh [hours]`
