@@ -86,9 +86,12 @@ case "$cmd" in
     i=0
     while [ "$(gh pr checks "$pr" -R "$REPO" --json name -q length 2>/dev/null || echo 0)" = 0 ] && [ "$i" -lt 20 ]; do sleep 3; i=$((i + 1)); done
     if gh pr checks "$pr" -R "$REPO" --watch --interval 5 >/dev/null 2>&1; then
+      branch=$(git branch --show-current)
       if gh pr merge "$pr" -R "$REPO" --squash --delete-branch >/dev/null 2>&1; then
         git switch -q main 2>/dev/null
         git pull -q --rebase
+        # the work is on main now (squashed), so the task branch on this computer can go
+        [ "$branch" != main ] && git branch -q -D "$branch" 2>/dev/null
         echo "Shipped: pull request #$pr merged into main, task #$n closed, card moved to Done."
       else
         echo "The checks passed but the merge did not go through, most likely because main changed in the same files."
