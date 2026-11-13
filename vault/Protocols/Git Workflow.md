@@ -35,7 +35,7 @@ More in [[Colab Workflow]].
 
 ## CI: is main green?
 `git sync` checks your files on your computer before sharing them (see [[Sync]]). Then every push that changes code is checked again on GitHub (notes-only pushes are skipped). On github.com the latest commit shows ✓ or ✗, and GitHub emails whoever pushed a failure.
-It checks: no secrets, no conflict markers, no huge files, every notebook valid, and `pytest` passes once `tests/` exists.
+It checks: no secrets, no conflict markers, no huge files, every notebook valid, and `pytest` passes once `tests/` has tests. An empty `tests/` folder is fine.
 
 ## MAIN BROKEN
 `main.ipynb` doesn't run, or CI shows ✗.
@@ -68,3 +68,6 @@ tests/
 requirements.txt
 ```
 From then on CI installs `requirements.txt` and runs `pytest` if `tests/` has tests.
+
+## When the repo goes public (once, by the repo owner)
+Import `.github/rulesets/main.json`: Settings → Rules → Rulesets → New ruleset → Import a ruleset. From then on GitHub itself refuses force-pushes to `main` and deleting it. GitHub only offers rulesets on public repos (or with a paid plan), so this can't be switched on earlier.

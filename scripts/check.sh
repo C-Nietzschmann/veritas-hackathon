@@ -14,10 +14,15 @@ check_file() {
     .env|.env.*|*/.env|*/.env.*) echo "  x secret file would be shared: $f" ;;
   esac
 
-  # Too big for git (datasets, model weights)
+  # Too big for git (datasets, model weights). Notebooks get more room,
+  # because main.ipynb keeps its outputs (plots, images).
   size=$(wc -c < "$f" | tr -d ' ')
-  if [ "$size" -gt 5000000 ]; then
-    echo "  x too big for git ($((size / 1000000)) MB): $f. Download it in the notebook from its source instead"
+  case "$f" in
+    *.ipynb) limit=25000000; fix="Clear or shrink its biggest outputs (images, long printouts)" ;;
+    *)       limit=5000000;  fix="Download it in the notebook from its source instead" ;;
+  esac
+  if [ "$size" -gt "$limit" ]; then
+    echo "  x too big for git ($((size / 1000000)) MB): $f. $fix"
   fi
 
   # Leftover merge conflict markers

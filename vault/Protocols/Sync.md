@@ -21,7 +21,7 @@ Want to see the board without opening Obsidian? `git board`
 Before anything is shared, `git sync` looks through your files and stops if it finds:
 - a secrets file (`.env`) or something that looks like an API key
 - leftover conflict markers from a merge
-- a file over 5 MB (datasets and model weights don't belong in git)
+- a file over 5 MB (datasets and model weights don't belong in git), or a notebook over 25 MB
 - a notebook that is broken
 
 It tells you which file. Fix it and run `git sync` again. GitHub runs the same check after every code push, plus the tests.

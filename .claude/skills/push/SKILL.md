@@ -15,7 +15,7 @@ Run `git status --short`.
 
 ## 2. Is the code ready? (code pushes only)
 Everyone shares `main`, so only code that runs may be pushed.
-- If `tests/` exists, run `pytest -q`. A failure stops the push: fix it first.
+- If `tests/` exists, run `pytest -q`. A failure stops the push: fix it first. Exit code 5 ("no tests ran") is not a failure: `tests/` just has no tests yet.
 - If a notebook changed, ask the user: "Did it run top to bottom with Restart and run all?" If not, wait.
 - If the work is unfinished, it may only be pushed when it can't break anything (a new file, a function nothing calls yet). Otherwise offer to push the notes only.
 
@@ -36,9 +36,16 @@ If `git sync` is not a known command, switch the shortcuts on once: `git config 
 If the pull stops with a conflict: stop. Show the user the file and follow `vault/Protocols/Sync.md`. Don't resolve a teammate's file by guessing; `git rebase --abort` is always safe.
 
 ## 5. Confirm GitHub's checks (code pushes only)
+Watch the run for your own commit, not "the latest run on main": right after a push that is often the previous run (a ✓ that says nothing about yours) or a teammate's.
 ```bash
-gh run watch "$(gh run list --branch main --limit 1 --json databaseId -q '.[0].databaseId')" --exit-status
+sha=$(git rev-parse HEAD); id=""
+for i in 1 2 3 4 5 6; do
+  id=$(gh run list --commit "$sha" --limit 1 --json databaseId -q '.[0].databaseId')
+  [ -n "$id" ] && break; sleep 5
+done
+if [ -n "$id" ]; then gh run watch "$id" --exit-status; else echo "no CI run for $sha"; fi
 ```
+- No run after 30 seconds: the push changed only `vault/` (CI skips those), or GitHub is slow. Look for the ✓ next to the commit on github.com.
 - Passed: say so.
 - Failed: run `gh run view --log-failed`, tell the user what broke in one sentence, and fix it now. If the fix isn't obvious within a few minutes, `git revert` the commit and `git sync`, and tell the user to post `MAIN BROKEN` in the team chat (see `vault/Protocols/Git Workflow.md`).
 - `gh` isn't installed or signed in: tell the user to look for the ✓ next to the latest commit on github.com.

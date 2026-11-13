@@ -8,8 +8,10 @@ on:
     branches: [main]
     paths-ignore: ['vault/**']
 
+# Pull requests: a newer push cancels the older run. Pushes to main: every commit gets
+# its own run, so a teammate's push never cancels the check on yours.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -32,4 +34,5 @@ jobs:
         if: hashFiles('requirements.txt') != ''
         run: |
           pip install -r requirements.txt pytest
-          if [ -d tests ]; then pytest -q; else echo "no tests/ yet"; fi
+          # pytest exits with 5 when tests/ has no tests yet. That is fine, not a failure.
+          if [ -d tests ]; then pytest -q || [ $? -eq 5 ]; else echo "no tests/ yet"; fi
