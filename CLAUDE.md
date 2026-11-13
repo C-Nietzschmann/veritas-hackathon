@@ -7,8 +7,10 @@ Stack: Python, Jupyter notebooks run in Google Colab.
 ## The vault comes first
 `vault/` holds the team's shared notes: plan, tasks, decisions, protocols. Plain Markdown, opened in Obsidian (the repo folder itself is the Obsidian vault; shared settings are in `.obsidian/`).
 
+A session-start hook (`.claude/settings.json` → `scripts/session-start.sh`) pulls the team's changes, switches on the `git sync` shortcut and prints the task board. If you don't see its output at the top of the session, run `sh scripts/session-start.sh` yourself.
+
 Every session, before anything else:
-1. `git pull --rebase --autostash`, then `sh scripts/board.sh` to see the task board. If `git sync` is not a known command yet: `git config --local include.path ../.gitalias`
+1. Look at the board the hook printed.
 2. Read `vault/Home.md`, `vault/Project/Idea.md`, the open notes in `vault/Tasks/`, and `vault/Decisions/`.
 3. Follow `vault/Protocols/AI Agent Protocol.md`. It is binding. The rest of `vault/Protocols/` explains the team's workflow: read the note that matches what you are doing (`Git Workflow`, `Colab Workflow`, `Evaluation Protocol`, `Task Protocol`, `Submission Checklist`).
 4. Confirm the task with the user before writing code. Work on one task.

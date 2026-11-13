@@ -31,7 +31,7 @@ The notes are in the `vault` folder in the left sidebar. Click the bookmark icon
 That is the whole workflow: change something, `git sync`. More in [[Sync]], and the big picture is on the [[Workflow map.canvas|Workflow map]].
 
 ## Using Claude Code?
-Open it in the `veritas-hackathon` folder. It reads `CLAUDE.md` and follows our protocols. When you want to share your work, say **push**: it checks the work, updates your task and log, syncs, and tells you whether GitHub's checks passed.
+Open it in the `veritas-hackathon` folder and accept the project's settings when it asks. It reads `CLAUDE.md` and follows our protocols. At the start of every session it gets the team's latest changes and looks at the board by itself. When you want to share your work, say **push**: it checks the work, updates your task and log, syncs, and tells you whether GitHub's checks passed.
 
 ## 5. Read
 [[Home]] → [[Rules]] → [[Timeline]] → [[Calls]] → [[Task Protocol]]. Fifteen minutes in total.

@@ -1,7 +1,7 @@
 filters:
   and:
-    - 'file.path.contains("Tasks/")'
-    - 'file.ext == "md"'
+    - file.path.contains("Tasks/")
+    - file.ext == "md"
 properties:
   file.name:
     displayName: Task
@@ -20,9 +20,9 @@ views:
     name: Open
     filters:
       and:
-        - 'status != "done"'
+        - status != "done"
     groupBy:
-      property: note.status
+      property: status
       direction: ASC
     groupOrder:
       - doing
@@ -30,34 +30,34 @@ views:
       - todo
     order:
       - file.name
-      - note.owner
-      - note.priority
-      - note.rubric
+      - owner
+      - priority
+      - rubric
     sort:
-      - property: note.priority
+      - property: priority
         direction: ASC
   - type: table
     name: By owner
     filters:
       and:
-        - 'status != "done"'
+        - status != "done"
     groupBy:
-      property: note.owner
+      property: owner
       direction: ASC
     order:
       - file.name
-      - note.status
-      - note.priority
+      - status
+      - priority
     sort:
-      - property: note.priority
+      - property: priority
         direction: ASC
   - type: table
     name: Done
     filters:
       and:
-        - 'status == "done"'
+        - status == "done"
     order:
       - file.name
-      - note.owner
-      - note.rubric
-      - note.link
+      - owner
+      - rubric
+      - link
