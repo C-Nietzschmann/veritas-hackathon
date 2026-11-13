@@ -1,12 +1,12 @@
+<!-- Pull requests are optional here. Use one for a risky change you want checked before it reaches main. -->
 ## What
 <!-- one or two lines -->
 
 ## Task
-<!-- the line on vault/Board.md -->
+<!-- the note in vault/Tasks -->
 
 ## Check
-- [ ] Runs locally / in Colab
-- [ ] I can explain every line of this PR
-- [ ] New datasets, models or libraries added to the vault (`Project/Credits`)
+- [ ] Runs in a fresh Colab session
+- [ ] I can explain every line
+- [ ] New datasets, models or libraries are in `vault/Project/Credits.md`
 - [ ] No names, school or secrets
-- [ ] Board updated

@@ -1,0 +1,7 @@
+# Team shortcuts. Switch them on once after cloning:
+#   git config --local include.path ../.gitalias
+#
+#   git sync                 share everything you changed, get everyone else's changes
+#   git sync "Add baseline"  the same, with a proper message (use this for code)
+[alias]
+	sync = "!f() { git add -A && git commit -q -m \"${1:-sync}\"; git pull -q --rebase && git push -q && echo synced; }; f"

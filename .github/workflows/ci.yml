@@ -1,9 +1,12 @@
 name: CI
 
+# Notes-only pushes (vault/) don't trigger a run.
 on:
   pull_request:
+    paths-ignore: ['vault/**']
   push:
     branches: [main]
+    paths-ignore: ['vault/**']
 
 concurrency:
   group: ci-${{ github.ref }}

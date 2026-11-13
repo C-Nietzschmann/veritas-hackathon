@@ -15,11 +15,12 @@ Our entry for the Veritas AI International High School Hackathon, 14–15 Novemb
 |---|---|
 | `notebooks/main.ipynb` | The project, top to bottom: data, baseline, model, evaluation, demo |
 | `src/` | Code shared between notebooks |
-| `tests/` | Checks that run on every pull request |
+| `tests/` | Checks that run when code is pushed |
 | `requirements.txt` | Python packages |
+| `vault/` | How we worked: plan, task board, decisions, evaluation log. An Obsidian vault, readable as plain Markdown |
 
 ## Credits
-<!-- Datasets, pre-trained models and libraries, with links. Copied from the team notes before submitting. -->
+<!-- Datasets, pre-trained models and libraries, with links. Copied from vault/Project/Credits.md before submitting. -->
 
 ---
 
@@ -29,17 +30,16 @@ Setup, once:
 ```bash
 git clone https://github.com/C-Nietzschmann/veritas-hackathon.git
 cd veritas-hackathon
-git clone https://github.com/C-Nietzschmann/veritas-hackathon-vault.git vault
+git config --local include.path ../.gitalias
 ```
-Then open `vault/` in Obsidian and start at `Home`. The plan, the task board and all protocols live there. `vault/` is a separate private repo and is ignored by this one.
+Then open the `vault` folder in Obsidian (*Open folder as vault*) and start at `Home`. Full steps: `vault/Setup.md`.
 
-How we work here:
-- Never commit to `main`. Branch `<handle>/<task>`, pull request, CI green, squash-merge.
-- One owner per notebook.
-- No secrets, no names, no school in this repo.
-- AI agents: read `CLAUDE.md` first.
-
-`main` protection (pull request and green CI required) is defined in `.github/rulesets/main.json`. GitHub only enforces it on public repos, so apply it when the repo goes public:
+Day to day there is one command. It saves your changes, gets everyone else's and uploads yours:
 ```bash
-gh api -X POST repos/C-Nietzschmann/veritas-hackathon/rulesets --input .github/rulesets/main.json
+git sync "what I changed"
 ```
+
+- Everyone works on `main`. Push only what runs.
+- One owner per notebook, one file per task, so two people never edit the same file.
+- No secrets, no full names, no school anywhere in this repo. It becomes public for the judges.
+- AI agents: read `CLAUDE.md` first.

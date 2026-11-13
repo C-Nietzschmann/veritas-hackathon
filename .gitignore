@@ -18,6 +18,3 @@ data/raw/
 
 # OS
 .DS_Store
-
-# the team vault is its own private repo, cloned here (see README)
-/vault/
