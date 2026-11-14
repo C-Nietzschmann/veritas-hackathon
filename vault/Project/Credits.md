@@ -31,6 +31,7 @@ The usual ones (numpy, pandas, scikit-learn, PyTorch and so on) are listed in `r
 Tutorials, papers, or snippets we adapted. Link and one line on what we took.
 - Chow's rule for when to abstain: C. K. Chow, "On optimum recognition error and reject tradeoff", IEEE Transactions on Information Theory 16(1), 1970. We used it to turn the three costs into the CLEAR and FLAG thresholds (`decide.thresholds`, ADR-004).
 - Companies House `api-enumerations` (https://github.com/companieshouse/api-enumerations): its `constants.yml` list, used to check the insolvency case types and date types the adapter counts.
+- The Wilson score interval: E. B. Wilson, "Probable inference, the law of succession, and statistical inference", Journal of the American Statistical Association 22(158), 1927. We used it for the 95% intervals around failure rates and calibration shares (`real_slice.wilson`, card #36).
 
 ## AI tools
 Which assistants we used and what for. Summarised from the "AI used for" lines in `Log/`.
