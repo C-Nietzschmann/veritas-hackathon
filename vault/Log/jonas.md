@@ -114,3 +114,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) built the baselines and their tests, reviewed the team's pull requests, and drafted the comments at my request. Claude Code on my PC is building the crawl.
 - **Next:** read and ship #127. Add `score()` (27.4) once #126 merges, then the first numbers in Evaluation. Finish #24.
 - **Blocked by:** 27.4 waits for #126 (`src/evaluate.py` is Cristiano's until it merges)
+
+## 2026-11-14 11:55
+- **Task:** #27 baselines (card on the board), plus the #24 crawl on my PC
+- **Did:** Had #127 reviewed before approving. The review found six problems: names were cut too short so different names matched, `controls` claims counted as directorships, missing data got a misleading reason, the box didn't check its own output, the window boundary was unclear, and name order was only half handled. All six are fixed with regression tests. Shipped #127 as a squash merge, which closed 27.1–27.3. The matching points in `decide.py` went to Cristiano on #34.
+- **Result:** `main` is green with 75 tests.
+- **AI used for:** Claude (claude.ai) reviewed and fixed the baselines and drafted the notes at my request.
+- **Next:** 27.4 `score()` once #126 merges, then the first numbers in Evaluation. The #24 crawl. Team call at 12:30 when Jan is back.
+- **Blocked by:** 27.4 waits for #126
