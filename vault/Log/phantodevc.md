@@ -29,3 +29,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code picked the free card, wrote the guard and its 7 tests, tested it end to end, shipped the PR and drafted the "How it works" note and this entry. I read it and can explain it.
 - **Next:** say on the call that `check.sh` gained the name guard. Pick the next free card.
 - **Blocked by:** nothing
+
+## 2026-11-14 13:40
+- **Task:** #24 crawl part 2, and #98 evidence graph (cards on the board)
+- **Did:** Made my own Companies House application and key, and started part 2 of 2 of the 2021 crawl on my computer with jonas's fixed crawler (PR #134). Built `draw_graph` in `src/interface.py` for #98: register facts solid, guessed matches dashed and labelled in words, labels from the display columns only. Opened PR #143 as work in progress. Claimed parent #35.
+- **Result:** crawl measured at 450 companies an hour (8.0 s each, 13:03 to 13:13), so my half of 2021 would take about 3.6 days if left to run. #98: 5 tests, all 164 pass. The crawl log slipped into PR #143 and was taken out again; no personal data was in it.
+- **AI used for:** Claude Code created the application and key in the browser (I pasted the key into .env myself), set up and measured the crawl, wrote `draw_graph` and its tests, opened the PR and wrote this entry.
+- **Next:** add the example picture to `main.ipynb` when Cristiano's notebook changes slow down, then ship #98. Agree with jonas when the crawl stops and how my data/raw reaches the adapter.
+- **Blocked by:** nothing
