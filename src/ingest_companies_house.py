@@ -97,7 +97,8 @@ def insolvency_start(insolvency):
         if case.get("type") not in INSOLVENCY_CASE_TYPES:
             continue
         for date in case.get("dates", []):
-            if date.get("type") in CASE_START_DATE_TYPES:
+            # A start entry with its date left empty tells us nothing, so it is skipped.
+            if date.get("type") in CASE_START_DATE_TYPES and date.get("date"):
                 starts.append(date["date"])
     if not starts:
         return None

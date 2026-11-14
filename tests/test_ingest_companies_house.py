@@ -63,6 +63,46 @@ def test_insolvency_date_counts_only_liquidation_and_administration():
     assert ev.is_blank(rows.loc[["TW000002", "TW000003", "TW000004"], "insolvency_on"]).all()   # TW000004: members' liquidation
 
 
+def test_insolvency_date_is_the_earliest_start():
+    # A company that went into administration and from there into liquidation: two cases.
+    # The earlier start counts, whatever order the cases come in. End dates never count.
+    administration = {"type": "in-administration", "dates": [
+        {"type": "administration-started-on", "date": "2020-02-01"},
+        {"type": "administration-ended-on", "date": "2021-03-01"},
+    ]}
+    liquidation = {"type": "creditors-voluntary-liquidation", "dates": [
+        {"type": "wound-up-on", "date": "2021-03-01"},
+    ]}
+    assert ch.insolvency_start({"cases": [liquidation, administration]}) == "2020-02-01"
+
+
+def test_insolvency_date_is_a_start_not_a_petition_or_an_end():
+    # Compulsory liquidation: the petition comes before the court's order, the conclusion after.
+    # Only the order is the start.
+    court_case = {"type": "compulsory-liquidation", "dates": [
+        {"type": "petitioned-on", "date": "2019-01-05"},
+        {"type": "ordered-to-wind-up-on", "date": "2019-03-01"},
+        {"type": "concluded-winding-up-on", "date": "2022-06-30"},
+    ]}
+    assert ch.insolvency_start({"cases": [court_case]}) == "2019-03-01"
+
+
+def test_insolvency_start_date_left_empty_is_skipped():
+    empty = {"type": "compulsory-liquidation", "dates": [{"type": "wound-up-on", "date": None}, {"type": "wound-up-on"}]}
+    assert ch.insolvency_start({"cases": [empty]}) is None
+    dated = {"type": "in-administration", "dates": [{"type": "administration-started-on", "date": "2020-02-01"}]}
+    assert ch.insolvency_start({"cases": [empty, dated]}) == "2020-02-01"
+
+
+def test_company_with_only_a_name_and_a_number():
+    # Every other field of a profile is optional in the API. Missing ones stay empty.
+    profile = {"company_name": "BARE BONES LTD", "company_number": "TW000009"}
+    mentions = ch.companies_to_mentions({"data/raw/company/TW000009.json": json.dumps(profile).encode()})
+    assert len(mentions) == 1
+    assert ev.is_blank(mentions.loc[0, ["status", "incorporated_on", "dissolved_on", "insolvency_on", "sic_code", "postcode"]]).all()
+    ev.check_rows(mentions, ev.empty_claims())
+
+
 def test_company_provenance_points_at_its_raw_file():
     raw = ch.load_raw(SAMPLE)
     row = company_rows().loc["TW000001"]
@@ -79,6 +119,26 @@ def test_ids_do_not_depend_on_file_order():
     assert ch.companies_to_mentions(raw).equals(ch.companies_to_mentions(backwards))   # R7
     for ours, theirs in zip(ch.officers_to_evidence(raw), ch.officers_to_evidence(backwards)):
         assert ours.equals(theirs)
+
+
+def look_alike_ids(raw):
+    """The mention id and the claim id of the look-alike Daniel Harrow (tw-officer-03)."""
+    people, claims = ch.officers_to_evidence(raw)
+    mention_id = people.loc[people["officer_id"] == "tw-officer-03", "mention_id"].iloc[0]
+    claim_id = claims.loc[claims["subject"] == mention_id, "claim_id"].iloc[0]
+    return mention_id, claim_id
+
+
+def test_ids_do_not_depend_on_an_officers_place_in_the_list():
+    # A later crawl can list the same officers in another order.
+    # The ids come from the appointment link, so they must stay the same (R7).
+    raw = ch.load_raw(SAMPLE)
+    path = "tests/raw_sample/officers/TW000003.json"
+    officers = json.loads(raw[path])
+    officers["items"].reverse()
+    crawled_again = dict(raw)
+    crawled_again[path] = json.dumps(officers).encode()
+    assert look_alike_ids(crawled_again) == look_alike_ids(raw)
 
 
 # --- 25.2 Officer records become person mentions and claims (#75) -------------------
@@ -106,6 +166,41 @@ def test_secretaries_and_corporate_directors_are_skipped():
     people, _ = ch.officers_to_evidence(ch.load_raw(SAMPLE))
     assert "OKAFOR, Ruth" not in set(people["name"])              # secretary
     assert "HARROW HOLDINGS LIMITED" not in set(people["name"])   # corporate director
+
+
+def bare_officer(role, appointment):
+    """An invented officer with only the fields the API always sends. Everything else is optional."""
+    return {
+        "name": "TESTER, Sam",
+        "officer_role": role,
+        "links": {
+            "self": f"/company/TW000009/appointments/{appointment}",
+            "officer": {"appointments": "/officers/tw-officer-09/appointments"},
+        },
+    }
+
+
+def officers_file(officers):
+    """A raw dict holding one officers file, for company TW000009."""
+    return {"data/raw/officers/TW000009.json": json.dumps({"items": officers}).encode()}
+
+
+def test_nominee_directors_count_but_corporate_nominees_do_not():
+    raw = officers_file([
+        bare_officer("nominee-director", "tw-appointment-0901"),             # a person
+        bare_officer("corporate-nominee-director", "tw-appointment-0902"),   # a company
+    ])
+    people, claims = ch.officers_to_evidence(raw)
+    assert len(people) == len(claims) == 1
+    assert ev.parse_record_ref(people.loc[0, "record_ref"])[1] == 0   # the first record: the person
+
+
+def test_director_with_only_the_required_fields():
+    # Old records have no birth date, nationality, address or appointment date. They still count.
+    people, claims = ch.officers_to_evidence(officers_file([bare_officer("director", "tw-appointment-0901")]))
+    assert len(people) == len(claims) == 1
+    assert ev.is_blank(people.loc[0, ["birth_month", "birth_year", "nationality", "postcode"]]).all()
+    assert pd.isna(claims.loc[0, "valid_from"]) and pd.isna(claims.loc[0, "valid_to"])
 
 
 def test_same_person_at_two_companies_stays_two_mentions():
@@ -142,6 +237,8 @@ def test_officer_provenance_points_at_the_officer_record():
     assert (path, position) == ("tests/raw_sample/officers/TW000003.json", 1)
     assert json.loads(raw[path])["items"][position]["name"] == look_alike["name"]
     assert ev.raw_unchanged(look_alike["record_ref"], raw[path])   # R1
+    his_claim = claims.loc[claims["subject"] == look_alike["mention_id"]].iloc[0]
+    assert his_claim["record_ref"] == look_alike["record_ref"]   # the claim comes from the same record
 
 
 def test_companies_and_officers_pass_the_schema_checks():
