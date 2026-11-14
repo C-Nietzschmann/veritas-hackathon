@@ -1,0 +1,27 @@
+{
+  "etag": "tw-etag-insolvency-0001",
+  "status": "liquidation",
+  "cases": [
+    {
+      "number": "1",
+      "type": "corporate-voluntary-arrangement",
+      "dates": [
+        {"type": "voluntary-arrangement-started-on", "date": "2020-06-01"},
+        {"type": "voluntary-arrangement-ended-on", "date": "2021-01-31"}
+      ],
+      "practitioners": [
+        {"name": "Invented Practitioner One", "role": "practitioner", "appointed_on": "2020-06-01"}
+      ]
+    },
+    {
+      "number": "2",
+      "type": "creditors-voluntary-liquidation",
+      "dates": [
+        {"type": "wound-up-on", "date": "2021-03-15"}
+      ],
+      "practitioners": [
+        {"name": "Invented Practitioner Two", "role": "practitioner", "appointed_on": "2021-03-15"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "officer-list",
+  "etag": "tw-etag-officers-0001",
+  "items_per_page": 100,
+  "start_index": 0,
+  "total_results": 2,
+  "active_count": 2,
+  "resigned_count": 0,
+  "links": {"self": "/company/TW000001/officers"},
+  "items": [
+    {
+      "name": "HARROW, Daniel",
+      "officer_role": "director",
+      "appointed_on": "2017-02-01",
+      "date_of_birth": {"month": 4, "year": 1979},
+      "nationality": "British",
+      "country_of_residence": "England",
+      "occupation": "Builder",
+      "address": {"premises": "1", "address_line_1": "Invented Road", "locality": "Testtown", "postal_code": "ZZ1 1AA"},
+      "links": {
+        "self": "/company/TW000001/appointments/tw-appointment-0101",
+        "officer": {"appointments": "/officers/tw-officer-01/appointments"}
+      }
+    },
+    {
+      "name": "OKAFOR, Ruth",
+      "officer_role": "secretary",
+      "appointed_on": "2017-02-01",
+      "address": {"premises": "1", "address_line_1": "Invented Road", "locality": "Testtown", "postal_code": "ZZ1 1AA"},
+      "links": {
+        "self": "/company/TW000001/appointments/tw-appointment-0102",
+        "officer": {"appointments": "/officers/tw-officer-07/appointments"}
+      }
+    }
+  ]
+}

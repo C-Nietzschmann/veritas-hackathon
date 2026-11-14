@@ -1,0 +1,19 @@
+{
+  "company_name": "HARROW BUILD SERVICES LTD",
+  "company_number": "TW000002",
+  "company_status": "active",
+  "type": "ltd",
+  "jurisdiction": "england-wales",
+  "date_of_creation": "2021-04-20",
+  "sic_codes": ["68100", "41202"],
+  "registered_office_address": {
+    "address_line_1": "2 Invented Road",
+    "locality": "Testtown",
+    "postal_code": "ZZ1 1AB"
+  },
+  "has_insolvency_history": false,
+  "links": {
+    "self": "/company/TW000002",
+    "officers": "/company/TW000002/officers"
+  }
+}

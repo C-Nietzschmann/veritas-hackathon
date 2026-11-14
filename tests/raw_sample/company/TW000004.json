@@ -1,0 +1,20 @@
+{
+  "company_name": "ELM STREET JOINERY LTD",
+  "company_number": "TW000004",
+  "company_status": "liquidation",
+  "type": "ltd",
+  "jurisdiction": "england-wales",
+  "date_of_creation": "2015-05-01",
+  "sic_codes": ["43320"],
+  "registered_office_address": {
+    "address_line_1": "3 Pretend Street",
+    "locality": "Sampleford",
+    "postal_code": "ZZ3 3EF"
+  },
+  "has_insolvency_history": true,
+  "links": {
+    "self": "/company/TW000004",
+    "officers": "/company/TW000004/officers",
+    "insolvency": "/company/TW000004/insolvency"
+  }
+}

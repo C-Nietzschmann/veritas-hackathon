@@ -1,0 +1,20 @@
+{
+  "company_name": "NORTHGATE ROOFING LTD",
+  "company_number": "TW000003",
+  "company_status": "dissolved",
+  "type": "ltd",
+  "jurisdiction": "england-wales",
+  "date_of_creation": "2016-03-01",
+  "date_of_cessation": "2020-12-01",
+  "sic_codes": ["43910"],
+  "registered_office_address": {
+    "address_line_1": "7 Made-up Lane",
+    "locality": "Faketon",
+    "postal_code": "ZZ7 2CD"
+  },
+  "has_insolvency_history": false,
+  "links": {
+    "self": "/company/TW000003",
+    "officers": "/company/TW000003/officers"
+  }
+}
