@@ -60,3 +60,49 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) undid the assignments and rewrote the notes at my request.
 - **Next:** everyone claims their first card from the start of the order in Plan.
 - **Blocked by:** nothing
+
+## 2026-11-14 08:42
+- **Task:** #22 Write the evidence schema, checks and observed graph, with sub-tasks 22.1 to 22.4 (cards on the board)
+- **Did:** Built `src/evidence.py` and `tests/test_evidence.py` on branch `task-22`:
+  - the six shared tables' columns
+  - stable ids and `record_ref` with the raw response's hash
+  - `check_rows`, which names each bad row and its rule
+  - `observed_graph` with the as-of rule
+
+  Modules now lists the exact column names.
+- **Result:** 16 tests pass locally. Branch pushed. The pull request is not open yet: it waits for me to read the code.
+- **AI used for:** Claude (claude.ai) wrote the schema, the tests and the draft "How it works" while I was away.
+- **Next:** read the code, open the pull request from `task-22` (description drafted), confirm I can explain it, then ship #22.
+- **Blocked by:** nothing
+
+## 2026-11-14 08:55
+- **Task:** #22 schema and #21 tiny world (cards on the board)
+- **Did:** Opened pull request #117 for the schema; its CI and the linked-task check pass. Built the tiny world on top of it: 28 hand-made rows with known answers (a phoenix with a new officer id, a same-name look-alike, a common name, a future insolvency that must not leak, a company with no evidence, a clean history, a copied source). Opened #118, stacked on #117.
+- **Result:** 26 tests pass locally. Both pull requests wait for me to read them before they merge.
+- **AI used for:** Claude (claude.ai) built the tiny world from the cases I approved and opened both pull requests at my request.
+- **Next:** read and ship #117, then #118. Then pick the next card: the baselines (#27) give the first numbers for the 14:00 gate.
+- **Blocked by:** nothing
+
+## 2026-11-14 09:40
+- **Task:** #22 schema and #21 tiny world (cards on the board)
+- **Did:** C-Nietzschmann reviewed #117. I applied his patch unchanged: stricter row checks (empty ids, swapped claims, dates not in `YYYY-MM-DD`, a `record_ref` in the wrong shape) and end dates after the as-of date now hidden in the graph. I added the same date check for the three company dates, then merged both into #118. ADR-001 now says "on or before t". I replied on #117 to his five open points.
+- **Result:** 23 tests pass on #117 and 33 on #118. Both still wait for me to read them before they merge.
+- **AI used for:** Claude (claude.ai) checked his patch, applied it, wrote the company-date check and drafted the reply, all at my request.
+- **Next:** read and ship #117, then #118. For the call: where the as-of view for company dates lives, which insolvency types count (members' voluntary liquidation doesn't), and which SIC code we keep. Then the baselines (#27).
+- **Blocked by:** nothing
+
+## 2026-11-14 09:55
+- **Task:** #22 schema and #21 tiny world, then #121 as-of view (cards on the board)
+- **Did:** Shipped #117 and #118 as squash merges. #21, #22 and their sub-tasks closed, and their "How it works" notes are posted. Cristiano's review point 1 was a real leak: a company's later insolvency showed up in a query dated before it. I created #121 for it and built `mentions_as_of` in `src/evidence.py`. Pull request #122 is open.
+- **Result:** `main` is green with 33 tests. #122 passes 36 locally.
+- **AI used for:** Claude (claude.ai) merged the pull requests when I said go, drafted the "How it works" notes, and wrote the as-of view and its tests.
+- **Next:** read and ship #122, then the crawl (#24), as Cristiano suggested.
+- **Blocked by:** nothing
+
+## 2026-11-14 09:58
+- **Task:** #121 as-of view (card on the board)
+- **Did:** Shipped #122 as a squash merge. #121 is closed with its "How it works" note.
+- **Result:** `main` is green with 36 tests.
+- **AI used for:** Claude (claude.ai) merged it when I said go and drafted the note.
+- **Next:** set up Claude Code in VS Code on my PC for the code work, because the crawl needs the Companies House API and the cloud session can't reach it. Then #24.
+- **Blocked by:** nothing
