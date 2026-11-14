@@ -106,3 +106,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) merged it when I said go and drafted the note.
 - **Next:** set up Claude Code in VS Code on my PC for the code work, because the crawl needs the Companies House API and the cloud session can't reach it. Then #24.
 - **Blocked by:** nothing
+
+## 2026-11-14 11:40
+- **Task:** #24 crawl (on my PC), plus #27 baselines as the agreed backup (cards on the board)
+- **Did:** Set up the repo, Python and my own Companies House API key on my PC; my local Claude is building the crawl (#24). Nobody had claimed #27 by 11:30, so I took it as agreed so the 14:00 gate holds. `src/baseline.py` has flag nothing, same name and officer links, as pairs plus decisions. Pull request #127 is open. Reviewed Cristiano's #123, #124, #125 and #126 and left comments.
+- **Result:** 67 tests pass on #127. On the tiny world, same name flags the phoenix and both look-alikes, and officer links miss the phoenix.
+- **AI used for:** Claude (claude.ai) built the baselines and their tests, reviewed the team's pull requests, and drafted the comments at my request. Claude Code on my PC is building the crawl.
+- **Next:** read and ship #127. Add `score()` (27.4) once #126 merges, then the first numbers in Evaluation. Finish #24.
+- **Blocked by:** 27.4 waits for #126 (`src/evaluate.py` is Cristiano's until it merges)
