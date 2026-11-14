@@ -274,6 +274,26 @@ def test_a_company_joining_the_slice_doesnt_move_the_others(monkeypatch, raw_dir
     assert [n for n in after if n != "TW999999"] == before
 
 
+def test_parts_split_the_companies_without_overlap():
+    numbers = [f"TW{k:06d}" for k in range(10)]
+    parts = [crawl.part_of(numbers, k, 3) for k in (1, 2, 3)]
+    assert parts[0] == [numbers[0], numbers[3], numbers[6], numbers[9]]   # every 3rd, from the 1st
+    assert sorted(sum(parts, [])) == numbers                               # together: each company once
+    with pytest.raises(ValueError):
+        crawl.part_of(numbers, 4, 3)
+
+
+def test_a_part_crawls_only_its_companies_and_slows_down_to_share_the_key(monkeypatch, raw_dir):
+    monkeypatch.setattr(crawl, "spacing", crawl.SECONDS_BETWEEN_REQUESTS)   # put back after the test
+    monkeypatch.setattr(crawl, "get", FakeAPI(world()))
+    done = raw_dir / crawl.DONE_FILE
+    crawl.crawl(sample_size=None, years=[2021], part=1, parts=2)
+    assert len(done.read_text(encoding="utf-8").splitlines()) == 2             # 1 of the 2 query companies
+    assert crawl.spacing == pytest.approx(2 * crawl.SECONDS_BETWEEN_REQUESTS)  # two parts share one limit
+    crawl.crawl(sample_size=None, years=[2021], part=2, parts=2)
+    assert len(done.read_text(encoding="utf-8").splitlines()) == 3             # now both, no overlap
+
+
 def test_finished_query_companies_are_listed_and_earlier_companies_are_not(monkeypatch, raw_dir):
     run_crawl(monkeypatch)
     rows = (raw_dir / crawl.DONE_FILE).read_text(encoding="utf-8").splitlines()
@@ -314,6 +334,7 @@ def use_fake_clock(monkeypatch, key="test-key"):
     for name in ("monotonic", "time", "sleep"):
         monkeypatch.setattr(crawl.time, name, getattr(clock, name))
     monkeypatch.setattr(crawl, "last_request", 0.0)
+    monkeypatch.setattr(crawl, "spacing", crawl.SECONDS_BETWEEN_REQUESTS)
     monkeypatch.setattr(crawl, "api_key", lambda: key)
     return clock
 
@@ -328,7 +349,7 @@ def test_requests_are_spaced_and_a_429_is_waited_out(monkeypatch):
         sent_at.append(clock.now)
         return answers.pop(0)
 
-    monkeypatch.setattr(crawl.requests, "get", fake_requests_get)
+    monkeypatch.setattr(crawl.session, "get", fake_requests_get)
     crawl.get("/company/TW000001")
     status, _ = crawl.get("/company/TW000002")   # a 429 first, then 200
     assert status == 200
@@ -339,7 +360,7 @@ def test_requests_are_spaced_and_a_429_is_waited_out(monkeypatch):
 def test_a_refused_key_is_tried_again_then_stops_with_an_error_that_hides_the_key(monkeypatch):
     use_fake_clock(monkeypatch, key="secret-test-key")
     sent = []
-    monkeypatch.setattr(crawl.requests, "get", lambda url, **options: sent.append(url) or FakeResponse(401))
+    monkeypatch.setattr(crawl.session, "get", lambda url, **options: sent.append(url) or FakeResponse(401))
     with pytest.raises(RuntimeError, match="COMPANIES_HOUSE_API_KEY") as error:
         crawl.get("/company/TW000001")
     assert len(sent) == crawl.MAX_TRIES   # a 401 can be a passing glitch, so it is tried again
@@ -350,7 +371,7 @@ def test_a_403_stops_at_once(monkeypatch):
     # A 403 means too many requests from this computer, or a block: asking again makes it worse.
     use_fake_clock(monkeypatch)
     sent = []
-    monkeypatch.setattr(crawl.requests, "get", lambda url, **options: sent.append(url) or FakeResponse(403))
+    monkeypatch.setattr(crawl.session, "get", lambda url, **options: sent.append(url) or FakeResponse(403))
     with pytest.raises(RuntimeError, match="403"):
         crawl.get("/company/TW000001")
     assert len(sent) == 1
@@ -358,7 +379,7 @@ def test_a_403_stops_at_once(monkeypatch):
 
 def test_a_broken_answer_is_never_saved(monkeypatch, raw_dir):
     use_fake_clock(monkeypatch)
-    monkeypatch.setattr(crawl.requests, "get", lambda url, **options: FakeResponse(200, content=b"<html>"))
+    monkeypatch.setattr(crawl.session, "get", lambda url, **options: FakeResponse(200, content=b"<html>"))
     with pytest.raises(ValueError):
         crawl.fetch("company/TW000001.json", "/company/TW000001")
     assert not (raw_dir / "company" / "TW000001.json").exists()

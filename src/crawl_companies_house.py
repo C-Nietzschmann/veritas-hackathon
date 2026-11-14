@@ -27,9 +27,11 @@ A file already on disk is never asked for again, so a stopped crawl resumes wher
 query_companies.csv lists the query companies crawled in full: downstream takes its companies
 from there, never from all the company files (they hold the earlier companies too).
 
-Run one crawl at a time, with one key: two crawls on one key would pass the limit, and
-Companies House doesn't allow several keys for one application.
-From the repo root:  python -m src.crawl_companies_house [sample size | all] [years ...]
+Several computers can split a year: part K of N takes every N-th company of the fixed order,
+starting at the K-th. Parts that run at the same time must share one key, because Companies
+House doesn't allow several keys for one application. So each part keeps N times the usual
+gap between requests, and all of them together stay under the limit.
+From the repo root:  python -m src.crawl_companies_house [sample size | all] [years ...] [K/N]
 """
 
 import calendar
@@ -57,9 +59,11 @@ SECONDS_BETWEEN_REQUESTS = 0.55
 MAX_TRIES = 6                # a request that keeps failing stops the crawl; run it again to resume
 SECONDS_AFTER_ERROR = 30     # the first pause after an error; it doubles with every try
 
-# The run settings: which years to crawl, in this order, and how many query companies per year.
+# The run settings: which years to crawl, in this order, how many query companies per year,
+# and which part of them this computer takes.
 YEARS = (2021, 2022)         # 2021 (train and validation) first, then 2022 (test); (2021,) crawls one year
 SAMPLE_SIZE = 25             # query companies per year for the fresh-run test; None means all
+PART, PARTS = 1, 1           # part 1 of 1 is everything; part 2 of 3 takes every 3rd company from the 2nd
 
 # The slice (#71): construction, SIC 2007 divisions 41-43, companies formed in the YEARS above.
 SIC_CODES = [
@@ -81,6 +85,8 @@ TITLES = {"MR", "MRS", "MS", "MISS", "DR", "SIR", "PROF", "REV", "LADY", "LORD",
 stats = Counter()            # requests made, for card #24
 flags = defaultdict(set)     # what to report: companies and officers the crawl couldn't take in full
 last_request = 0.0           # when the last request started (time.monotonic), for the spacing
+spacing = SECONDS_BETWEEN_REQUESTS   # the gap get() keeps; crawl() widens it when parts share the key
+session = requests.Session() # one connection, reused: about twice as fast as a new one per request
 
 
 # --- Talking to the API -----------------------------------------------------------------
@@ -106,20 +112,20 @@ def seconds_until_reset(answer):
 def get(path, params=None):
     """Ask the API for one path. Returns (status, body bytes) for a 200 or a 404.
 
-    Starts at most one request every SECONDS_BETWEEN_REQUESTS, retries included, so the crawl
-    stays under the rate limit. A 429 (too many requests) is waited out, then asked again.
+    Starts at most one request every `spacing` seconds, retries included, so the crawl stays
+    under the rate limit. A 429 (too many requests) is waited out, then asked again.
     No answer, a server error or a 401 is tried again, waiting longer each time. A 403 or
     any other answer stops the crawl.
     """
     global last_request
     for attempt in range(1, MAX_TRIES + 1):
-        wait = last_request + SECONDS_BETWEEN_REQUESTS - time.monotonic()
+        wait = last_request + spacing - time.monotonic()
         if wait > 0:
             time.sleep(wait)
         last_request = time.monotonic()
         stats["requests"] += 1
         try:
-            answer = requests.get(API + path, params=params, auth=(api_key(), ""), timeout=60)
+            answer = session.get(API + path, params=params, auth=(api_key(), ""), timeout=60)
             status = answer.status_code
         except requests.RequestException:             # no answer at all: network down, timeout
             status = None
@@ -316,6 +322,17 @@ def query_companies(year, sample_size=None):
     return numbers if sample_size is None else numbers[:sample_size]
 
 
+def part_of(numbers, part, parts):
+    """Part `part` of `parts`: every parts-th company of the fixed order, starting at the part-th.
+
+    The parts don't overlap and together hold every company. The order looks random,
+    so each part is a fair sample too.
+    """
+    if not 1 <= part <= parts:
+        raise ValueError(f"part {part} of {parts}: the part must be a number from 1 to {parts}")
+    return numbers[part - 1::parts]
+
+
 def finished_companies():
     """The query companies crawled in full so far, read from DONE_FILE."""
     path = RAW_DIR / DONE_FILE
@@ -347,31 +364,37 @@ def crawl_company(number):
             follow_officer(other, skip_active=True)
 
 
-def crawl(sample_size=SAMPLE_SIZE, years=YEARS):
-    """Crawl sample_size query companies per year (None: all of them), the years in order.
+def crawl(sample_size=SAMPLE_SIZE, years=YEARS, part=PART, parts=PARTS):
+    """Crawl part `part` of `parts` of sample_size query companies per year (None: all of
+    them), the years in order. Query companies already finished are skipped.
 
+    Parts that run at the same time share the key's limit, so each part keeps `parts` times
+    the usual gap between requests: together they stay under 600 requests per 5 minutes.
     Prints a progress line every 100 companies, and returns the counts for card #24.
     """
+    global spacing
+    spacing = SECONDS_BETWEEN_REQUESTS * parts
     stats.clear()
     flags.clear()
     started = time.monotonic()
     finished = finished_companies()
     per_company = []                     # the requests each query company took
     for year in years:
-        numbers = query_companies(year, sample_size)
+        numbers = part_of(query_companies(year, sample_size), part, parts)
+        todo = [number for number in numbers if number not in finished]
         year_started = time.monotonic()
-        print(f"{year}: {len(numbers):,} query companies")
-        for done, number in enumerate(numbers, start=1):
+        print(f"{year}, part {part} of {parts}: {len(numbers):,} query companies, "
+              f"{len(numbers) - len(todo):,} already finished, {len(todo):,} to crawl")
+        for done, number in enumerate(todo, start=1):
             before = stats["requests"]
             crawl_company(number)
             per_company.append(stats["requests"] - before)
-            if number not in finished:
-                mark_finished(year, number)
-                finished.add(number)
-            if done % 100 == 0 or done == len(numbers):
+            mark_finished(year, number)
+            finished.add(number)
+            if done % 100 == 0 or done == len(todo):
                 minutes = (time.monotonic() - year_started) / 60
-                left = minutes / done * (len(numbers) - done)
-                print(f"{year}: {done:,} of {len(numbers):,} companies, {stats['requests']:,} requests, "
+                left = minutes / done * (len(todo) - done)
+                print(f"{year}: {done:,} of {len(todo):,} companies, {stats['requests']:,} requests, "
                       f"{minutes:.0f} min so far, about {left:.0f} min to go")
     return summary(per_company, started)
 
@@ -397,9 +420,15 @@ def summary(per_company, started):
 
 
 if __name__ == "__main__":
-    # python -m src.crawl_companies_house             SAMPLE_SIZE per year, 2021 then 2022
-    # python -m src.crawl_companies_house all         the whole slice, 2021 then 2022
-    # python -m src.crawl_companies_house 500 2021    500 companies of 2021
-    size = sys.argv[1] if len(sys.argv) > 1 else str(SAMPLE_SIZE)
-    years = [int(year) for year in sys.argv[2:]] or list(YEARS)
-    print(json.dumps(crawl(None if size == "all" else int(size), years), indent=2))
+    # python -m src.crawl_companies_house                 SAMPLE_SIZE per year, 2021 then 2022
+    # python -m src.crawl_companies_house all             the whole slice, 2021 then 2022
+    # python -m src.crawl_companies_house 500 2021        500 companies of 2021
+    # python -m src.crawl_companies_house all 2021 1/2    part 1 of 2 of 2021, on this computer
+    args = sys.argv[1:]
+    size = args[0] if args else str(SAMPLE_SIZE)
+    years = [int(arg) for arg in args[1:] if "/" not in arg] or list(YEARS)
+    part, parts = PART, PARTS
+    for arg in args[1:]:
+        if "/" in arg:                   # "1/2" means part 1 of 2
+            part, parts = (int(n) for n in arg.split("/"))
+    print(json.dumps(crawl(None if size == "all" else int(size), years, part, parts), indent=2))
