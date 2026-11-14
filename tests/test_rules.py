@@ -138,11 +138,11 @@ def test_r6_look_alikes_get_a_same_person_link_not_a_merge():
 @pytest.mark.xfail(raises=ImportError, reason="placeholder until the one-identity task, card #32")
 def test_r7_same_input_and_seed_give_the_same_output():
     """R7: inferences are reproducible and revisable. A placeholder: it checks nothing yet.
-    The day src/infer.py exists it turns red, until the real test is written here: same
+    The day the possible-worlds sampler exists (card 32.2) it turns red, until the real test is written here: same
     input and seed give identical output, and changing one match changes only the links
     that list it in depends_on."""
-    from src import infer  # noqa: F401
-    pytest.fail("src/infer.py exists now: write the R7 test (card #32)")
+    from src.infer import sample_worlds  # noqa: F401  (an ImportError until card 32.2)
+    pytest.fail("sample_worlds exists now: write the R7 test (card #32)")
 
 
 def test_r8_no_evidence_gives_not_enough_evidence():
