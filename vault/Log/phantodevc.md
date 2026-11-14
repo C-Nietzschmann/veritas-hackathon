@@ -61,3 +61,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the sliders, tests and Demo cell, shipped the PR and drafted the note and this entry. I can explain how the sliders work.
 - **Next:** close #38 if the team agrees. Crawl part 2 keeps running.
 - **Blocked by:** nothing
+
+## 2026-11-14 14:04
+- **Task:** #113 Credits, #115 README, #102 flip in the interface, #114 pinned requirements, #105 name-commonness bands (cards on the board)
+- **Did:** Completed Credits (every library, Chow's rule, the AI tools, the Companies House licence checked on its official page) and closed #113. Wrote the README (PR #150, open until the fresh-run test #48); its run steps worked word for word in a fresh clone. Shipped #102 (PR #151): the match to check first is red in the picture, marked in the table, and named in one sentence by `show()`. Shipped #114 (PR #152): every library pinned. Shipped #105 (PR #153): `name_commonness` bands from counts only. Closed #38.
+- **Result:** `main` green. #37 at 2/2, #39 at 1/2, #50 at 2/3. Bands on my local crawl (2,223 director records): 737 rare, 1,245 medium, 241 common.
+- **AI used for:** Claude Code wrote the code, tests, Credits and README, checked the licence and the run steps, shipped the PRs and drafted the notes and this entry. I can explain each change.
+- **Next:** #48 fresh-run test on Sunday, then ship the README. Crawl part 2 keeps running.
+- **Blocked by:** nothing
