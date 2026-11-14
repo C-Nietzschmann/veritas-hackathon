@@ -132,6 +132,16 @@ def is_blank(column):
     return column.isna() | column.astype("string").str.strip().eq("").fillna(False)
 
 
+def parse_dates(column):
+    """Read a column of ISO dates (YYYY-MM-DD). Anything else, empty cells included,
+    becomes NaT, pandas' "not a time"."""
+    return pd.to_datetime(column.astype("string"), format="%Y-%m-%d", errors="coerce")
+
+
+# What record_ref() builds: file, row number, sha256.
+RECORD_REF_SHAPE = r".+#\d+@[0-9a-f]{64}"
+
+
 def check_rows(mentions, claims):
     """Stop bad rows at the door.
 
@@ -143,14 +153,20 @@ def check_rows(mentions, claims):
     problems = []
     tables = [("mentions", mentions, "mention_id"), ("claims", claims, "claim_id")]
 
-    # R2: every row says where it came from.
+    # R2: every row says where it came from, in the shape the R1 check can read back.
     for name, table, id_col in tables:
         for col in ("source", "record_ref"):
             for row_id in table.loc[is_blank(table[col]), id_col]:
                 problems.append(f"{name} row {row_id}: empty {col} (R2: every row needs its provenance)")
+        well_formed = table["record_ref"].astype("string").str.fullmatch(RECORD_REF_SHAPE).fillna(False)
+        for row_id in table.loc[~well_formed & ~is_blank(table["record_ref"]), id_col]:
+            problems.append(f"{name} row {row_id}: record_ref is not file#row@sha256 (R1: build it with record_ref())")
 
-    # Ids are unique, so a claim points at exactly one mention.
+    # Every row has an id, and ids are unique, so a claim points at exactly one mention.
     for name, table, id_col in tables:
+        blank = int(is_blank(table[id_col]).sum())
+        if blank:
+            problems.append(f"{name}: {blank} row(s) with an empty {id_col} (every row needs an id)")
         for row_id in table.loc[table[id_col].duplicated(), id_col].unique():
             problems.append(f"{name} row {row_id}: duplicate {id_col} (ids must be unique)")
 
@@ -168,9 +184,29 @@ def check_rows(mentions, claims):
         for row_id, value in zip(dangling["claim_id"], dangling[end]):
             problems.append(f"claims row {row_id}: {end} {value!r} is not a mention (claims connect mentions)")
 
+    # Both relations end at a company: someone is a director of, or controls, a company.
+    # This catches a claim written the wrong way round.
+    company_ids = mentions.loc[mentions["kind"] == "company", "mention_id"]
+    is_mention = claims["object"].isin(mentions["mention_id"])
+    wrong_end = claims.loc[is_mention & ~claims["object"].isin(company_ids)]
+    for row_id, relation in zip(wrong_end["claim_id"], wrong_end["relation"]):
+        problems.append(f"claims row {row_id}: the object of {relation} must be a company (subject and object swapped?)")
+
+    # A date is ISO or empty. One we can't read would silently drop out of every as-of filter.
+    start = parse_dates(claims["valid_from"])
+    stop = parse_dates(claims["valid_to"])
+    for col, parsed in (("valid_from", start), ("valid_to", stop)):
+        unreadable = claims.loc[parsed.isna() & ~is_blank(claims[col])]
+        for row_id, value in zip(unreadable["claim_id"], unreadable[col]):
+            problems.append(f"claims row {row_id}: {col} {value!r} is not a date like 2021-05-01 (dates)")
+
+    # The same for the company dates: the label and the as-of rule run on them.
+    for col in ("incorporated_on", "dissolved_on", "insolvency_on"):
+        unreadable = mentions.loc[parse_dates(mentions[col]).isna() & ~is_blank(mentions[col])]
+        for row_id, value in zip(unreadable["mention_id"], unreadable[col]):
+            problems.append(f"mentions row {row_id}: {col} {value!r} is not a date like 2021-05-01 (dates)")
+
     # A relationship can't end before it starts.
-    start = pd.to_datetime(claims["valid_from"], errors="coerce")
-    stop = pd.to_datetime(claims["valid_to"], errors="coerce")
     for row_id in claims.loc[stop < start, "claim_id"]:
         problems.append(f"claims row {row_id}: valid_to is before valid_from (dates)")
 
@@ -191,12 +227,15 @@ def observed_graph(claims, as_of=None):
 
     as_of keeps only claims that started on or before that date (the as-of rule,
     ADR-001). A claim with no start date is dropped then, because we can't show
-    it existed by that date.
+    it existed by that date. An end date after as_of is emptied: on that date the
+    relationship was still running, and its end was still the future.
     """
     check_columns(claims, "claims")
     stated = ~is_blank(claims["source"]) & ~is_blank(claims["record_ref"])
     edges = claims.loc[stated, EDGE_COLS]
     if as_of is not None:
-        start = pd.to_datetime(edges["valid_from"], errors="coerce")
-        edges = edges.loc[start.notna() & (start <= pd.Timestamp(as_of))]
+        as_of = pd.Timestamp(as_of)
+        start = parse_dates(edges["valid_from"])
+        edges = edges.loc[start.notna() & (start <= as_of)].copy()
+        edges.loc[parse_dates(edges["valid_to"]) > as_of, "valid_to"] = None
     return edges.reset_index(drop=True)
