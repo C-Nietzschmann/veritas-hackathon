@@ -17,7 +17,7 @@ The usual ones (numpy, pandas, scikit-learn, PyTorch and so on) are listed in `r
 
 | Name | Link | Used for |
 |---|---|---|
-| | | |
+| ipywidgets | https://github.com/jupyter-widgets/ipywidgets | The cost sliders and Reset button in the notebook's Demo (#104). Agreed on the team call before adding it. |
 
 ## Code and ideas from elsewhere
 Tutorials, papers, or snippets we adapted. Link and one line on what we took.

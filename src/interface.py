@@ -178,6 +178,54 @@ def what_if(links, confirm=(), reject=()):
     return checked
 
 
+def cost_summary(query, links, line, costs, decide, thresholds):
+    """One line of text: the costs, the thresholds they give and the decision they lead to (#104).
+
+    decide and thresholds are the decision layer's own functions, passed in by the notebook,
+    because the interface imports nothing but the schema (ADR-005).
+    """
+    clear_below, flag_above = thresholds(*costs)
+    decision = decide(query, links, line, costs)["decision"]
+    miss, wrong_flag, ask = costs
+    return (f"Costs: missed case {miss:g}, wrong flag {wrong_flag:g}, asking {ask:g}. "
+            f"Clear at or below {clear_below:.0%}, flag at or above {flag_above:.0%}. "
+            f"{query}: {decision}")
+
+
+def cost_sliders(query, links, line, agreed_costs, decide, thresholds):
+    """Three sliders for the costs, the thresholds and decision next to them, and a Reset
+    button that returns to the agreed costs (#104). Returns the widget box to display.
+
+    The saved notebook on GitHub can't show sliders, so it also prints the line for the
+    agreed costs once.
+    """
+    import ipywidgets as widgets   # here, so the rest of the interface works without it
+
+    miss, wrong_flag, ask = agreed_costs
+    sliders = [
+        widgets.FloatSlider(value=miss, min=1, max=50, step=1, description="Missed case"),
+        widgets.FloatSlider(value=wrong_flag, min=0.5, max=20, step=0.5, description="Wrong flag"),
+        widgets.FloatSlider(value=ask, min=0.5, max=10, step=0.5, description="Asking"),
+    ]
+    summary = widgets.Label()
+    reset = widgets.Button(description="Reset to agreed costs")
+
+    def update(_change=None):
+        costs = tuple(slider.value for slider in sliders)
+        summary.value = cost_summary(query, links, line, costs, decide, thresholds)
+
+    def back_to_agreed(_button):
+        for slider, value in zip(sliders, agreed_costs):
+            slider.value = value      # each change runs update() again
+
+    for slider in sliders:
+        slider.observe(update, names="value")
+    reset.on_click(back_to_agreed)
+    update()
+    print(summary.value)
+    return widgets.VBox(sliders + [summary, reset])
+
+
 def show(query, mentions, claims, matches, decisions):
     """A company number in; the decision, the reason, the picture and the evidence table out (#99).
 
