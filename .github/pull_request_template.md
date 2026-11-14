@@ -7,7 +7,7 @@ Closes #
 <!-- one or two lines -->
 
 ## Check
-- [ ] Runs in a fresh Colab session
+- [ ] Runs top to bottom from a fresh clone (Restart kernel and run all)
 - [ ] I can explain every line
 - [ ] New datasets, models or libraries are in `vault/Project/Credits.md`
 - [ ] No names, school or secrets

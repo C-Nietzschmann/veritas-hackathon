@@ -32,7 +32,7 @@ check_file() {
 
   # Things that look like API keys or tokens
   if grep -qE '(sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|hf_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|-----BEGIN [A-Z ]*PRIVATE KEY-----)' "$f" 2>/dev/null; then
-    echo "  x looks like an API key or token in: $f. Use Colab Secrets or .env"
+    echo "  x looks like an API key or token in: $f. Put it in .env (ignored by git)"
   fi
 
   # Notebooks must be valid JSON (skipped where jq isn't installed; GitHub always checks)

@@ -27,7 +27,7 @@ Veritas AI International High School Hackathon. 48 hours, team of 3, fully remot
 
 | Hub | What you find there |
 |---|---|
-| [[Protocols]] | How we work: rules, timeline, calls, tasks, git, Colab, AI, evaluation, submission |
+| [[Protocols]] | How we work: rules, timeline, calls, tasks, git, notebooks, AI, evaluation, submission |
 | [[Tasks]] | The way to the task board on GitHub |
 | [[Project]] | The idea, the results, credits, write-up and demo script |
 | [[Decisions]] | What we decided and why |
@@ -41,5 +41,5 @@ New here? Start with [[Setup]].
 ## Links
 - Repo: https://github.com/C-Nietzschmann/veritas-hackathon (this vault is its `vault/` folder)
 - Hackathon site: https://highschoolhackathon.org
-- Main Colab notebook: _add after kickoff_
+- Main notebook on GitHub: `notebooks/main.ipynb`
 - Submission form: pinned in the WhatsApp group, not here. This repo becomes public.

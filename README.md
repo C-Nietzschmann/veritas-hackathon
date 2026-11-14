@@ -2,13 +2,19 @@
 
 Our entry for the Veritas AI International High School Hackathon, 14–15 November 2026.
 
-<!-- After kickoff, replace this block with: project name, one line on what it does, and the Open in Colab badge. -->
+<!-- After kickoff, replace this block with: project name, one line on what it does, and a link to notebooks/main.ipynb. -->
 > Nothing here yet. All project code is written during the 48 hours, starting Sat 14 Nov 00:00 ET.
 
 ## Run it
 <!-- Fill in before submitting. A reviewer must be able to follow this with no help. -->
-1. Open `notebooks/main.ipynb` in Google Colab.
-2. Runtime → Run all.
+The results are visible without running: open [`notebooks/main.ipynb`](notebooks/main.ipynb) on GitHub. To run it yourself (Python 3.10+):
+```bash
+git clone https://github.com/C-Nietzschmann/veritas-hackathon.git && cd veritas-hackathon
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt jupyter
+jupyter lab notebooks/main.ipynb
+```
+Then Run → Run All Cells.
 
 ## What's in this repo
 | Path | What |
