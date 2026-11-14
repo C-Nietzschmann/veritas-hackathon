@@ -19,13 +19,15 @@ from tests.tiny_world import tiny_world
 # exists the test runs for real. It shows as XPASS while its rule holds (then delete its
 # xfail line) and red when the rule is broken.
 #
-# Entity resolution (src/resolve.py, cards #30, #31) doesn't exist yet, so its function
-# name below is a guess. When the box lands, change the line marked GUESS to its real call.
+# Entity resolution (src/resolve.py) has its blocking (#30) but not its matcher (#31), and
+# only the matcher gives a pair its p. So these tests wait for match_probability (31.2).
+# When it lands, change the line marked GUESS to the call that returns the scored pairs.
 
 def resolve_pairs(mentions):
     """Entity resolution: mentions -> the pairs table (a, b, p, ...)."""
+    from src.resolve import match_probability  # noqa: F401  (an ImportError until card 31.2)
     from src import resolve
-    return resolve.candidate_pairs(mentions)   # GUESS: wire to the real call (cards #30, #31)
+    return resolve.candidate_pairs(mentions)   # GUESS: wire to the scored pairs (card #31)
 
 
 # --- The rules ---------------------------------------------------------------------
