@@ -1,7 +1,7 @@
-"""Tests for src/evidence.py, the shared schema (sub-tasks 22.1 to 22.4).
+"""Tests for src/evidence.py, the shared schema (sub-tasks 22.1 to 22.4, card #121).
 
-They run on a small hand-made example with invented names. Once the shared
-tiny world (#21) exists, they can switch to it.
+Most run on a small hand-made example with invented names. The companies-as-of
+tests (#121) use the shared tiny world, which has companies that fail later.
 """
 
 import hashlib
@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 
 from src import evidence as ev
+from tests.tiny_world import tiny_world
 
 RAW = b'{"company_number": "00000001", "officers": ["Alex Example"]}'
 
@@ -204,3 +205,34 @@ def test_as_of_drops_undated_claims():
     edges = ev.observed_graph(claims, as_of="2030-01-01")
     assert claims.loc[0, "claim_id"] not in set(edges["claim_id"])
     assert len(edges) == 2
+
+
+# --- #121 The companies as of a date ------------------------------------------------
+
+def company(view, truth, number):
+    """One company's row in a mentions table, or None when it isn't there."""
+    rows = view.loc[view["mention_id"] == truth["mention"][number]]
+    return rows.iloc[0] if len(rows) else None
+
+
+def test_as_of_hides_a_companys_own_later_insolvency():
+    mentions, _, truth = tiny_world()
+    view = ev.mentions_as_of(mentions, "2021-04-20")                    # TW000002 is formed that day
+    assert pd.isna(company(view, truth, "TW000002")["insolvency_on"])   # it fails in 2022: hidden
+    assert company(view, truth, "TW000001")["insolvency_on"] == "2021-03-15"   # before: stays
+
+
+def test_as_of_drops_companies_formed_later():
+    mentions, _, truth = tiny_world()
+    view = ev.mentions_as_of(mentions, "2021-02-10")                    # TW000005 is formed that day
+    assert company(view, truth, "TW000009") is None                     # formed in 2023
+    assert company(view, truth, "TW000005") is not None                 # formed that day: stays
+    assert company(view, truth, "TW000008")["dissolved_on"] == "2020-12-01"
+
+
+def test_as_of_empties_status_and_keeps_people():
+    mentions, _, _ = tiny_world()
+    view = ev.mentions_as_of(mentions, "2022-01-01")
+    assert view.loc[view["kind"] == "company", "status"].isna().all()
+    assert (view["kind"] == "person").sum() == (mentions["kind"] == "person").sum()
+    assert mentions["status"].notna().any()                             # the input is not changed
