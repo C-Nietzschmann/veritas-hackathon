@@ -60,3 +60,17 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) undid the assignments and rewrote the notes at my request.
 - **Next:** everyone claims their first card from the start of the order in Plan.
 - **Blocked by:** nothing
+
+## 2026-11-14 08:55
+- **Task:** #22 Write the evidence schema, checks and observed graph, with sub-tasks 22.1 to 22.4 (cards on the board)
+- **Did:** Built `src/evidence.py` and `tests/test_evidence.py` on branch `task-22`:
+  - the six shared tables' columns
+  - stable ids and `record_ref` with the raw response's hash
+  - `check_rows`, which names each bad row and its rule
+  - `observed_graph` with the as-of rule
+
+  Modules now lists the exact column names.
+- **Result:** 16 tests pass locally. Branch pushed. The pull request is not open yet: it waits for me to read the code.
+- **AI used for:** Claude (claude.ai) wrote the schema, the tests and the draft "How it works" while I was away.
+- **Next:** read the code, open the pull request from `task-22` (description drafted), confirm I can explain it, then ship #22.
+- **Blocked by:** nothing
