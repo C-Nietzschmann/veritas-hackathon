@@ -1,0 +1,26 @@
+{
+  "kind": "officer-list",
+  "etag": "tw-etag-officers-0004",
+  "items_per_page": 100,
+  "start_index": 0,
+  "total_results": 1,
+  "active_count": 1,
+  "resigned_count": 0,
+  "links": {"self": "/company/TW000004/officers"},
+  "items": [
+    {
+      "name": "SMITH, James",
+      "officer_role": "director",
+      "appointed_on": "2015-05-01",
+      "date_of_birth": {"month": 2, "year": 1962},
+      "nationality": "British",
+      "country_of_residence": "England",
+      "occupation": "Joiner",
+      "address": {"premises": "3", "address_line_1": "Pretend Street", "locality": "Sampleford", "postal_code": "ZZ3 3EF"},
+      "links": {
+        "self": "/company/TW000004/appointments/tw-appointment-0401",
+        "officer": {"appointments": "/officers/tw-officer-04/appointments"}
+      }
+    }
+  ]
+}

@@ -45,6 +45,10 @@ CASE_START_DATE_TYPES = {
 # Our slice is construction: SIC codes 41xxx, 42xxx and 43xxx.
 SLICE_SIC_PREFIXES = ("41", "42", "43")
 
+# The officer roles that are directors who are people. Every other role is skipped:
+# secretaries, and corporate-director and the other corporate-* roles (a company, not a person).
+DIRECTOR_ROLES = {"director", "nominee-director"}
+
 
 def load_raw(raw_dir="data/raw"):
     """Read every raw response under raw_dir into {path: bytes}.
@@ -135,3 +139,57 @@ def companies_to_mentions(raw):
         )
         rows.append(row)
     return pd.DataFrame(rows, columns=ev.MENTION_COLS)
+
+
+def officer_id(officer):
+    """The register's officer id, from the link "/officers/{id}/appointments".
+
+    Stored as the matcher's label only, never used as a feature (ADR-003).
+    """
+    return officer["links"]["officer"]["appointments"].split("/")[2]
+
+
+def officers_to_evidence(raw):
+    """One person mention and one director_of claim per director appointment (#75).
+
+    Only directors who are people count (DIRECTOR_ROLES): secretaries and corporate
+    directors are skipped. Every appointment gets its own mention, even when the same
+    person appears at two companies under the same officer id: deciding who is who
+    is entity resolution's job (R6).
+    """
+    mentions, claims = [], []
+    for path, number, raw_bytes in files_in(raw, "officers"):
+        items = json.loads(raw_bytes).get("items", [])
+        for position, officer in enumerate(items):
+            if officer.get("officer_role") not in DIRECTOR_ROLES:
+                continue
+
+            # The appointment's own link, "/company/{number}/appointments/{id}", is unique
+            # and stays the same on every crawl, so the ids do too (R7).
+            appointment = officer["links"]["self"]
+            born = officer.get("date_of_birth", {})
+
+            person = dict.fromkeys(ev.MENTION_COLS)   # every column, empty until filled
+            person.update(
+                mention_id=ev.make_id(SOURCE, f"person{appointment}"),
+                kind="person",
+                name=officer["name"],
+                birth_month=born.get("month"),
+                birth_year=born.get("year"),
+                nationality=officer.get("nationality"),
+                officer_id=officer_id(officer),
+                postcode=officer.get("address", {}).get("postal_code"),
+                **provenance(path, position, raw_bytes),
+            )
+            mentions.append(person)
+
+            claims.append(dict(
+                claim_id=ev.make_id(SOURCE, f"director_of{appointment}"),
+                subject=person["mention_id"],
+                relation="director_of",
+                object=company_mention_id(number),   # the company mention from companies_to_mentions
+                valid_from=officer.get("appointed_on"),
+                valid_to=officer.get("resigned_on"),   # None while the director still serves
+                **provenance(path, position, raw_bytes),
+            ))
+    return pd.DataFrame(mentions, columns=ev.MENTION_COLS), pd.DataFrame(claims, columns=ev.CLAIM_COLS)
