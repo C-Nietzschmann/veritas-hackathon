@@ -36,7 +36,8 @@ ROOT = Path(__file__).resolve().parents[1]   # the repo folder: this file is in 
 SOURCE = "companies_house"           # source and origin of every row
 ADAPTER = "ingest_companies_house"   # the code that made the row
 
-# insolvency_on: the case types that count as the company failing (liquidation or administration).
+# insolvency_on: the case types that count as an insolvency (liquidation or administration).
+# The failure label (label_failures in evaluate.py) also counts a dissolution, from dissolved_on.
 # Left out on purpose: members-voluntary-liquidation (a solvent company closing itself down),
 # voluntary arrangements, receivership, moratorium and foreign insolvency.
 INSOLVENCY_CASE_TYPES = {

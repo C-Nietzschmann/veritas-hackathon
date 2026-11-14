@@ -35,7 +35,7 @@ Defined once in `src/evidence.py`, each with its check. Change one only on a cal
 |---|---|---|---|
 | **mentions** | adapter | every box | `mention_id`, `kind` (company or person), `name` as written, `display_name` (masked), the attributes below, and provenance (`source`, `record_ref` with raw file, row and hash, `origin`, `adapter`) |
 | **claims** | adapter | evidence, decision layer, interface | `claim_id`, `subject`, `relation` (`director_of` or `controls`), `object`, `valid_from`, `valid_to`, provenance |
-| **labels** | adapter | decision layer, evaluation | `company_id`, `formed_on`, `failed` (liquidation or administration within 24 months), `split` (train, validation or test) |
+| **labels** | adapter | decision layer, evaluation | `company_id`, `formed_on`, `failed` (liquidation, administration or dissolution within 24 months), `split` (train, validation or test) |
 | **pairs** | entity resolution, baselines | decision layer, evaluation, interface | `a`, `b`, `p`, `features`, `method`, `label` (same officer id, for training and checking only) |
 | **links** | decision layer | interface, evaluation | `query`, `predecessor`, `via` (the pair it rests on), `p`, `method`, `depends_on` |
 | **decisions** | decision layer, baselines | interface, evaluation | `query`, `method`, `decision`, `p_predecessor`, `p_fail`, `reason`, `flip` |
