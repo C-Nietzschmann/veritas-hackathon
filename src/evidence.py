@@ -239,3 +239,25 @@ def observed_graph(claims, as_of=None):
         edges = edges.loc[start.notna() & (start <= as_of)].copy()
         edges.loc[parse_dates(edges["valid_to"]) > as_of, "valid_to"] = None
     return edges.reset_index(drop=True)
+
+
+# --- #121 The companies as of a date ------------------------------------------------
+
+def mentions_as_of(mentions, as_of):
+    """The mentions as they stood on as_of: the as-of rule for companies (ADR-001).
+
+    A crawl made today also shows what happened to a company after as_of. So this
+    drops the companies formed after that date and hides dissolution and insolvency
+    dates after it. It empties status, which is as of the crawl day: code reads
+    the dates instead. People's mentions all stay, because their claims carry the
+    dates and observed_graph(claims, as_of) filters those.
+    """
+    check_columns(mentions, "mentions")
+    as_of = pd.Timestamp(as_of)
+    is_company = mentions["kind"] == "company"
+    formed_later = is_company & (parse_dates(mentions["incorporated_on"]) > as_of)
+    view = mentions.loc[~formed_later].copy()
+    for col in ("dissolved_on", "insolvency_on"):
+        view.loc[parse_dates(view[col]) > as_of, col] = None
+    view.loc[view["kind"] == "company", "status"] = None
+    return view.reset_index(drop=True)
