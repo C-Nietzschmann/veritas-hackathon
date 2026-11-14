@@ -135,14 +135,23 @@ def test_r6_look_alikes_get_a_same_person_link_not_a_merge():
         assert 0 < p_of[pair] < 1
 
 
-@pytest.mark.xfail(raises=ImportError, reason="placeholder until the one-identity task, card #32")
 def test_r7_same_input_and_seed_give_the_same_output():
-    """R7: inferences are reproducible and revisable. A placeholder: it checks nothing yet.
-    The day the possible-worlds sampler exists (card 32.2) it turns red, until the real test is written here: same
-    input and seed give identical output, and changing one match changes only the links
-    that list it in depends_on."""
-    from src.infer import sample_worlds  # noqa: F401  (an ImportError until card 32.2)
-    pytest.fail("sample_worlds exists now: write the R7 test (card #32)")
+    """R7: inferences are reproducible and revisable. The same pairs and seed give identical
+    output, and changing one match changes only the links that list it in depends_on."""
+    from src import infer
+    rows = [("d1", "x", 0.5, None, "by hand", None), ("d1", "y", 0.5, None, "by hand", None),
+            ("d2", "z", 0.6, None, "by hand", None), ("d2", "w", 0.3, None, "by hand", None)]
+    pairs = pd.DataFrame(rows, columns=ev.PAIR_COLS)
+    before = infer.sample_worlds(pairs, n=400, seed=42)
+    assert before.equals(infer.sample_worlds(pairs, n=400, seed=42))
+
+    changed = pairs.copy()
+    changed.loc[2, "p"] = 0.9   # we now know more about the match d2-z
+    after = infer.sample_worlds(changed, n=400, seed=42)
+    rests_on_it = before["depends_on"].map(lambda group: ("d2", "z") in group)
+    assert list(rests_on_it) == [False, False, True, True]
+    assert before.loc[~rests_on_it, "p"].equals(after.loc[~rests_on_it, "p"])   # d1's links: untouched
+    assert (before.loc[rests_on_it, "p"] != after.loc[rests_on_it, "p"]).all()  # d2's links: both moved
 
 
 def test_r8_no_evidence_gives_not_enough_evidence():
