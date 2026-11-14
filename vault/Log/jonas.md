@@ -90,3 +90,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) checked his patch, applied it, wrote the company-date check and drafted the reply, all at my request.
 - **Next:** read and ship #117, then #118. For the call: where the as-of view for company dates lives, which insolvency types count (members' voluntary liquidation doesn't), and which SIC code we keep. Then the baselines (#27).
 - **Blocked by:** nothing
+
+## 2026-11-14 09:55
+- **Task:** #22 schema and #21 tiny world, then #121 as-of view (cards on the board)
+- **Did:** Shipped #117 and #118 as squash merges. #21, #22 and their sub-tasks closed, and their "How it works" notes are posted. Cristiano's review point 1 was a real leak: a company's later insolvency showed up in a query dated before it. I created #121 for it and built `mentions_as_of` in `src/evidence.py`. Pull request #122 is open.
+- **Result:** `main` is green with 33 tests. #122 passes 36 locally.
+- **AI used for:** Claude (claude.ai) merged the pull requests when I said go, drafted the "How it works" notes, and wrote the as-of view and its tests.
+- **Next:** read and ship #122, then the crawl (#24), as Cristiano suggested.
+- **Blocked by:** nothing
