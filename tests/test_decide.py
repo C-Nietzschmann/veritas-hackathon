@@ -254,8 +254,8 @@ def test_decide_fills_flip_and_says_it_in_the_reason_by_company_number():
     mentions, claims, truth = tiny_world()
     rows = decide_all(mentions, claims, hand_made_pairs(truth))
     assert rows["TW000002"]["flip"]["becomes"] == "CLEAR"
-    # p is called the matcher's estimate, never how "sure" we are: on real data it ran too high.
-    assert "the matcher estimates a 90% chance it's the same person" in rows["TW000002"]["reason"]
+    # p is called an estimate, never how "sure" we are: on real data it ran too high.
+    assert "an estimated 90% chance it's the same person" in rows["TW000002"]["reason"]
     assert rows["TW000002"]["reason"].endswith(
         "This becomes CLEAR if the director matched with TW000001 turns out not to be the same person.")
     assert rows["TW000006"]["flip"] is None and rows["TW000007"]["flip"] is None   # nothing to check
