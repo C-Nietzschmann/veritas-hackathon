@@ -45,3 +45,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the table, `show()`, the Demo cells and tests, ran the notebook, shipped the PR and drafted the notes and this entry. I read `interface.py`.
 - **Next:** crawl part 2 keeps running. Pick the next free card.
 - **Blocked by:** nothing
+
+## 2026-11-14 13:42
+- **Task:** #103 confirm and reject a match (card on the board, parent #38)
+- **Did:** Added `interface.what_if`: a person confirms (p = 1) or rejects (p = 0) a match, every other match stays as it was, then the decision layer runs again. Two Demo cells in `main.ipynb` show it. Closed #35 after its three sub-tasks shipped. Shipped #103 as PR #147.
+- **Result:** rejecting TW000002's one match turns FLAG into CLEAR. #38 at 1/2, `main` green with 205 tests.
+- **AI used for:** Claude Code wrote `what_if`, its tests and the Demo cells, shipped the PR and drafted the note and this entry. I can explain `what_if`.
+- **Next:** on the call: may we add ipywidgets for the cost sliders (#104) and buttons? Crawl part 2 keeps running.
+- **Blocked by:** #104 waits for the call's yes on ipywidgets
