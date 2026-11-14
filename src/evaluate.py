@@ -1,4 +1,5 @@
-"""The evaluation box (card #28): the failure label, the time split and the as-of rule.
+"""The evaluation box: the failure label, the time split and the as-of rule (card #28),
+and one scoring function for every method (card #80).
 
 Like every box, it imports nothing from src/ except evidence.py (ADR-005).
 Dates are read with read_dates, which stops with an error on a date that is not
@@ -6,6 +7,7 @@ written as YYYY-MM-DD, so a bad date can't quietly change a label or a set.
 """
 
 import pandas as pd
+from sklearn.metrics import average_precision_score
 
 from src import evidence as ev
 
@@ -98,3 +100,60 @@ def history_as_of(claims, date):
     read_dates(claims["valid_from"])
     read_dates(claims["valid_to"])
     return ev.observed_graph(claims, as_of=date)
+
+
+# --- 27.4 Score any method the same way ----------------------------------------------
+
+def score(decisions, labels):
+    """How one method's decisions compare with what really happened (card #80).
+
+    `decisions` is the decisions table of one method; `labels` is the labels table
+    (company_id, failed, ...). Only companies in both count. Our method and every
+    baseline go through this one function, so they're scored the same way (ADR-005).
+    - FLAG on a company that failed is a right flag; FLAG on one that didn't is a false flag.
+    - A company that failed and wasn't flagged is a miss, whether it was cleared or left
+      to check by hand.
+
+    Returns a dict:
+    - companies, failed: how many companies were scored, and how many of them failed
+    - flags, false_flags, misses: counts
+    - precision: right flags / flags. None when nothing was flagged: 0 out of 0 is no number
+    - recall: right flags / failed companies. None when none failed
+    - not_enough_evidence: the share of companies left to check by hand
+    - pr_auc: the average precision of p_fail over the companies that have one. None when
+      the method gives no probabilities, or they don't cover both a failure and a non-failure
+    """
+    ev.check_columns(decisions, "decisions")
+    ev.check_columns(labels, "labels")
+    methods = list(decisions["method"].unique())
+    if len(methods) != 1:
+        raise ValueError(f"score() scores one method at a time, got {methods}: use score_methods()")
+
+    both = decisions.merge(labels[["company_id", "failed"]], left_on="query", right_on="company_id")
+    failed = both["failed"].astype(bool)
+    flagged = both["decision"] == "FLAG"
+    right_flags = int((flagged & failed).sum())
+
+    has_p = both["p_fail"].notna()
+    pr_auc = None
+    if has_p.any() and failed[has_p].nunique() == 2:
+        pr_auc = float(average_precision_score(failed[has_p], both.loc[has_p, "p_fail"].astype(float)))
+
+    return dict(
+        method=methods[0],
+        companies=len(both),
+        failed=int(failed.sum()),
+        flags=int(flagged.sum()),
+        false_flags=int((flagged & ~failed).sum()),
+        misses=int((failed & ~flagged).sum()),
+        precision=right_flags / int(flagged.sum()) if flagged.any() else None,
+        recall=right_flags / int(failed.sum()) if failed.any() else None,
+        not_enough_evidence=float((both["decision"] == "NOT ENOUGH EVIDENCE").mean()) if len(both) else None,
+        pr_auc=pr_auc,
+    )
+
+
+def score_methods(decisions, labels):
+    """score() for every method in a decisions table, one row each: our method next to the baselines."""
+    rows = [score(decisions[decisions["method"] == method], labels) for method in decisions["method"].unique()]
+    return pd.DataFrame(rows)
