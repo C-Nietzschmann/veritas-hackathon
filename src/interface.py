@@ -157,6 +157,27 @@ def evidence_table(query, mentions, claims, links):
                                        "source", "record or depends on"])
 
 
+def what_if(links, confirm=(), reject=()):
+    """The company's matches after a person checked some of them by hand (#103).
+
+    confirm and reject hold match numbers: the row numbers of `links`, in the order the
+    evidence table lists the guesses. A confirmed match gets p = 1, a rejected one p = 0.
+    Every other match keeps its p exactly (R7), so only the links that rest on a checked
+    match change. Returns a copy; `links` itself is left alone.
+    Run the decision layer again on the result to see the new decision.
+    """
+    confirm, reject = set(confirm), set(reject)
+    if confirm & reject:
+        raise ValueError(f"Match {sorted(confirm & reject)} can't be both confirmed and rejected.")
+    for number in confirm | reject:
+        if number not in range(len(links)):
+            raise ValueError(f"There is no match {number}: this company has {len(links)} (0 to {len(links) - 1}).")
+    checked = links.copy().reset_index(drop=True)
+    checked.loc[sorted(confirm), "p"] = 1.0
+    checked.loc[sorted(reject), "p"] = 0.0
+    return checked
+
+
 def show(query, mentions, claims, matches, decisions):
     """A company number in; the decision, the reason, the picture and the evidence table out (#99).
 
