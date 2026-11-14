@@ -30,7 +30,7 @@ Up: [[Log]]
 - **Next:** say on the call that `check.sh` gained the name guard. Pick the next free card.
 - **Blocked by:** nothing
 
-## 2026-11-14 13:40
+## 2026-11-14 13:25
 - **Task:** #24 crawl part 2, and #98 evidence graph (cards on the board)
 - **Did:** Made my own Companies House application and key, and started part 2 of 2 of the 2021 crawl on my computer with jonas's fixed crawler (PR #134). Built `draw_graph` in `src/interface.py` for #98: register facts solid, guessed matches dashed and labelled in words, labels from the display columns only. Opened PR #143 as work in progress. Claimed parent #35.
 - **Result:** crawl measured at 450 companies an hour (8.0 s each, 13:03 to 13:13), so my half of 2021 would take about 3.6 days if left to run. #98: 5 tests, all 164 pass. The crawl log slipped into PR #143 and was taken out again; no personal data was in it.
