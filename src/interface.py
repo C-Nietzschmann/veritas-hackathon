@@ -77,7 +77,8 @@ def evidence(query, mentions, claims, links):
             director, other = (a, b) if a in directors else (b, a)
             earlier = companies.loc[link["predecessor"], "mention_id"]
             guesses.append(dict(director=director, other=other, earlier=earlier,
-                                p=link["p"], depends_on=link["depends_on"]))
+                                p=link["p"], depends_on=link["depends_on"],
+                                via=tuple(sorted(link["via"]))))
             # the earlier company's fact: the claim this link depends on, other -> earlier
             facts.append(edges[edges["claim_id"].isin(link["depends_on"]) & (edges["object"] == earlier)])
 
@@ -85,11 +86,17 @@ def evidence(query, mentions, claims, links):
     return query_id, facts, guesses
 
 
-def draw_graph(query, mentions, claims, links, decision):
+def is_flip(guess, flip):
+    """Is this guess the match the decision layer says to check first (decide.flip, #102)?"""
+    return flip is not None and guess["via"] == tuple(sorted(flip["via"]))
+
+
+def draw_graph(query, mentions, claims, links, decision, flip=None):
     """Draw one query company's evidence: its directors, our guessed matches and the
     earlier insolvent companies behind them. Returns a matplotlib Figure.
 
-    decision: the decision word, for example "FLAG".
+    decision: the decision word, for example "FLAG". flip: the decision's flip (or None);
+    that match is drawn red and thicker, labelled "check this first" (#102).
     """
     query_id, facts, guesses = evidence(query, mentions, claims, links)
     directors = list(dict.fromkeys(facts.loc[facts["object"] == query_id, "subject"]))
@@ -107,9 +114,9 @@ def draw_graph(query, mentions, claims, links, decision):
     fig = Figure(figsize=(10, 2 + 1.2 * max(len(directors), len(others), 1)))
     ax = fig.subplots()
 
-    def line(a, b, style, text=None):
+    def line(a, b, style, text=None, color="black", width=1.5):
         (x1, y1), (x2, y2) = place[a], place[b]
-        ax.plot([x1, x2], [y1, y2], linestyle=style, color="black", linewidth=1.5, zorder=1)
+        ax.plot([x1, x2], [y1, y2], linestyle=style, color=color, linewidth=width, zorder=1)
         if text:
             ax.text((x1 + x2) / 2, (y1 + y2) / 2 + 0.12, text, ha="center", fontsize=9, style="italic",
                     zorder=3, bbox=dict(facecolor="white", edgecolor="none", pad=1))
@@ -117,7 +124,11 @@ def draw_graph(query, mentions, claims, links, decision):
     for _, fact in facts.iterrows():                                   # facts: solid
         line(fact["subject"], fact["object"], "-")
     for g in guesses:                                                  # guesses: dashed
-        line(g["director"], g["other"], "--", in_words(g["p"]) + " same person")
+        if is_flip(g, flip):
+            line(g["director"], g["other"], "--", in_words(g["p"]) + " same person: check this first",
+                 color="red", width=2.5)
+        else:
+            line(g["director"], g["other"], "--", in_words(g["p"]) + " same person")
 
     for mention_id, (x, y) in place.items():
         is_company = mention_id == query_id or mention_id in earlier
@@ -134,12 +145,12 @@ def draw_graph(query, mentions, claims, links, decision):
     return fig
 
 
-def evidence_table(query, mentions, claims, links):
+def evidence_table(query, mentions, claims, links, flip=None):
     """Every line of the picture as one row (#100): masked labels only.
 
     A fact row names its source and record_ref (the raw file, row and hash it came from).
     A guess row gives how sure we are, in words and as p, and the claims it depends on,
-    so no guess appears without its uncertainty.
+    so no guess appears without its uncertainty. "check first" marks the decision's flip (#102).
     """
     query_id, facts, guesses = evidence(query, mentions, claims, links)
     rows = []
@@ -147,14 +158,31 @@ def evidence_table(query, mentions, claims, links):
         rows.append({"line": "solid (fact)", "from": label(mentions, fact["subject"]),
                      "to": label(mentions, fact["object"]), "says": "director of",
                      "how sure": "on the register", "p": None,
-                     "source": fact["source"], "record or depends on": fact["record_ref"]})
+                     "source": fact["source"], "record or depends on": fact["record_ref"],
+                     "check first": ""})
     for g in guesses:
         rows.append({"line": "dashed (guess)", "from": label(mentions, g["director"]),
                      "to": label(mentions, g["other"]), "says": "same person?",
                      "how sure": in_words(g["p"]), "p": round(float(g["p"]), 2),
-                     "source": "our matcher", "record or depends on": ", ".join(g["depends_on"])})
+                     "source": "our matcher", "record or depends on": ", ".join(g["depends_on"]),
+                     "check first": "yes" if is_flip(g, flip) else ""})
     return pd.DataFrame(rows, columns=["line", "from", "to", "says", "how sure", "p",
-                                       "source", "record or depends on"])
+                                       "source", "record or depends on", "check first"])
+
+
+def flip_sentence(links, flip):
+    """One sentence on what to check first, with the match number what_if takes (#102), or None.
+
+    Masked: it names the earlier company by number and the match by its number, never a person.
+    """
+    if flip is None or links is None:
+        return None
+    vias = [tuple(sorted(via)) for via in links["via"]]
+    number = vias.index(tuple(sorted(flip["via"])))
+    turns_out = "is" if flip["if_same_person"] else "is not"
+    action = "confirm" if flip["if_same_person"] else "reject"
+    return (f"Check first: match {number} (with {flip['predecessor']}). The decision becomes "
+            f"{flip['becomes']} if it {turns_out} the same person: try what_if(..., {action}=[{number}]).")
 
 
 def what_if(links, confirm=(), reject=()):
@@ -246,8 +274,12 @@ def show(query, mentions, claims, matches, decisions):
     links = matches.get(query)
     if links is None:   # nothing to draw: no director records on file (R8)
         return row, None, None
-    fig = draw_graph(query, mentions, claims, links, row["decision"])
-    table = evidence_table(query, mentions, claims, links)
+    flip = row.get("flip")
+    sentence = flip_sentence(links, flip)
+    if sentence:
+        print(sentence)
+    fig = draw_graph(query, mentions, claims, links, row["decision"], flip)
+    table = evidence_table(query, mentions, claims, links, flip)
     try:                # in a notebook, show both; elsewhere just return them
         from IPython.display import Image, display
         png = io.BytesIO()
