@@ -414,8 +414,34 @@ def test_the_hand_check_sheet_shows_display_names_and_the_fields_asked_for():
     assert phoenix.loc["validation director", "co-directors"] == people.loc[person("p8"), "display_name"]   # Ruth Okafor
     assert phoenix.loc["earlier record", "company"] == "Harrow Build Ltd"
     assert phoenix.loc["earlier record", "company formed"] == "2017-02-01"
+    assert set(phoenix["same name after normalising"]) == {"yes"}
     page = real_slice.handcheck_html(sheet)
     assert page.count("<table>") == len(sample) and "Daniel Harrow" not in page
+
+
+def test_the_hand_check_page_is_blind():
+    mentions, links = tiny_links()
+    claims = tiny_world()[1]
+    sample = real_slice.handcheck_sample(links, evaluate.name_commonness(mentions), n=50)
+    page = real_slice.handcheck_html(real_slice.handcheck_sheet(sample, mentions, claims))
+    for hint in real_slice.GROUPS + ["matcher", "0.90", "0.70", "common"]:
+        assert hint not in page                                   # no group, band or p to sway a verdict
+    shown = [page.index(pair) for pair in sorted(sample["pair_id"])]
+    assert shown == sorted(shown)                                 # pair-id order, not the sample's order
+    matcher_only = real_slice.pair_id(person("p3"), person("p8"))
+    assert "Names the same after normalising (word order, case, titles): no" in page.split(matcher_only, 1)[1]
+
+
+def test_the_matcher_learns_only_from_records_at_companies_formed_in_the_training_period():
+    mentions, claims, truth = tiny_world()
+    pairs = pd.DataFrame([(person("p1"), person("p2")),     # Harrow Build 2017 and Harrow Build Services, April 2021
+                          (person("p5"), person("p9")),     # Smith Brothers was formed in 2023: later
+                          (person("p4"), person("p5"))],    # 2015 and February 2021
+                         columns=["a", "b"])
+    assert list(real_slice.train_period_pairs(pairs, mentions, claims)) == [True, False, True]
+    # A company formed in the validation period, labelled or not, keeps its pairs out too
+    mentions.loc[mentions["company_number"] == "TW000005", "incorporated_on"] = "2021-10-15"
+    assert list(real_slice.train_period_pairs(pairs, mentions, claims)) == [True, False, False]
 
 
 def test_postcode_area_is_the_letters_of_the_district():

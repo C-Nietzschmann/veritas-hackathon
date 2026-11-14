@@ -409,6 +409,22 @@ def links_by_band(links, bands):
     return pd.DataFrame(rows).T.rename_axis("band")
 
 
+TRAIN_PERIOD_END = "2021-09-30"   # evaluate.split: train is formed January to September 2021
+
+
+def train_period_pairs(pairs, mentions, claims, until=TRAIN_PERIOD_END):
+    """True for a pair whose two records are both at companies formed by `until`, the end of the
+    training period (evaluate.split). The matcher learns only from those pairs: a record at a
+    company formed later (the validation or test period, query company or not, labelled or not)
+    keeps its pair out of training, so nothing from 2022 or from validation reaches the matcher.
+    """
+    companies = mentions[mentions["kind"] == "company"].set_index("mention_id")
+    held = claims[claims["relation"] == "director_of"].drop_duplicates("subject").set_index("subject")
+    formed = evaluate.read_dates(held["object"].map(companies["incorporated_on"]))
+    early = set(formed.index[formed <= pd.Timestamp(until)])
+    return pairs["a"].isin(early) & pairs["b"].isin(early)
+
+
 def pair_id(a, b):
     """The hand check's id for two records: the same in either order, and no name in it
     (a hash of the two mention ids, which are hashes themselves)."""
@@ -419,9 +435,10 @@ def handcheck_sample(links, bands, n=50, seed=42):
     """n "different ids" pairs for the hand check, spread over GROUPS x BANDS.
 
     Groups: the same-name rule says yes and the matcher no; both say yes; only the matcher says
-    yes. The pairs of each group x band cell are shuffled (seed); then the cells give one pair
-    each in turn (group by group, bands rare to common), skipping empty cells, until n are
-    taken. A pair met from both sides (two validation directors) is taken once.
+    yes. One random generator, seeded with `seed`, shuffles the pairs of each group x band cell,
+    cell by cell in GROUPS x BANDS order; then the cells give one pair each in turn (group by
+    group, bands rare to common), skipping empty cells, until n are taken. A pair met from both
+    sides (two validation directors) is taken once.
     """
     unconfirmed = links[links["register"] == "different ids"].copy()
     unconfirmed["pair_id"] = [pair_id(a, b) for a, b in zip(unconfirmed["director"], unconfirmed["record"])]
@@ -462,10 +479,12 @@ def birth_text(person):
 def handcheck_sheet(sample, mentions, claims):
     """What the hand check shows of each sampled pair, for both records: display name, birth
     month and year, nationality, postcode area, company name and formation date, appointment
-    dates and the co-directors' display names.
+    dates and the co-directors' display names; and whether the two names are the same after
+    baseline.normalise_name, since two display names differ when only word order or a title does.
 
     Display names only, never a director's name. Company names are real and can hold a
-    person's name, so this table stays on the PC and never goes into git.
+    person's name, so this table stays on the PC and never goes into git. Its group, band and
+    p columns are for the notebook only: handcheck_html never shows them.
     """
     people = mentions[mentions["kind"] == "person"].set_index("mention_id")
     companies = mentions[mentions["kind"] == "company"].set_index("mention_id")
@@ -473,6 +492,8 @@ def handcheck_sheet(sample, mentions, claims):
     held = directorships.drop_duplicates("subject").set_index("subject")   # each record's company and dates
     rows = []
     for pair in sample.itertuples(index=False):
+        names = [baseline.normalise_name(people.loc[mention, "name"]) for mention in (pair.director, pair.record)]
+        same = "yes" if names[0] and names[0] == names[1] else "no"
         for side, mention in [("validation director", pair.director), ("earlier record", pair.record)]:
             person, claim = people.loc[mention], held.loc[mention]
             company = companies.loc[claim["object"]]
@@ -480,6 +501,7 @@ def handcheck_sheet(sample, mentions, claims):
                                        & (directorships["subject"] != mention), "subject"].unique()
             rows.append({
                 "pair_id": pair.pair_id, "group": pair.group, "band": pair.band, "p": pair.p, "side": side,
+                "same name after normalising": same,
                 "display name": person["display_name"],
                 "born": birth_text(person),
                 "nationality": person["nationality"],
@@ -494,7 +516,11 @@ def handcheck_sheet(sample, mentions, claims):
 
 
 def handcheck_html(sheet):
-    """handcheck_sheet as one HTML page: a table per pair, the two records side by side."""
+    """handcheck_sheet as one HTML page: a table per pair, the two records side by side.
+
+    Blind: the pairs come in pair-id order, a hash order that says nothing about their group,
+    and the page shows no group, band or matcher p, so they can't sway a verdict.
+    """
     fields = ["display name", "born", "nationality", "postcode area", "company", "company formed",
               "appointed", "resigned", "co-directors"]
 
@@ -507,11 +533,10 @@ def handcheck_html(sheet):
              "vertical-align:top}th{background:#f3f3f3;width:12em}</style>",
              "<h1>Hand check (#36): same person?</h1><p>Write yes, no or unsure next to each pair id in "
              "notebooks/jonas_handcheck.csv. This page holds real company names: it stays on this PC.</p>"]
-    for number, (pair, rows) in enumerate(sheet.groupby("pair_id", sort=False), start=1):
-        first = rows.iloc[0]
-        p = "never proposed by blocking" if pd.isna(first["p"]) else f"{first['p']:.2f}"
-        parts.append(f"<h2>{number}. {text(pair)}</h2><p>{text(first['group'])} | {text(first['band'])} name"
-                     f" | matcher p: {p}</p><table><tr><th></th>"
+    for number, (pair, rows) in enumerate(sheet.groupby("pair_id", sort=True), start=1):
+        same = rows["same name after normalising"].iloc[0]
+        parts.append(f"<h2>{number}. {text(pair)}</h2><p>Names the same after normalising (word order, case, "
+                     f"titles): {text(same)}</p><table><tr><th></th>"
                      + "".join(f"<th>{text(side)}</th>" for side in rows["side"]) + "</tr>")
         for field in fields:
             parts.append(f"<tr><th>{field}</th>" + "".join(f"<td>{text(value)}</td>" for value in rows[field]) + "</tr>")
