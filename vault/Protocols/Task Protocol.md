@@ -20,6 +20,21 @@ A good task takes 1 to 3 hours and has a result you can show. Bigger than that: 
 | Priority | Label `P0` `P1` `P2` | P0: no demo without it. P1: makes it clearly better. P2: stretch |
 | Rubric | Label `technical` `originality` `impact` `testing` `communication` | Which criterion it earns points for |
 | Blocked | Label `blocked` | Cannot continue without help |
+| Area | Label `area: …` | Which technical area it belongs to (see below) |
+| Gate | Milestone | Which gate it is due at, with the due time |
+
+## Areas, cards and sub-tasks
+The board has three levels. GitHub shows the progress of each level on the one above.
+
+1. **Area** (7 issues titled "Area · …"): Setup, Data, Model, Evaluation, Tests and end-to-end runs, Interface and privacy, Submission. Nobody claims an area. It only groups its cards and shows how far they are.
+2. **Card** (for example #22 "Write the evidence schema"): one box or one result from Modules.
+3. **Sub-task** (label `subtask`, titled like "22.3 · Check the rows"): one file, one function or result, one check. **This is what you claim and what a pull request closes.** A card closes when its sub-tasks are done.
+
+Cards with no sub-tasks (setup, the end-to-end runs, the write-up, submitting) are claimed directly.
+
+Gates are milestones: 1 · Scope lock, 2 · L0 tiny world, 3 · L1 real slice, 4 · L2 improvement, 5 · First submission, 6 · Final submission. Open a milestone to see what is still open for that gate.
+
+On the board, filter with `label:subtask` to see only the pieces to claim, or `-label:subtask` to see only the cards.
 
 ## The flow
 
