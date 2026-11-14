@@ -16,6 +16,7 @@ from src import evaluate
 from src import evidence as ev
 from src import ingest_companies_house as adapter
 from src import real_slice
+from tests import tiny_world as tiny_world_module
 from tests.tiny_world import tiny_world
 
 SAMPLE = "tests/raw_sample"
@@ -281,3 +282,165 @@ def test_the_officer_id_beats_a_name_link_in_the_second_table_too():
     found = real_slice.strongest_failed_link(["TW000002"], mentions, claims, pd.concat([appointments, extra]),
                                              real_slice.failure_dates(mentions))
     assert found["TW000002"] == "same officer id"   # and the name and birth link to Harrow Build doesn't count on top
+
+
+# --- The headline: which earlier records each method calls the same person -------------------
+
+def person(key):
+    """The mention id of a tiny-world appointment, by its key ("p1" to "p9")."""
+    row = next(row for row in tiny_world_module.APPOINTMENTS if row[0] == key)
+    return ev.make_id(tiny_world_module.SOURCE, f"appointment/{row[3]}/{row[5]}")
+
+
+def fake_scored(p_by_keys):
+    """A stand-in for resolve.scored_pairs: the matcher's p for some pairs, each listed once with a < b."""
+    rows = [tuple(sorted((person(x), person(y)))) + (p,) for (x, y), p in p_by_keys.items()]
+    return pd.DataFrame(rows, columns=["a", "b", "p"])
+
+
+# The phoenix (p2 and p1) gets 0.9, so the matcher links it. A look-alike (p3 and p1) gets 0.2.
+# Ruth Okafor (p8) and the third Daniel Harrow (p3) get 0.7: a link only the matcher makes.
+# Priya Lambert's two records (p7 and p6) share an officer id, and the matcher misses them with 0.3.
+TINY_P = {("p1", "p2"): 0.9, ("p1", "p3"): 0.2, ("p3", "p8"): 0.7, ("p6", "p7"): 0.3}
+
+
+def tiny_links():
+    mentions, claims, truth = tiny_world()
+    pairs = real_slice.earlier_records(truth["queries"], mentions, claims)
+    return mentions, real_slice.method_links(pairs, mentions, fake_scored(TINY_P))
+
+
+def test_earlier_records_follow_the_as_of_rule():
+    mentions, claims, truth = tiny_world()
+    pairs = real_slice.earlier_records(["TW000002", "TW000005", "TW000006"], mentions, claims)
+    found = set(pairs.itertuples(index=False, name=None))
+    # TW000002, formed 2021-04-20: its two directors, with every directorship elsewhere that began by then.
+    # p3 (2021-06-01), p7 (2021-05-15) and p9 (2023) began later, so they are not earlier records.
+    expected = {("TW000002", person(d), person(r)) for d in ["p2", "p8"] for r in ["p1", "p4", "p5", "p6"]}
+    # TW000005, formed 2021-02-10: James Smith's own later record (p9, 2023) is the future.
+    expected |= {("TW000005", person("p5"), person(r)) for r in ["p1", "p4", "p6"]}
+    assert found == expected   # and TW000006 has no director records, so no rows
+
+
+def test_each_method_and_the_register_mark_the_links():
+    mentions, links = tiny_links()
+    columns = ["director", "record", "same name", "officer links", "matcher", "register"]
+    marks = {(row[0], row[1]): tuple(row[2:]) for row in links[columns].itertuples(index=False, name=None)}
+
+    def at(d, r):
+        return marks[(person(d), person(r))]
+
+    assert at("p2", "p1") == (True, False, True, "different ids")      # the phoenix: a new officer id
+    assert at("p3", "p1") == (True, False, False, "different ids")     # a look-alike, the matcher says no
+    assert at("p3", "p2") == (True, False, False, "different ids")     # never proposed by blocking: no p, so no
+    assert at("p3", "p8") == (False, False, True, "different ids")     # the matcher only
+    assert at("p5", "p4") == (True, False, False, "different ids")     # the common name
+    assert at("p7", "p6") == (True, True, False, "same officer id")    # confirmed, and the matcher misses it
+    assert len(marks) == 6                                              # no pair that no method links
+
+
+def test_the_matcher_links_at_exactly_the_threshold_and_empty_names_never_match():
+    mentions, claims, truth = tiny_world()
+    mentions.loc[mentions["mention_id"].isin([person("p8"), person("p4")]), "name"] = ""   # two records with no name
+    pairs = real_slice.earlier_records(["TW000002", "TW000005"], mentions, claims)
+    links = real_slice.method_links(pairs, mentions, fake_scored({("p1", "p2"): 0.5}))
+    marks = {(d, r): (same, matcher) for d, r, same, matcher
+             in links[["director", "record", "same name", "matcher"]].itertuples(index=False, name=None)}
+    assert marks[(person("p2"), person("p1"))] == (True, True)    # p = 0.5 is "p >= 0.5"
+    assert (person("p8"), person("p4")) not in marks              # two empty names are not the same name
+
+
+def test_links_by_band_counts_each_method_and_the_matchers_misses():
+    mentions, links = tiny_links()
+    table = real_slice.links_by_band(links, evaluate.name_commonness(mentions))
+    # Harrow and Smith are common surnames in the tiny world, Lambert medium, Okafor rare.
+    assert table.loc["common"].to_dict() == {"different ids: same name": 4, "different ids: officer links": 0,
+                                             "different ids: matcher": 2, "same officer id": 0,
+                                             "same officer id, missed by the matcher": 0}
+    assert table.loc["medium", "same officer id"] == 1
+    assert table.loc["medium", "same officer id, missed by the matcher"] == 1
+    assert table.loc["rare"].sum() == 0
+    assert (table.loc["all"] == table.loc[real_slice.BANDS].sum()).all()
+
+
+def test_the_hand_check_sample_takes_the_cells_in_turn():
+    mentions, links = tiny_links()
+    bands = evaluate.name_commonness(mentions)
+    # Five "different ids" pairs, all common: three for the same name only, one for both, one for the matcher only.
+    four = real_slice.handcheck_sample(links, bands, n=4, seed=42)
+    assert four["group"].value_counts().to_dict() == {"same name, not the matcher": 2, "both": 1, "the matcher only": 1}
+    every = real_slice.handcheck_sample(links, bands, n=50, seed=42)
+    assert len(every) == 5 and every["pair_id"].is_unique
+    assert set(every["band"]) == {"common"}
+    assert every.equals(real_slice.handcheck_sample(links, bands, n=50, seed=42))   # the same sample every run
+    confirmed = real_slice.pair_id(person("p7"), person("p6"))
+    assert confirmed not in set(every["pair_id"])                                    # only "different ids" pairs
+
+
+def test_a_pair_met_from_both_sides_is_checked_once():
+    mentions, links = tiny_links()
+    phoenix = links[(links["director"] == person("p2")) & (links["record"] == person("p1"))]
+    swapped = phoenix.assign(company_id="TW000001", director=phoenix["record"], record=phoenix["director"])
+    sample = real_slice.handcheck_sample(pd.concat([links, swapped], ignore_index=True),
+                                         evaluate.name_commonness(mentions), n=50)
+    assert (sample["pair_id"] == real_slice.pair_id(person("p1"), person("p2"))).sum() == 1
+
+
+def test_a_pair_id_is_the_same_both_ways_and_holds_no_name():
+    a, b = person("p2"), person("p1")
+    assert real_slice.pair_id(a, b) == real_slice.pair_id(b, a)
+    assert len(real_slice.pair_id(a, b)) == 16 and "harrow" not in real_slice.pair_id(a, b).lower()
+
+
+def test_the_hand_check_sheet_shows_display_names_and_the_fields_asked_for():
+    mentions, claims, truth = tiny_world()
+    is_person = mentions["kind"] == "person"
+    mentions.loc[is_person, "display_name"] = [f"Display {n}" for n in range(is_person.sum())]   # not the names
+    pairs = real_slice.earlier_records(truth["queries"], mentions, claims)
+    links = real_slice.method_links(pairs, mentions, fake_scored(TINY_P))
+    sample = real_slice.handcheck_sample(links, evaluate.name_commonness(mentions), n=50)
+    sheet = real_slice.handcheck_sheet(sample, mentions, claims)
+    assert len(sheet) == 2 * len(sample)                                     # both records of each pair
+    shown = " ".join(map(str, sheet.to_numpy().ravel()))
+    for name in ["Daniel Harrow", "James Smith", "Priya Lambert", "Ruth Okafor"]:
+        assert name not in shown                                              # display names only
+    people = mentions.set_index("mention_id")
+    phoenix = sheet[sheet["pair_id"] == real_slice.pair_id(person("p2"), person("p1"))].set_index("side")
+    assert phoenix.loc["validation director", "display name"] == people.loc[person("p2"), "display_name"]
+    assert phoenix.loc["validation director", "born"] == "04/1979"
+    assert phoenix.loc["validation director", "postcode area"] == "ZZ"
+    assert phoenix.loc["validation director", "nationality"] == "British"
+    assert phoenix.loc["validation director", "company"] == "Harrow Build Services Ltd"
+    assert phoenix.loc["validation director", "co-directors"] == people.loc[person("p8"), "display_name"]   # Ruth Okafor
+    assert phoenix.loc["earlier record", "company"] == "Harrow Build Ltd"
+    assert phoenix.loc["earlier record", "company formed"] == "2017-02-01"
+    page = real_slice.handcheck_html(sheet)
+    assert page.count("<table>") == len(sample) and "Daniel Harrow" not in page
+
+
+def test_postcode_area_is_the_letters_of_the_district():
+    assert real_slice.postcode_area("SW1A") == "SW"
+    assert real_slice.postcode_area("B1") == "B"       # an area can be one letter
+    assert real_slice.postcode_area("ZZ1") == "ZZ"
+    assert real_slice.postcode_area(None) == "" and real_slice.postcode_area(float("nan")) == ""
+
+
+def test_only_directorships_are_earlier_records():
+    mentions, claims, truth = tiny_world()
+    controls = claims.iloc[0].copy()   # Ruth Okafor controlling Harrow Build since 2017: not a directorship
+    controls[["claim_id", "subject", "relation", "object", "valid_from", "valid_to"]] = [
+        "controls-1", person("p8"), "controls", ev.make_id(tiny_world_module.SOURCE, "company/TW000001"), "2017-01-01", None]
+    with_controls = pd.concat([claims, controls.to_frame().T], ignore_index=True)
+    before = real_slice.earlier_records(["TW000005"], mentions, claims)
+    after = real_slice.earlier_records(["TW000005"], mentions, with_controls)
+    assert after.equals(before)   # her only directorship began 2021-04-20, after TW000005 was formed
+
+
+def test_the_hand_check_page_escapes_what_it_shows():
+    mentions, claims, truth = tiny_world()
+    mentions.loc[mentions["company_number"] == "TW000002", "name"] = "Harrow & Sons <Build> Ltd"
+    pairs = real_slice.earlier_records(["TW000002"], mentions, claims)
+    links = real_slice.method_links(pairs, mentions, fake_scored(TINY_P))
+    sample = real_slice.handcheck_sample(links, evaluate.name_commonness(mentions), n=50)
+    page = real_slice.handcheck_html(real_slice.handcheck_sheet(sample, mentions, claims))
+    assert "Harrow &amp; Sons &lt;Build&gt; Ltd" in page and "<Build>" not in page

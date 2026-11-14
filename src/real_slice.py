@@ -13,12 +13,20 @@ failure rate? It counts each company under the strongest link it has to an insol
 earlier company, and gives each failure rate with its 95% interval. The second key table
 asks the same with another predecessor: an earlier company that failed the way our own
 label defines failure.
+
+The third part measures the headline on the validation companies: which earlier records
+each method (the same-name rule, officer links, the matcher) calls the same person, how many
+of those links the register doesn't confirm, per name-commonness band, and a sample of them
+for a hand check whose sheet stays off git.
 """
 
+import html
 import json
 import math
+import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from src import baseline
@@ -326,3 +334,186 @@ def strongest_failed_link(queries, mentions, claims, appointments, failed_on):
                 links.add("same name and birth month and year" if same_birth else "same name only")
         found[query] = next((link for link in LINKS if link in links), "no predecessor")
     return pd.Series(found, name="link")
+
+
+# --- The headline: which earlier records each method calls the same person -------------------
+
+GROUPS = ["same name, not the matcher", "both", "the matcher only"]   # the hand check's groups
+BANDS = ["rare", "medium", "common"]                                 # evaluate.name_commonness (#105)
+
+
+def earlier_records(queries, mentions, claims):
+    """Each query company's directors on record by its formation date, each paired with every
+    record of a directorship at another company that started by that date, resigned ones
+    included: the as-of rule of decide.candidate_matches (ADR-001).
+
+    Returns one row per (company_id, director, record); director and record are mention ids.
+    A company with no director on record by then has no rows.
+    """
+    companies = mentions[mentions["kind"] == "company"].set_index("company_number")
+    directorships = claims[claims["relation"] == "director_of"]
+    rows = []
+    for query in queries:
+        edges = ev.observed_graph(directorships, as_of=pd.Timestamp(companies.loc[query, "incorporated_on"]))
+        here = edges["object"] == companies.loc[query, "mention_id"]
+        records = edges.loc[~here, "subject"].unique()
+        for director in edges.loc[here, "subject"].unique():
+            rows += [(query, director, record) for record in records]
+    return pd.DataFrame(rows, columns=["company_id", "director", "record"])
+
+
+def method_links(pairs, mentions, scored, threshold=0.5):
+    """What each method says about each (director, record) pair of earlier_records, and whether
+    the register confirms it. Keeps the pairs that at least one method links.
+
+    - same name: the same name after baseline.normalise_name; an empty name never matches
+    - officer links: the same officer id; an empty id never matches
+    - matcher: blocking proposed the pair (it is in `scored`) and the matcher's p >= threshold
+    register: "same officer id" (confirmed) when the officer ids match, else "different ids".
+    p is the matcher's, empty for a pair blocking never proposed.
+    """
+    people = mentions[mentions["kind"] == "person"].set_index("mention_id")
+    name = people["name"].map(baseline.normalise_name)
+    officer = people["officer_id"].where(~ev.is_blank(people["officer_id"]))
+    p_of = dict(zip(zip(scored["a"], scored["b"]), scored["p"]))   # blocking lists each pair once, a < b
+    links = pairs.copy()
+    d_name, r_name = name.loc[links["director"]].to_numpy(), name.loc[links["record"]].to_numpy()
+    d_id, r_id = officer.loc[links["director"]].to_numpy(), officer.loc[links["record"]].to_numpy()
+    links["same name"] = (d_name == r_name) & (d_name != "")
+    links["officer links"] = pd.notna(d_id) & (d_id == r_id)
+    links["p"] = [float(p_of.get(tuple(sorted(pair)), math.nan)) for pair in zip(links["director"], links["record"])]
+    links["matcher"] = links["p"] >= threshold                    # an empty p is never >= threshold
+    links["register"] = np.where(links["officer links"], "same officer id", "different ids")
+    return links[links["same name"] | links["officer links"] | links["matcher"]].reset_index(drop=True)
+
+
+def links_by_band(links, bands):
+    """The headline counts, per name-commonness band of the director (bands: evaluate.name_commonness).
+
+    For each method, the "different ids" links it makes. Then the "same officer id" links,
+    every one of which is an officer link, and how many of them the matcher misses.
+    """
+    band = links["director"].map(bands)
+    rows = {}
+    for name in BANDS + ["all"]:
+        part = links if name == "all" else links[band == name]
+        unconfirmed = part[part["register"] == "different ids"]
+        confirmed = part[part["register"] == "same officer id"]
+        rows[name] = {
+            "different ids: same name": int(unconfirmed["same name"].sum()),
+            "different ids: officer links": int(unconfirmed["officer links"].sum()),
+            "different ids: matcher": int(unconfirmed["matcher"].sum()),
+            "same officer id": len(confirmed),
+            "same officer id, missed by the matcher": int((~confirmed["matcher"]).sum()),
+        }
+    return pd.DataFrame(rows).T.rename_axis("band")
+
+
+def pair_id(a, b):
+    """The hand check's id for two records: the same in either order, and no name in it
+    (a hash of the two mention ids, which are hashes themselves)."""
+    return ev.make_id("handcheck", "|".join(sorted((a, b))))
+
+
+def handcheck_sample(links, bands, n=50, seed=42):
+    """n "different ids" pairs for the hand check, spread over GROUPS x BANDS.
+
+    Groups: the same-name rule says yes and the matcher no; both say yes; only the matcher says
+    yes. The pairs of each group x band cell are shuffled (seed); then the cells give one pair
+    each in turn (group by group, bands rare to common), skipping empty cells, until n are
+    taken. A pair met from both sides (two validation directors) is taken once.
+    """
+    unconfirmed = links[links["register"] == "different ids"].copy()
+    unconfirmed["pair_id"] = [pair_id(a, b) for a, b in zip(unconfirmed["director"], unconfirmed["record"])]
+    unconfirmed = unconfirmed.sort_values(["pair_id", "company_id", "director"]).drop_duplicates("pair_id")
+    unconfirmed["band"] = unconfirmed["director"].map(bands)
+    same, matcher = unconfirmed["same name"], unconfirmed["matcher"]
+    unconfirmed["group"] = np.select([same & ~matcher, same & matcher, ~same & matcher], GROUPS, default="")
+    rng = np.random.default_rng(seed)
+    cells = []
+    for group in GROUPS:
+        for band in BANDS:
+            cell = unconfirmed.index[(unconfirmed["group"] == group) & (unconfirmed["band"] == band)]
+            cells.append(list(cell[rng.permutation(len(cell))]))
+    picked = []
+    while len(picked) < n and any(cells):
+        for cell in cells:
+            if cell and len(picked) < n:
+                picked.append(cell.pop(0))
+    columns = ["pair_id", "group", "band", "company_id", "director", "record", "p"]
+    return unconfirmed.loc[picked, columns].reset_index(drop=True)
+
+
+def postcode_area(district):
+    """The postcode area: the letters a district starts with ("SW1A" gives "SW"). Empty if none."""
+    if not isinstance(district, str):
+        return ""
+    found = re.match(r"[A-Za-z]+", district.strip())
+    return found.group(0).upper() if found else ""
+
+
+def birth_text(person):
+    """Birth month and year as "04/1979", or "unknown"."""
+    month = pd.to_numeric(person["birth_month"], errors="coerce")
+    year = pd.to_numeric(person["birth_year"], errors="coerce")
+    return "unknown" if pd.isna(month) or pd.isna(year) else f"{int(month):02d}/{int(year)}"
+
+
+def handcheck_sheet(sample, mentions, claims):
+    """What the hand check shows of each sampled pair, for both records: display name, birth
+    month and year, nationality, postcode area, company name and formation date, appointment
+    dates and the co-directors' display names.
+
+    Display names only, never a director's name. Company names are real and can hold a
+    person's name, so this table stays on the PC and never goes into git.
+    """
+    people = mentions[mentions["kind"] == "person"].set_index("mention_id")
+    companies = mentions[mentions["kind"] == "company"].set_index("mention_id")
+    directorships = claims[claims["relation"] == "director_of"]
+    held = directorships.drop_duplicates("subject").set_index("subject")   # each record's company and dates
+    rows = []
+    for pair in sample.itertuples(index=False):
+        for side, mention in [("validation director", pair.director), ("earlier record", pair.record)]:
+            person, claim = people.loc[mention], held.loc[mention]
+            company = companies.loc[claim["object"]]
+            others = directorships.loc[(directorships["object"] == claim["object"])
+                                       & (directorships["subject"] != mention), "subject"].unique()
+            rows.append({
+                "pair_id": pair.pair_id, "group": pair.group, "band": pair.band, "p": pair.p, "side": side,
+                "display name": person["display_name"],
+                "born": birth_text(person),
+                "nationality": person["nationality"],
+                "postcode area": postcode_area(person["display_postcode"]),
+                "company": company["name"],
+                "company formed": company["incorporated_on"],
+                "appointed": claim["valid_from"],
+                "resigned": claim["valid_to"],
+                "co-directors": ", ".join(sorted(people.loc[others, "display_name"].fillna(""))),
+            })
+    return pd.DataFrame(rows)
+
+
+def handcheck_html(sheet):
+    """handcheck_sheet as one HTML page: a table per pair, the two records side by side."""
+    fields = ["display name", "born", "nationality", "postcode area", "company", "company formed",
+              "appointed", "resigned", "co-directors"]
+
+    def text(value):
+        return "" if value is None or (isinstance(value, float) and math.isnan(value)) else html.escape(str(value))
+
+    parts = ["<!doctype html><meta charset='utf-8'><title>Hand check (#36)</title>",
+             "<style>body{font-family:system-ui,sans-serif;margin:2em;max-width:70em}table{border-collapse:collapse;"
+             "margin:0 0 2em;width:100%}td,th{border:1px solid #ccc;padding:.3em .6em;text-align:left;"
+             "vertical-align:top}th{background:#f3f3f3;width:12em}</style>",
+             "<h1>Hand check (#36): same person?</h1><p>Write yes, no or unsure next to each pair id in "
+             "notebooks/jonas_handcheck.csv. This page holds real company names: it stays on this PC.</p>"]
+    for number, (pair, rows) in enumerate(sheet.groupby("pair_id", sort=False), start=1):
+        first = rows.iloc[0]
+        p = "never proposed by blocking" if pd.isna(first["p"]) else f"{first['p']:.2f}"
+        parts.append(f"<h2>{number}. {text(pair)}</h2><p>{text(first['group'])} | {text(first['band'])} name"
+                     f" | matcher p: {p}</p><table><tr><th></th>"
+                     + "".join(f"<th>{text(side)}</th>" for side in rows["side"]) + "</tr>")
+        for field in fields:
+            parts.append(f"<tr><th>{field}</th>" + "".join(f"<td>{text(value)}</td>" for value in rows[field]) + "</tr>")
+        parts.append("</table>")
+    return "\n".join(parts)
