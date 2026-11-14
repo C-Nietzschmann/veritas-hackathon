@@ -15,3 +15,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code counted the failures, proposed three ways to fix the label, made the change and its tests, had a second AI pass review it, and drafted the notes, all at my request.
 - **Next:** jonas and phantodevc confirm the label at the next check-in. The costs need a second look (#94): with a third of companies failing, CLEAR at 10% can't fire. Settle with jonas whether each of us may use an own key (his comment on #24 says one key for the project).
 - **Blocked by:** nothing
+
+## 2026-11-14 19:11
+- **Task:** #157 the gap between requests in the crawler (card on the board), with my #24 crawl still running
+- **Did:** Put the usual 0.55 s gap back for every part of the crawl, which undoes 3e94e7b: each part runs on its owner's own key. A run started as part K of N now prints a reminder that it needs its own key. jonas set a one-key rule on #24 at 13:53; my crawl keeps running on my own key until the team settles it.
+- **Result:** 259 tests pass, 1 skipped. My crawl of 2021 part 2 of 2 had 2,148 query companies finished at 19:11, with no error and no rate-limit wait in its log.
+- **AI used for:** Claude Code read what changed on #24 and in PR #134, checked Companies House's rate-limit pages, made the change and its test at my request, and wrote this entry.
+- **Next:** settle the key rule with jonas and phantodevc at the next check-in: one key per person, or one key for all. Tell them before they restart a crawl from `main`: with this version two parts on one key pass the limit. Send jonas my `data/raw/`. Nobody is crawling 2022 yet.
+- **Blocked by:** nothing
