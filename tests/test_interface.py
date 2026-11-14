@@ -1,5 +1,6 @@
 """Tests for draw_graph (card #98), on the tiny world."""
 import pandas as pd
+import pytest
 
 from src import decide, interface
 from src import evidence as ev
@@ -97,3 +98,37 @@ def test_show_without_director_records_gives_only_the_decision():
     quiet = [q for q in truth["queries"] if matches[q] is None][0]
     row, fig, table = interface.show(quiet, mentions, claims, matches, decisions)
     assert row["decision"] == "NOT ENOUGH EVIDENCE" and fig is None and table is None
+
+
+# --- #103 confirm and reject a match --------------------------------------------------
+
+def two_matches():
+    """TW000002's match plus a made-up second one, to check the other match is left alone."""
+    links = matches["TW000002"]
+    second = links.iloc[[0]].assign(p=0.3, predecessor="TW999999")
+    return pd.concat([links, second], ignore_index=True)
+
+
+def test_reject_sets_p_to_0_and_leaves_the_other_match_alone():
+    links = two_matches()
+    checked = interface.what_if(links, reject=[0])
+    assert checked.loc[0, "p"] == 0.0
+    pd.testing.assert_series_equal(checked.loc[1], links.loc[1])   # R7: untouched
+    assert links.loc[0, "p"] == 0.9                                # the original is left alone
+
+
+def test_confirm_sets_p_to_1():
+    assert interface.what_if(two_matches(), confirm=[1]).loc[1, "p"] == 1.0
+
+
+def test_rejecting_the_phoenix_match_changes_the_decision():
+    before = decide.decide("TW000002", matches["TW000002"], LINE, COSTS)["decision"]
+    after = decide.decide("TW000002", interface.what_if(matches["TW000002"], reject=[0]), LINE, COSTS)["decision"]
+    assert (before, after) == ("FLAG", "CLEAR")
+
+
+def test_a_wrong_match_number_or_both_at_once_gives_a_readable_error():
+    with pytest.raises(ValueError, match="There is no match 5"):
+        interface.what_if(matches["TW000002"], reject=[5])
+    with pytest.raises(ValueError, match="both confirmed and rejected"):
+        interface.what_if(matches["TW000002"], confirm=[0], reject=[0])
