@@ -132,3 +132,23 @@ def test_a_wrong_match_number_or_both_at_once_gives_a_readable_error():
         interface.what_if(matches["TW000002"], reject=[5])
     with pytest.raises(ValueError, match="both confirmed and rejected"):
         interface.what_if(matches["TW000002"], confirm=[0], reject=[0])
+
+
+# --- #104 cost sliders -------------------------------------------------------------
+
+def test_cost_summary_names_the_thresholds_and_the_decision():
+    text = interface.cost_summary("TW000002", matches["TW000002"], LINE, COSTS, decide.decide, decide.thresholds)
+    assert "Clear at or below 10%, flag at or above 50%" in text and text.endswith("TW000002: FLAG")
+
+
+def test_moving_a_slider_moves_the_decision_and_reset_brings_it_back():
+    box = interface.cost_sliders("TW000002", matches["TW000002"], LINE, COSTS, decide.decide, decide.thresholds)
+    miss, wrong_flag, ask = box.children[:3]
+    summary, reset = box.children[3], box.children[4]
+    assert summary.value.endswith("FLAG")
+    wrong_flag.value = 20            # a wrong flag now costs a lot, so flagging needs much more certainty
+    ask.value = 0.5
+    assert "flag at or above 98%" in summary.value and not summary.value.endswith("FLAG")
+    reset.click()
+    assert summary.value == interface.cost_summary("TW000002", matches["TW000002"], LINE, COSTS,
+                                                   decide.decide, decide.thresholds)
