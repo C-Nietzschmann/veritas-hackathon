@@ -8,12 +8,14 @@ Veritas AI International High School Hackathon. 48 hours, team of 3, fully remot
 | Moment | Our time (CET) | Official (ET) |
 |---|---|---|
 | Registration closes | Sat 14 Nov 05:59 | Fri 13 Nov 23:59 |
-| Official kickoff call (recorded) and briefs by email | Sat 14 Nov 06:00 | Sat 14 Nov 00:00 |
+| Hacking starts (no official kickoff call; briefs are in the starter-kit email) | Sat 14 Nov 06:00 | Sat 14 Nov 00:00 |
 | Our kickoff call | Sat 14 Nov 08:00 | |
 | MVP gate | Sat 14 Nov 21:00 | |
 | Feature freeze | Sun 15 Nov 14:00 | |
-| **We submit** | **Sun 15 Nov 21:00** | Sun 15 Nov 15:00 |
+| First version submitted | Sun 15 Nov 18:00 | Sun 15 Nov 12:00 |
+| **Final version submitted** | **Sun 15 Nov 21:00** | Sun 15 Nov 15:00 |
 | Hard deadline (buffer only) | Mon 16 Nov 05:59 | Sun 15 Nov 23:59 |
+| Finals, if we get in | Sat 21 Nov 17:00 | Sat 21 Nov 11:00 |
 
 **The whole workflow on one page:** [[Workflow map.canvas|Workflow map]]
 

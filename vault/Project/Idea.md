@@ -1,13 +1,17 @@
 # Idea
 
-Filled in together on the kickoff call, Sat 08:00–10:00 CET. Locked at 10:00. Changes after that need a note in `Decisions/`.
+Filled in together on our kickoff call, Sat 08:00–10:00 CET. Locked at 10:00. Changes after that need a note in `Decisions/`.
 Owner after lock: the coordinator.
 
 ## Track and challenge
 - **Track:** (Health, Finance, Climate or Languages)
-- **Challenge brief** (paste it from the email):
+- **The track's challenge** (from [[Track Briefs]]):
 
 >
+
+- **Starting point:** a suggested project (which one, level) or "Our own idea"
+- **The track's must-haves:** copy them here from Track Briefs and tick them off as we go
+  - [ ] 
 
 ## The problem, in one sentence
 _Who_ has _what problem_ in _which situation_?
@@ -20,8 +24,13 @@ One real person or group. What do they do today without our project, and what do
 ## Our approach
 What goes in, what comes out, and what the model does in between. Three or four sentences that a classmate would understand.
 
-## What makes it ours (originality, 20 points)
-The angle that isn't the first idea everyone has. Why hasn't the obvious solution already solved this?
+## What we add (required)
+Judges compare teams that started from the same suggested project and score what each added. Pick at least one, and write it in one sentence: this goes on the submission form.
+- **Our own user or setting:** a specific person, place or community
+- **Our own data:** a different or local dataset, data collected with permission, or a test set from a new source
+- **Our own question:** when does it fail, who does it fail for, does it hold up somewhere new
+
+**What we add:**
 
 ## Data
 | Dataset | Link | Size | Licence | Why this one |
@@ -56,7 +65,13 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 -
 
 ## The demo, in one sentence
-What the viewer sees happen in the 2-minute video.
+The real input that goes in and the result that comes out, as the judges will see it.
+
+## The four questions
+- **Who is it for?**
+- **What goes in, what comes out?**
+- **Which baseline must it beat?**
+- **Where do we expect it to fail?**
 
 ## Risks
 | What could go wrong | How we'd notice | Plan B |

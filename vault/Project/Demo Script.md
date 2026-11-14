@@ -1,6 +1,6 @@
 # Demo Script
 
-The 2-minute video. Owner: Product and story lead. Write the script at feature freeze, record by Sun 18:00.
+The video is **optional but recommended**: up to 2 minutes, a screen recording with a voice over it is enough. Only skip it if the time is better spent on testing. Owner: Product and story lead. Write the script at feature freeze, record by Sun 18:00.
 Two minutes is about 280 spoken words. Write it out, time it, cut it.
 
 ## Structure

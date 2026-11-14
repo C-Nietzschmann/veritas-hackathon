@@ -9,6 +9,8 @@ Up: [[Decisions]]
 ## Decision
 Our own deadline is Sun 15 Nov 21:00 CET, nine hours before the official one (Mon 05:59 CET). Feature freeze is Sun 14:00 CET.
 
+**Update 14 Nov (from the Project Briefs):** resubmitting is allowed and judges see the latest version, so we submit a **first version at Sun 18:00** right after the fresh-run test, and the final version at 21:00.
+
 ## Why
 - Late submissions are rejected with no exceptions, and the organisers advise submitting early.
 - The official deadline is in the middle of our night, before a school day. Work done at 04:00 is where mistakes happen.

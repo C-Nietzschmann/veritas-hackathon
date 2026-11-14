@@ -16,11 +16,20 @@ Every session, before anything else:
 4. Confirm the task with the user before writing code, and claim its card (see "Tasks"). Work on one task.
 
 ## Hackathon rules (these override everything)
-- **No project code before kickoff** (Sat 14 Nov 06:00 CET). Before that, only docs and config.
+Source: the official Project Briefs and Hacker Guide, summarised in `vault/Brief/Hackathon Brief.md` and `vault/Brief/Track Briefs.md`. Read both before helping choose or scope an idea.
+- **Hacking runs Sat 14 Nov 06:00 CET to Mon 16 Nov 05:59 CET.** All project work happens in that window. The team submits a first version Sun 18:00 and the final one Sun 21:00 CET.
+- **AI must be central.** The model or AI does the project's main job. An app or website built with AI coding tools does not count on its own.
+- **Make it your own.** On top of any suggested project the team adds its own user or setting, its own data, or its own question. Keep that in view in every suggestion you make.
+- **Every project answers four questions:** who is it for, what goes in and what comes out, does it beat a simple baseline, where does it fail. All results on test data the model never saw.
+- **Each track has must-haves** (separate false negatives and false positives for Health, precision/recall and time splits for Finance, one location and a persistence baseline for Climate, per-language results and side-by-side examples for Languages). See `vault/Brief/Track Briefs.md`.
+- **Health or finance:** the write-up contains the exact line "This project is a prototype and is not medical advice." or "...not financial advice."
 - **The humans must understand every line.** Finalists are questioned live. Write the simplest code that works, explain before you write, and never hand over code the user hasn't read. Help the owner write the "How it works" comment that closes the task's issue.
-- **Never invent results.** Every metric comes from code that was run. Say plainly when something is untested.
-- **Credit everything.** New dataset, pre-trained model or library → `vault/Project/Credits.md` and `requirements.txt` right away.
+- **Never invent results.** Every metric comes from code that was run. Report weak results honestly.
+- **Credit everything.** New dataset, pre-trained model, AI API, tutorial or AI tool → `vault/Project/Credits.md` (and `requirements.txt` for libraries) right away. The submission lists all of them.
+- **Public or synthetic data only.** No personal information without permission, no real patient records.
+- **The organisers give no technical help.** When the team is stuck, you, the docs and teammates are the help. Keep fixes simple.
 - **This repo becomes public for blind judging.** No full names, school, phone numbers, emails or private links anywhere, including `vault/` and commit messages. People are referred to by their handle from `vault/Protocols/Team.md`.
+- **Notebooks are saved with their outputs visible.** Judges look at them without running.
 
 ## Repo rules
 - **Notes go straight to `main`:** changes that touch only `vault/` are shared with `git sync "message"` (alias in `.gitalias`: check, add all, commit, pull --rebase, push).
