@@ -156,6 +156,12 @@ def test_unreadable_date_is_rejected():
     assert_rejected(mentions, claims, f"claims row {claims.loc[1, 'claim_id']}: valid_from '01/05/2021' is not a date")
 
 
+def test_unreadable_company_date_is_rejected():
+    mentions, claims = mini_world()
+    mentions.loc[0, "incorporated_on"] = "15/03/2021"   # row 0 is a company
+    assert_rejected(mentions, claims, f"mentions row {mentions.loc[0, 'mention_id']}: incorporated_on '15/03/2021' is not a date")
+
+
 def test_record_ref_in_the_wrong_shape_is_rejected():
     mentions, claims = mini_world()
     mentions.loc[0, "record_ref"] = "data/raw/example.json"

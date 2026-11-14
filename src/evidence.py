@@ -200,6 +200,12 @@ def check_rows(mentions, claims):
         for row_id, value in zip(unreadable["claim_id"], unreadable[col]):
             problems.append(f"claims row {row_id}: {col} {value!r} is not a date like 2021-05-01 (dates)")
 
+    # The same for the company dates: the label and the as-of rule run on them.
+    for col in ("incorporated_on", "dissolved_on", "insolvency_on"):
+        unreadable = mentions.loc[parse_dates(mentions[col]).isna() & ~is_blank(mentions[col])]
+        for row_id, value in zip(unreadable["mention_id"], unreadable[col]):
+            problems.append(f"mentions row {row_id}: {col} {value!r} is not a date like 2021-05-01 (dates)")
+
     # A relationship can't end before it starts.
     for row_id in claims.loc[stop < start, "claim_id"]:
         problems.append(f"claims row {row_id}: valid_to is before valid_from (dates)")
