@@ -146,3 +146,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) restored the rule, ran the tests and checks, restarted the crawl and counted the failure routes with the team's adapter and label code, at my request.
 - **Next:** go through the crawler and write the "How it works" note. Decide with the team whether the label should count dissolution. phantodevc runs part 2 of 2 on my key. Ship #24 when I say so.
 - **Blocked by:** nothing
+
+## 2026-11-14 15:32
+- **Task:** #36 Run main.ipynb end to end on real data (card on the board)
+- **Did:** Built `src/real_slice.py`. It reads the crawl's finished query companies, runs the adapter over `data/raw`, and labels and splits them with the team's `label_failures` and `split`. It also builds the key table: each company under its strongest link to an insolvent earlier company, with 95% Wilson intervals. Ran every box of `main.ipynb` on part 1 of 2021 in my scratch notebook `notebooks/jonas_real.ipynb`, on a copy of the crawl's files taken at 15:04. The name guard doesn't run on Windows yet (#112), so I ran its functions on the notebook by hand: no real name found.
+- **Result:** Draft PR #154, checks green. 438 query companies (331 train, 107 validation): 137 failed under the team label, none through insolvency. With a predecessor by officer id or by name and birth month and year, 4 of 30 failed (13%, 5-30%); with none, 120 of 369 (33%, 28-37%). The failure line slopes down (35% to 9.6%), so FLAG can never fire, and the decision layer says NOT ENOUGH EVIDENCE for 106 of 107 validation companies. Blocking kept all 45 same-officer-id pairs in validation.
+- **AI used for:** Claude Code (Opus 5.5) in VS Code wrote the loader, its tests and the notebook, ran every box and the checks, and opened the draft PR, at my request.
+- **Next:** read `real_slice.py` and the notebook. Decide with the team on the label, the costs and the downward line (#94). Ship #24 when ready.
+- **Blocked by:** nothing
