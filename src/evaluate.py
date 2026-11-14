@@ -167,3 +167,34 @@ def score_methods(decisions, labels):
     """score() for every method in a decisions table, one row each: our method next to the baselines."""
     rows = [score(decisions[decisions["method"] == method], labels) for method in decisions["method"].unique()]
     return pd.DataFrame(rows)
+
+
+# --- 39.1 How common a director's surname is (card #105) ------------------------------
+
+# A surname at or above this share of the most frequent counts is "common" (the top 10%).
+COMMON_QUANTILE = 0.9
+
+
+def surname(name):
+    """The surname, lower case: "HARROW, Daniel" (the register's form) and "Daniel Harrow" both give "harrow"."""
+    name = " ".join(str(name).split())
+    part = name.split(",")[0] if "," in name else name.split(" ")[-1]
+    return part.strip().casefold()
+
+
+def name_commonness(mentions):
+    """Each person mention's band by how often its surname appears among all person mentions:
+    "rare" (once), "common" (among the most frequent 10%, and at least twice) or "medium".
+
+    Counts only, from the data itself: nothing is guessed about anyone's background.
+    A person with several appointments is counted once per appointment, as the register lists them.
+    Returns a Series indexed by mention_id; band sizes: name_commonness(mentions).value_counts().
+    """
+    people = mentions[mentions["kind"] == "person"]
+    surnames = people["name"].map(surname)
+    counts = surnames.map(surnames.value_counts())
+    common_at = max(2, counts.quantile(COMMON_QUANTILE))
+    bands = pd.Series("medium", index=people["mention_id"].to_numpy(), name="name_band")
+    bands[(counts == 1).to_numpy()] = "rare"
+    bands[(counts >= common_at).to_numpy()] = "common"
+    return bands
