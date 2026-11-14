@@ -154,3 +154,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) in VS Code wrote the loader, its tests and the notebook, ran every box and the checks, and opened the draft PR, at my request.
 - **Next:** read `real_slice.py` and the notebook. Decide with the team on the label, the costs and the downward line (#94). Ship #24 when ready.
 - **Blocked by:** nothing
+
+## 2026-11-14 16:38
+- **Task:** #36 Run main.ipynb end to end on real data (card on the board)
+- **Did:** Defined a second key table in commit 469c621 (16:05), before it touched real data. A predecessor counts only if it failed the way our label defines failure (liquidation, administration or dissolution within 24 months of its own incorporation), dated on or before the new company's formation. Its links come from the saved appointment lists, because a predecessor that was only dissolved has no officer list. Ran it next to the first table on the same 438 companies. Also measured, read-only, the share of crawl requests that went to profiles of companies a director's own appointment list showed as active. Four independent read-only checks recounted and reviewed both.
+- **Result:** Second table: 24 of 71 companies with a predecessor by officer id or by name and birth month and year failed (34%, 24-45%), against 96 of 310 without one (31%, 26-36%). No row has a failure through insolvency. Skipping those active companies would save 1,036 of 8,824 requests (11.7%), under the 25% bar, so I prepared no crawler change. Draft PR #154 updated, checks green.
+- **AI used for:** Claude Code (Opus 5.5) wrote and tested the second table, ran it and the request replay, and had four subagents recount and review both, at my request.
+- **Next:** decide with the team what the two tables mean for the label and the predecessor signal. Keep #154 a draft until main.ipynb runs on real data.
+- **Blocked by:** nothing
