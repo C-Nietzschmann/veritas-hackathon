@@ -20,7 +20,7 @@ Newest row at the bottom. One row per experiment.
 ### Tiny world check (a code check, not a result)
 The three baselines on the tiny world's 5 hand-made query companies (`tests/tiny_world.py`). One of them fails within 24 months: TW000002, the phoenix. These numbers show the code behaves the way the tiny world was built to show. They say nothing about real companies.
 
-Printed by `score_methods` in `src/evaluate.py`, and pinned by `tests/test_score.py::test_the_baselines_on_the_tiny_world` @ c648801 (jonas, Sat 12:25).
+Printed by `score_methods` in `src/evaluate.py`, and pinned by `tests/test_score.py::test_the_baselines_on_the_tiny_world` @ fedf96b (merged in #130, jonas, Sat 13:52).
 
 | Baseline | Flags | False flags | Misses | Precision | Recall |
 |---|---|---|---|---|---|
