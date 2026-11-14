@@ -65,3 +65,8 @@ def test_a_certain_candidate_takes_everything_and_two_share():
 def test_a_p_outside_0_to_1_is_refused(bad):
     with pytest.raises(ValueError, match="between 0 and 1"):
         one_identity([0.5, bad])
+
+
+def test_a_candidate_with_p_0_gets_nothing_and_takes_nothing():
+    assert one_identity([0.0, 0.5]) == pytest.approx([0.0, 0.5])
+    assert one_identity([0.0]) == [0.0]
