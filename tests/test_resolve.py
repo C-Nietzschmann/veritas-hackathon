@@ -1,5 +1,7 @@
 """Tests for src/resolve.py, entity resolution (card #30), on the tiny world."""
 
+import pandas as pd
+
 from src import evidence as ev
 from src import resolve as rs
 from tests.tiny_world import tiny_world
@@ -70,3 +72,83 @@ def test_a_person_with_no_name_is_in_no_pair():
     pairs = rs.candidate_pairs(mentions)
     nameless = {truth["mention"]["p1"], truth["mention"]["p2"]}
     assert not (set(pairs["a"]) | set(pairs["b"])) & nameless
+
+
+# --- 30.2 Pair features ----------------------------------------------------------------
+
+def features_of(mentions, truth, key_a, key_b):
+    """The feature row of one pair, as a dict."""
+    a, b = pair(truth, key_a, key_b)
+    pairs = pd.DataFrame([(a, b, None, None, "by hand", None)], columns=ev.PAIR_COLS)
+    return rs.pair_features(pairs, mentions).iloc[0].to_dict()
+
+
+def test_officer_id_is_never_a_feature():
+    mentions, _, _ = tiny_world()
+    pairs = rs.candidate_pairs(mentions)
+    assert "officer_id" not in rs.FEATURE_COLS
+    assert list(rs.pair_features(pairs, mentions).columns) == rs.FEATURE_COLS
+    # And it isn't read on the quiet: without any officer id the features are the same.
+    without = mentions.assign(officer_id=None)
+    assert rs.pair_features(pairs, without).equals(rs.pair_features(pairs, mentions))
+
+
+def test_one_feature_row_per_pair_and_no_empty_cells():
+    mentions, _, _ = tiny_world()
+    pairs = rs.candidate_pairs(mentions)
+    features = rs.pair_features(pairs, mentions)
+    assert len(features) == len(pairs)
+    assert features.notna().all().all()
+
+
+def test_the_phoenix_agrees_on_name_and_birth_the_look_alike_only_on_name():
+    mentions, _, truth = tiny_world()
+    phoenix = features_of(mentions, truth, "p1", "p2")       # the same Daniel Harrow, new postcode
+    look_alike = features_of(mentions, truth, "p1", "p3")    # another Daniel Harrow
+    assert phoenix["name_similarity"] == 1 and phoenix["birth_same"] == 1
+    assert phoenix["postcode_same"] == 1                      # ZZ1 1AA and ZZ1 1AB: the same district
+    assert look_alike["name_similarity"] == 1
+    assert look_alike["birth_same"] == 0 and look_alike["postcode_same"] == 0
+
+
+def test_name_order_and_titles_do_not_lower_the_similarity():
+    mentions, _, truth = tiny_world()
+    mentions = renamed(mentions, truth, "p2", name="HARROW, Daniel")
+    mentions = renamed(mentions, truth, "p1", name="Mr Daniel Harrow")
+    assert features_of(mentions, truth, "p1", "p2")["name_similarity"] == 1
+
+
+def test_a_missing_value_is_marked_missing_not_different():
+    mentions, _, truth = tiny_world()
+    mentions = renamed(mentions, truth, "p2", birth_month=None, nationality=None)
+    row = features_of(mentions, truth, "p1", "p2")
+    assert row["birth_missing"] == 1 and row["birth_same"] == 0
+    assert row["nationality_missing"] == 1 and row["nationality_same"] == 0
+    assert row["postcode_missing"] == 0                      # the control: still known
+
+
+def test_district_reads_a_postcode_with_or_without_its_space():
+    assert rs.district("ZZ1 1AA") == rs.district("zz11aa") == "ZZ1"
+    assert rs.district(None) == rs.district("  ") == ""
+
+
+# --- 30.3 Blocking recall --------------------------------------------------------------
+
+def test_blocking_keeps_every_pair_the_tiny_register_links():
+    mentions, _, _ = tiny_world()
+    result = rs.blocking_recall(rs.candidate_pairs(mentions), mentions)
+    assert result == dict(true_pairs=2, kept=2, recall=1.0)   # p5-p9 and p6-p7 share an officer id
+
+
+def test_recall_drops_when_blocking_loses_a_linked_pair():
+    mentions, _, truth = tiny_world()
+    # p9 is p5 under another name and with no birth date: neither blocking route proposes it.
+    mentions = renamed(mentions, truth, "p9", name="Jim Smythe", birth_year=None)
+    result = rs.blocking_recall(rs.candidate_pairs(mentions), mentions)
+    assert result == dict(true_pairs=2, kept=1, recall=0.5)
+
+
+def test_recall_is_none_when_the_register_links_nobody():
+    mentions, _, _ = tiny_world()
+    mentions = mentions.assign(officer_id=None)
+    assert rs.blocking_recall(rs.candidate_pairs(mentions), mentions)["recall"] is None

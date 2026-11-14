@@ -12,6 +12,12 @@ cheap rule proposes the ones worth comparing. The rule, in one sentence:
 Blocking decides nothing. A look-alike with the same name is proposed too: telling the
 two apart is the matcher's job (#31). But a true match that blocking never proposes can
 never be found, so its recall is measured (30.3).
+
+30.2 Pair features. Each candidate pair gets the numbers the matcher learns from: how
+similar the names are, and whether birth month and year, postcode district and
+nationality agree. A missing value is marked as missing, not counted as a difference.
+
+30.3 Blocking recall. The share of the register's own links that blocking proposed.
 """
 
 import re
@@ -95,3 +101,90 @@ def sharing(table, keys):
         filled = filled[~ev.is_blank(filled[key])]
     both = filled.merge(filled, on=keys)
     return both[both["id_x"] < both["id_y"]]   # each pair once, and never a row with itself
+
+
+# --- 30.2 Pair features ---------------------------------------------------------------
+
+# What the matcher (#31) learns from. The officer id is not here and never will be:
+# it is the label, and as a feature it would give away the answer (ADR-003).
+FEATURE_COLS = [
+    "name_similarity", "name_missing",
+    "birth_same", "birth_missing",
+    "postcode_same", "postcode_missing",
+    "nationality_same", "nationality_missing",
+]
+
+
+def comparable_name(name):
+    """A name with its words cleaned and sorted, titles dropped, so that
+    "HARROW, Daniel" and "Mr Daniel Harrow" both give "daniel harrow". No name gives ""."""
+    if not isinstance(name, str):
+        return ""
+    return " ".join(sorted(word for word in clean(name).split() if word not in TITLES))
+
+
+def district(postcode):
+    """The district of a postcode: "ZZ1 1AA" and "ZZ11AA" both give "ZZ1". No postcode gives ""."""
+    if not isinstance(postcode, str) or not postcode.strip():
+        return ""
+    postcode = postcode.strip().upper()
+    if " " in postcode:
+        return postcode.split()[0]
+    return postcode[:-3]   # written without the space: the last part is always three characters
+
+
+def pair_features(pairs, mentions):
+    """30.2: one row of numbers per pair, in the same order as `pairs`, with the columns FEATURE_COLS.
+
+    For each field, two columns:
+    - name_similarity is 0 to 1 (1 = the same words); the other three "_same" columns are 1 or 0.
+    - "_missing" is 1 when either record has no value. Then the first column is 0, and the
+      matcher can tell "we don't know" from "they differ".
+    Birth is the month and year together. Postcode is the district only.
+    """
+    ev.check_columns(pairs, "pairs")
+    ev.check_columns(mentions, "mentions")
+    people = mentions.set_index("mention_id")
+
+    # Each field as text, with "" for a missing value.
+    year = pd.to_numeric(people["birth_year"], errors="coerce").astype("Int64").astype("string")
+    month = pd.to_numeric(people["birth_month"], errors="coerce").astype("Int64").astype("string")
+    values = pd.DataFrame({
+        "name": people["name"].map(comparable_name),
+        "birth": (year + "-" + month).fillna(""),   # a missing year or month makes the whole text missing
+        "postcode": people["postcode"].map(district),
+        "nationality": people["nationality"].map(lambda value: clean(value) if isinstance(value, str) else ""),
+    })
+    left = values.loc[pairs["a"]].reset_index(drop=True)
+    right = values.loc[pairs["b"]].reset_index(drop=True)
+
+    features = pd.DataFrame(index=pairs.index)
+    for field in values.columns:
+        missing = ((left[field] == "") | (right[field] == "")).to_numpy()
+        if field == "name":
+            column = "name_similarity"
+            same = [SequenceMatcher(None, x, y).ratio() for x, y in zip(left[field], right[field])]
+        else:
+            column = f"{field}_same"
+            same = (left[field] == right[field]).to_numpy()
+        features[column] = pd.Series(same, dtype=float).where(~missing, 0.0).to_numpy()
+        features[f"{field}_missing"] = missing.astype(float)
+    return features[FEATURE_COLS]
+
+
+# --- 30.3 Blocking recall -------------------------------------------------------------
+
+def blocking_recall(pairs, mentions):
+    """30.3: of the pairs the register itself links (same officer id), how many did blocking propose?
+
+    Returns a dict: true_pairs, kept, and recall = kept / true_pairs (None when there are no
+    true pairs). A true pair that blocking never proposes can never be matched (ADR-003).
+    It can't see the people the register split across two officer ids: those have no label.
+    """
+    people = mentions[mentions["kind"] == "person"]
+    linked = sharing(pd.DataFrame({"id": people["mention_id"].to_numpy(),
+                                   "officer_id": people["officer_id"].to_numpy()}), ["officer_id"])
+    true_pairs = set(zip(linked["id_x"], linked["id_y"]))
+    kept = len(true_pairs & set(zip(pairs["a"], pairs["b"])))
+    return dict(true_pairs=len(true_pairs), kept=kept,
+                recall=kept / len(true_pairs) if true_pairs else None)
