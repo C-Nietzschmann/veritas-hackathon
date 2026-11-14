@@ -1,9 +1,9 @@
 # Python packages the notebook and src/ import. Add a package here in the same push that first uses it.
-# Versions are pinned before the submission (card #50).
-numpy
-pandas
-scikit-learn
-matplotlib
-requests
-python-dotenv
-ipywidgets
+# Pinned to the versions we ran with (card #114), so a fresh clone installs exactly these.
+numpy==2.5.4
+pandas==3.1.1
+scikit-learn==1.9.1
+matplotlib==3.11.2
+requests==2.34.2
+python-dotenv==1.2.4
+ipywidgets==8.1.9
