@@ -33,14 +33,23 @@ def as_of_date(date):
 
 # --- 28.1 The failure label ------------------------------------------------------
 
-def label_failures(mentions, window_months=24):
+def label_failures(mentions, window_months=24, count_dissolved=True):
     """Did each company fail within `window_months` months of incorporation?
 
-    Failed means insolvency_on is on or before incorporated_on + window_months.
+    Failed means that, on or before incorporated_on + window_months, the company
+    went insolvent (insolvency_on) or was dissolved (dissolved_on).
     The adapter (#74) fills insolvency_on with the earliest start date of a
     liquidation or administration case, leaving out members' voluntary
-    liquidation (a solvent wind-down), so the label only reads that column.
-    No insolvency date, or a later one, means not failed.
+    liquidation (a solvent wind-down). It fills dissolved_on with the day the
+    company was removed from the register, whatever the reason.
+    Neither date, or only later ones, means not failed.
+
+    Dissolution counts (card #142) because young companies almost never end in a
+    liquidation or administration: they are struck off the register instead, and
+    a supplier's unpaid invoice is lost either way. The register's profile doesn't
+    say why a company was dissolved, so a company closed by its owners with no
+    debts counts as failed too. count_dissolved=False gives the label as it was
+    before: liquidation or administration only.
 
     Give it the mentions as downloaded, never the output of mentions_as_of: the
     label looks into the future on purpose, and the as-of view hides that future,
@@ -51,10 +60,11 @@ def label_failures(mentions, window_months=24):
     """
     companies = mentions.loc[mentions["kind"] == "company"]
     formed = read_dates(companies["incorporated_on"])
-    insolvent = read_dates(companies["insolvency_on"])
     deadline = formed + pd.DateOffset(months=window_months)
-    # An empty insolvency date is NaT ("not a time"), and NaT <= anything is False.
-    failed = insolvent <= deadline
+    # An empty date is NaT ("not a time"), and NaT <= anything is False.
+    failed = read_dates(companies["insolvency_on"]) <= deadline
+    if count_dissolved:
+        failed = failed | (read_dates(companies["dissolved_on"]) <= deadline)
     return pd.Series(failed.to_numpy(), index=companies["company_number"], name="failed")
 
 

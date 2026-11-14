@@ -7,7 +7,7 @@ The choices we build on and the rules that keep the boxes apart. **No fixed role
 ## The choices
 1. **Lighter MVP.** P(insolvent predecessor) by the formula, P(fail) by a straight line, then the cost-based decision. One identity per director is Sunday's measured improvement (#32).
 2. **Slice.** Construction companies (SIC 41–43) formed in 2021 (train and validation) and 2022 (test), about 3,000 per year. We widen it if #19 counts too few positives.
-3. **Label.** Liquidation or administration within 24 months of incorporation.
+3. **Label.** Liquidation, administration or dissolution within 24 months of incorporation (dissolution added 14 Nov, card #142).
 4. **Costs.** A missed case 10, a wrong flag 2, asking 1. So FLAG above P(fail) 0.5, CLEAR below 0.1, and NOT ENOUGH EVIDENCE in between.
 
 ## One schema in the middle
