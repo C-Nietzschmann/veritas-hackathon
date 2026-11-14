@@ -2,7 +2,7 @@
 
 Ten rules. If a situation isn't covered, pick whatever keeps `main` working and the team informed.
 
-1. **`main` always runs.** We all push straight to `main`, so push only what runs. Anyone can open the main notebook at any moment and run it top to bottom. If you break it, fixing it is your only task.
+1. **`main` always runs.** Code reaches `main` through a pull request linked to its task (Claude does this when you say "push"). Only finished, running work is merged. Anyone can open the main notebook at any moment and run it top to bottom. If you break it, fixing it is your only task.
 2. **No project code before kickoff.** Everything is written between Sat 06:00 CET and the deadline. This is a hackathon rule and breaking it can disqualify us.
 3. **If you can't explain it, it doesn't merge.** That includes code an AI wrote for you. Finalists are questioned live. See [[AI Agent Protocol]].
 4. **One owner per task, one task at a time.** No card on the board, no work. A card takes 30 seconds. See [[Task Protocol]].
@@ -12,6 +12,14 @@ Ten rules. If a situation isn't covered, pick whatever keeps `main` working and 
 8. **Credit as you go.** Every dataset, pre-trained model and library goes into Credits the moment you first use it.
 9. **Cut scope, never the deadline.** We submit Sunday 21:00 CET with whatever works. P0 tasks only until the MVP gate.
 10. **Sleep and eat.** Nobody is expected online between 23:00 and 08:00. Tired people break `main`.
+
+Hackathon rules we must not break (from the Project Briefs, all in Hackathon Brief):
+- **AI must be central.** The model does the main job. An app built with AI coding tools is not enough.
+- **Make it your own.** Our own user, data or question on top of any suggested project.
+- **Public or synthetic data only,** no personal information without permission, every source cited.
+- **Health or finance:** the exact prototype disclaimer in the write-up.
+- **Honest results,** on test data the model never saw.
+- **No help from the organisers** on technical problems. We help each other.
 
 Two housekeeping rules that protect us:
 - No API keys, passwords or tokens in git, ever. Use Colab Secrets or a local `.env`.

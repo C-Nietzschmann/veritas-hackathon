@@ -12,6 +12,13 @@
 7. **Look at the failures.** Take 10 to 20 examples the model got wrong and read them. Group them. This becomes the "where it fails" section.
 8. **Check across groups.** Report the main metric for each group in the data (for example sex, age band, region, language or source), with how many examples each group has. Say plainly if it's uneven and what that means for the user. It's a hackathon rule, and judges reward it.
 
+## What each track requires
+From the Project Briefs. These are must-haves, not extras.
+- **Health:** missed cases (false negatives) and false alarms (false positives) reported **separately**. Check across age, sex or skin tone.
+- **Finance:** at least one simple baseline. Rare events (fraud, scams): **precision and recall**, not accuracy. Dated data: train on earlier, test on later.
+- **Climate:** one location. Train on earlier dates, test on later, never shuffle days. Beat **persistence** ("tomorrow = today").
+- **Languages:** results **per language or accent**, and real outputs shown **next to the correct output**. Ideally checked by a real speaker.
+
 ## Checks that catch the classic mistakes
 - **Leakage:** is there a feature that secretly contains the answer, or do near-identical rows sit in both train and test? A score that looks too good usually is.
 - **Same preprocessing:** scalers and encoders are fitted on train only, then applied to validation and test.
