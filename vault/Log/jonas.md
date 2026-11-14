@@ -61,7 +61,7 @@ Up: [[Log]]
 - **Next:** everyone claims their first card from the start of the order in Plan.
 - **Blocked by:** nothing
 
-## 2026-11-14 08:55
+## 2026-11-14 08:42
 - **Task:** #22 Write the evidence schema, checks and observed graph, with sub-tasks 22.1 to 22.4 (cards on the board)
 - **Did:** Built `src/evidence.py` and `tests/test_evidence.py` on branch `task-22`:
   - the six shared tables' columns
