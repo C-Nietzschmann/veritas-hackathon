@@ -1,0 +1,17 @@
+{
+  "etag": "tw-etag-insolvency-0004",
+  "status": "liquidation",
+  "cases": [
+    {
+      "number": "1",
+      "type": "members-voluntary-liquidation",
+      "dates": [
+        {"type": "declaration-solvent-on", "date": "2022-01-10"},
+        {"type": "wound-up-on", "date": "2022-01-20"}
+      ],
+      "practitioners": [
+        {"name": "Invented Practitioner Three", "role": "practitioner", "appointed_on": "2022-01-20"}
+      ]
+    }
+  ]
+}

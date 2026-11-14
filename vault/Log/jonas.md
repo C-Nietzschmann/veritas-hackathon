@@ -106,3 +106,27 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) merged it when I said go and drafted the note.
 - **Next:** set up Claude Code in VS Code on my PC for the code work, because the crawl needs the Companies House API and the cloud session can't reach it. Then #24.
 - **Blocked by:** nothing
+
+## 2026-11-14 11:40
+- **Task:** #24 crawl (on my PC), plus #27 baselines as the agreed backup (cards on the board)
+- **Did:** Set up the repo, Python and my own Companies House API key on my PC; my local Claude is building the crawl (#24). Nobody had claimed #27 by 11:30, so I took it as agreed so the 14:00 gate holds. `src/baseline.py` has flag nothing, same name and officer links, as pairs plus decisions. Pull request #127 is open. Reviewed Cristiano's #123, #124, #125 and #126 and left comments.
+- **Result:** 67 tests pass on #127. On the tiny world, same name flags the phoenix and both look-alikes, and officer links miss the phoenix.
+- **AI used for:** Claude (claude.ai) built the baselines and their tests, reviewed the team's pull requests, and drafted the comments at my request. Claude Code on my PC is building the crawl.
+- **Next:** read and ship #127. Add `score()` (27.4) once #126 merges, then the first numbers in Evaluation. Finish #24.
+- **Blocked by:** 27.4 waits for #126 (`src/evaluate.py` is Cristiano's until it merges)
+
+## 2026-11-14 11:55
+- **Task:** #27 baselines (card on the board), plus the #24 crawl on my PC
+- **Did:** Had #127 reviewed before approving. The review found six problems: names were cut too short so different names matched, `controls` claims counted as directorships, missing data got a misleading reason, the box didn't check its own output, the window boundary was unclear, and name order was only half handled. All six are fixed with regression tests. Shipped #127 as a squash merge, which closed 27.1–27.3. The matching points in `decide.py` went to Cristiano on #34.
+- **Result:** `main` is green with 75 tests.
+- **AI used for:** Claude (claude.ai) reviewed and fixed the baselines and drafted the notes at my request.
+- **Next:** 27.4 `score()` once #126 merges, then the first numbers in Evaluation. The #24 crawl. Team call at 12:30 when Jan is back.
+- **Blocked by:** 27.4 waits for #126
+
+## 2026-11-14 12:20
+- **Task:** #27 baselines (27.4 scoring) and #132 decision layer fix (cards on the board), plus the #24 crawl on my PC
+- **Did:** Approved Cristiano's #125 (with follow-ups) and #126, and he merged both. He applied the follow-ups in #131, which I checked. Built `score()` and `score_methods()` in `src/evaluate.py` (PR #130), and put the baselines' first numbers, on the tiny world, in Evaluation. Fixed `decide.py` so only directorships count and its output is checked against the schema, as Cristiano asked (card #132, PR #133).
+- **Result:** on the tiny world, same name flags 3 with 2 false flags, while flag nothing and officer links miss the one failure. That's a code check, not a result. 105 tests pass on #133.
+- **AI used for:** Claude (claude.ai) reviewed the PRs, wrote `score()`, the decision layer fix and their tests, and drafted the approvals, all at my request.
+- **Next:** read and ship #130 and #133. The 12:30 call: owners for #29 and #30/#31, slice size, and splitting the crawl with Jan.
+- **Blocked by:** nothing
