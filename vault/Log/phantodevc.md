@@ -21,3 +21,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the API client draft, the masking functions and their tests, shipped the PR and drafted the "How it works" note and this entry. I read the code and can explain it.
 - **Next:** raise on the call: who wires masking into the adapter (#111), and whether company names named after their owner get masked. Then pick the next free card.
 - **Blocked by:** nothing
+
+## 2026-11-14 12:55
+- **Task:** #112 name guard (card on the board)
+- **Did:** Built `scripts/name_guard.py`: it searches `main.ipynb`'s cells and saved outputs for every real director's name in the local raw data, written either way round. `scripts/check.sh` now runs it before every share where the raw data is present. Shipped as PR #138.
+- **Result:** #112 closed, `main` green. A planted "Daniel Harrow" in a notebook output made `check.sh` refuse to share.
+- **AI used for:** Claude Code picked the free card, wrote the guard and its 7 tests, tested it end to end, shipped the PR and drafted the "How it works" note and this entry. I read it and can explain it.
+- **Next:** say on the call that `check.sh` gained the name guard. Pick the next free card.
+- **Blocked by:** nothing
