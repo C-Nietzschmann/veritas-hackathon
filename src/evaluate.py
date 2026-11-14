@@ -77,42 +77,20 @@ def split(companies):
 def history_as_of(claims, date):
     """Directors' history as it stood on `date`, the query company's formation date.
 
-    Keeps claims that started on or before `date`. "On" counts on purpose:
-    directors are normally appointed on the day the company forms. (ADR-001 says
-    "before"; the review on pull request #117 asks to change that word.)
+    Keeps claims that started on or before `date`, as ADR-001 says. "On" counts
+    on purpose: directors are normally appointed on the day the company forms.
     A claim with no start date is dropped: we can't show it existed by then.
     An end date after `date` is emptied: on that date the appointment was still
     running, and when it would end was still the future.
-    Stops with an error if `date` is empty.
+    Stops with an error if `date` is empty, or if a claim's date is not written
+    as YYYY-MM-DD.
 
-    Returns the observed graph's edges (evidence.observed_graph).
+    Returns the observed graph's edges: evidence.observed_graph does the filtering.
+    The companies' own dates follow the same rule in evidence.mentions_as_of.
     """
     date = as_of_date(date)
-    # observed_graph guesses or drops a start date it can't read. Reading them here first stops instead.
+    # observed_graph drops a claim whose start date it can't read, and leaves an end date
+    # it can't read as it is, even one in the future. Reading both here first stops instead.
     read_dates(claims["valid_from"])
-    history = ev.observed_graph(claims, as_of=date)
-    # observed_graph may not empty future end dates yet (the patch on #117), so do it here too.
-    ends = read_dates(history["valid_to"])
-    history.loc[ends > date, "valid_to"] = None
-    return history
-
-
-def mentions_as_of(mentions, date):
-    """The mentions with company insolvency and dissolution dates after `date` emptied, and no status.
-
-    A company's dates and status are copied from the register on the day we
-    downloaded it, so they can show the future (review on #117, point 1).
-    insolvency_on and dissolved_on after `date` are emptied: on that date they
-    hadn't happened yet. status is emptied for every company, because it is
-    the status on download day and has no date we could check.
-
-    Returns a copy; the table passed in is not changed.
-    Stops with an error if `date` is empty.
-    """
-    date = as_of_date(date)
-    seen = mentions.copy()
-    for column in ("insolvency_on", "dissolved_on"):
-        later = read_dates(seen[column]) > date
-        seen.loc[later, column] = None
-    seen["status"] = None
-    return seen
+    read_dates(claims["valid_to"])
+    return ev.observed_graph(claims, as_of=date)

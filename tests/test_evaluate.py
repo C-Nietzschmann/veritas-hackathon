@@ -56,11 +56,15 @@ def test_a_date_not_written_as_iso_stops_instead_of_being_guessed():
         evaluate.split(table([company("TW100006", "01/10/2021")]))
     with pytest.raises(ValueError):
         evaluate.label_failures(table([company("TW100007", "2021-02-01", insolvent="01/03/2023")]))
+    # The as-of date itself: 01/05/2021 must not cut the history at 5 January.
     with pytest.raises(ValueError):
-        evaluate.mentions_as_of(table([company("TW100008", "2014-03-01")]), "01/05/2021")
+        evaluate.history_as_of(claims_table([claim("early", "p", "c", "2015-01-01")]), "01/05/2021")
     # A claim that starts on 1 June must not count as "started by 1 May" because it reads as 6 January.
     with pytest.raises(ValueError):
         evaluate.history_as_of(claims_table([claim("june", "p", "c", "01/06/2021")]), "2021-05-01")
+    # An end date in 2023 must not stay visible in 2021 because it can't be read.
+    with pytest.raises(ValueError):
+        evaluate.history_as_of(claims_table([claim("ends", "p", "c", "2015-01-01", "01/02/2023")]), "2021-05-01")
 
 
 # --- 28.2 The time split and the as-of rule ------------------------------------
@@ -140,30 +144,25 @@ def test_insolvency_from_the_future_does_not_leak():
     ])
     date = "2021-05-01"
     history = evaluate.history_as_of(claims, date)
-    seen = evaluate.mentions_as_of(mentions, date).set_index("mention_id")
+    seen = ev.mentions_as_of(mentions, date).set_index("mention_id")   # the shared view (#121)
 
     assert old in set(history["object"])                      # the 2015 claim survives ...
     assert pd.isna(seen.loc[old, "insolvency_on"])            # ... but shows no insolvency in 2021
     assert seen.loc[older, "insolvency_on"] == "2020-06-01"   # an insolvency in the past stays
     assert pd.isna(seen.loc[older, "dissolved_on"])           # dissolved after the date: hidden
-    assert seen["status"].isna().all()                        # download-day status: always hidden
-    assert mentions.loc[0, "insolvency_on"] == "2022-03-01"   # the table passed in is unchanged
 
 
 def test_insolvency_on_the_date_itself_stays():
     # "After the date" is the future. The date itself has happened, like a claim that starts that day.
     mentions = table([company("TW300004", "2014-03-01", insolvent="2021-05-01", dissolved="2021-05-01")])
-    seen = evaluate.mentions_as_of(mentions, "2021-05-01")
+    seen = ev.mentions_as_of(mentions, "2021-05-01")
     assert seen.loc[0, "insolvency_on"] == "2021-05-01"
     assert seen.loc[0, "dissolved_on"] == "2021-05-01"
 
 
-def test_as_of_without_a_date_stops_instead_of_showing_the_future():
+def test_history_without_a_date_stops_instead_of_showing_the_future():
     # A company with no formation date has nothing to cut at, so nothing would be hidden.
-    mentions = table([company("TW300005", "2014-03-01", insolvent="2022-03-01")])
     claims = claims_table([claim("later", "p", "c", "2024-01-01")])
     for no_date in (None, float("nan"), ""):   # the ways an empty cell can arrive
         with pytest.raises(ValueError):
             evaluate.history_as_of(claims, no_date)
-        with pytest.raises(ValueError):
-            evaluate.mentions_as_of(mentions, no_date)
