@@ -22,5 +22,5 @@ Hackathon rules we must not break (from the Project Briefs, all in Hackathon Bri
 - **No help from the organisers** on technical problems. We help each other.
 
 Two housekeeping rules that protect us:
-- No API keys, passwords or tokens in git, ever. Use Colab Secrets or a local `.env`.
+- No API keys, passwords or tokens in git, ever. Use a local `.env` (ignored by git).
 - No full names, school, faces, phone numbers, emails or private links anywhere in the repo, the write-up or the video. That includes this vault: the repo becomes public for the judges, and Round 1 is judged blind. Use handles (see Team).

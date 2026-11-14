@@ -12,7 +12,7 @@
 		{"id":"p6","type":"text","text":"## Feature freeze\nSun 14:00\n\nFrom here only [[Evaluation]], [[Write-up]], [[Demo Script]] and bug fixes","x":2050,"y":0,"width":270,"height":230,"color":"1"},
 		{"id":"p7","type":"text","text":"## Submit\nSun 21:00\n\n[[Submission Checklist]], together on the call","x":2460,"y":0,"width":270,"height":230,"color":"6"},
 		{"id":"l1","type":"text","text":"### 1 · Pick a task\nOn the [GitHub board](https://github.com/users/C-Nietzschmann/projects/3): assign yourself, drag the card to In Progress\n\n[[Task Protocol]]","x":560,"y":460,"width":300,"height":230,"color":"4"},
-		{"id":"l2","type":"text","text":"### 2 · Build it\nIn your own notebook, in Colab\n\n[[Colab Workflow]]","x":920,"y":460,"width":300,"height":230,"color":"4"},
+		{"id":"l2","type":"text","text":"### 2 · Build it\nIn your own notebook, in local Jupyter\n\n[[Notebook Workflow]]","x":920,"y":460,"width":300,"height":230,"color":"4"},
 		{"id":"l3","type":"text","text":"### 3 · Measure it\nA number next to the baseline, logged in [[Evaluation]]\n\n[[Evaluation Protocol]]","x":1280,"y":460,"width":300,"height":230,"color":"4"},
 		{"id":"l4","type":"text","text":"### 4 · Explain it\nWrite \"How it works\" in your own words. If you can't, it isn't done\n\n[[AI Agent Protocol]]","x":1280,"y":780,"width":300,"height":230,"color":"4"},
 		{"id":"l5","type":"text","text":"### 5 · Push it\nTell Claude: **push**. Code goes through a pull request linked to your task\n\n[[Git Workflow]]","x":920,"y":780,"width":300,"height":230,"color":"4"},

@@ -5,7 +5,7 @@ One repo, and `main` is what we submit. There are two ways in:
 - **Notes** (anything in `vault/`) go straight to `main` with `git sync`.
 - **Code** goes through a **pull request linked to its task**. With Claude Code you just say "push": it opens the pull request, waits for the checks and merges it. Every finished card on the board then shows its pull request.
 
-Working by hand, for example saving your own notebook from Colab, you may still push straight to `main`. Then one rule carries the weight: **push only what runs.**
+Working by hand, you may still push your own notebook straight to `main`. Then one rule carries the weight: **push only what runs.**
 
 ## The loop
 ```bash
@@ -29,9 +29,9 @@ Notebooks are JSON, and git merges them badly. So:
 - Personal work goes in `notebooks/<handle>_<topic>.ipynb`.
 - The submitted notebook is `notebooks/main.ipynb`. Its owner is the Product lead.
 - Code that more than one notebook needs lives in `src/*.py` and is imported.
-- Colab saves straight to GitHub. Run `git sync` afterwards so your computer has it too.
+- We run notebooks locally in Jupyter. GitHub shows them with their outputs, which is what the judges see.
 
-More in [[Colab Workflow]].
+More in [[Notebook Workflow]].
 
 ## What stays out of git
 - Secrets: API keys, tokens, `.env`. CI rejects a committed `.env`.

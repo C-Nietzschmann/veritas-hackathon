@@ -12,9 +12,9 @@ Up: [[Brief]]
 
 | Level | For a team that… | Recommended tools |
 |---|---|---|
-| Beginner | has never coded or knows only basics | Teachable Machine, or Colab with the starter notebooks |
-| Intermediate | can write some Python | Colab, pandas, scikit-learn, Gradio |
-| Advanced | has trained models before | PyTorch or Hugging Face, free GPU on Colab or Kaggle |
+| Beginner | has never coded or knows only basics | Teachable Machine, or the starter notebooks (we run them in local Jupyter) |
+| Intermediate | can write some Python | Jupyter, pandas, scikit-learn, Gradio |
+| Advanced | has trained models before | PyTorch or Hugging Face, a GPU if one is available (we have none: keep models small) |
 
 ---
 

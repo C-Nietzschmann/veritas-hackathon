@@ -2,7 +2,7 @@
 
 Repo of a team of 3 in the Veritas AI International High School Hackathon.
 48 hours: Sat 14 Nov 2026 06:00 CET → Mon 16 Nov 05:59 CET. The team submits Sun 15 Nov 21:00 CET.
-Stack: Python, Jupyter notebooks run in Google Colab.
+Stack: Python, Jupyter notebooks run locally, code and notebooks on GitHub. No Google Colab.
 
 ## The vault comes first
 `vault/` holds the team's shared notes: plan, protocols, project notes, decisions, logs. Tasks are not in the vault: they are GitHub issues on the project board (see "Tasks" below). Plain Markdown, opened in Obsidian (the repo folder itself is the Obsidian vault; shared settings are in `.obsidian/`).
@@ -12,7 +12,7 @@ A session-start hook (`.claude/settings.json` → `scripts/session-start.sh`) pu
 Every session, before anything else:
 1. Look at the board the hook printed.
 2. Read `vault/Home.md`, `vault/Project/Idea.md` and `vault/Decisions/`.
-3. Follow `vault/Protocols/AI Agent Protocol.md`. It is binding. The rest of `vault/Protocols/` explains the team's workflow: read the note that matches what you are doing (`Git Workflow`, `Colab Workflow`, `Evaluation Protocol`, `Task Protocol`, `Submission Checklist`).
+3. Follow `vault/Protocols/AI Agent Protocol.md`. It is binding. The rest of `vault/Protocols/` explains the team's workflow: read the note that matches what you are doing (`Git Workflow`, `Notebook Workflow`, `Evaluation Protocol`, `Task Protocol`, `Submission Checklist`).
 4. Confirm the task with the user before writing code, and claim its card (see "Tasks"). Work on one task.
 
 ## Hackathon rules (these override everything)
@@ -35,11 +35,11 @@ Source: the official Project Briefs and Hacker Guide, summarised in `vault/Brief
 - **Notes go straight to `main`:** changes that touch only `vault/` are shared with `git sync "message"` (alias in `.gitalias`: check, add all, commit, pull --rebase, push).
 - **Code goes through a pull request linked to its task:** anything outside `vault/` is shared with `sh scripts/task.sh ship <number> "message"` (finished) or `sh scripts/task.sh pr <number> "message"` (work in progress). The pull request's description starts with `Closes #<number>`; the "Linked task" check fails one that names no task. No task yet: create the card first. Never open a pull request by another route, and never push code to `main` directly.
 - **Before you share, run `git status`.** Both commands commit everything in the working tree. If there are changes that are not from your task or not ready, ask the user first.
-- **Only finished, running work is merged.** `notebooks/main.ipynb` must run top to bottom in a fresh Colab session at every moment.
+- **Only finished, running work is merged.** `notebooks/main.ipynb` must run top to bottom from a fresh clone (see the fresh-run test in `vault/Protocols/Notebook Workflow.md`) at every moment.
 - Never force-push. Never rewrite pushed history. If a pull stops with a conflict, show the user; don't resolve someone else's file by guessing.
 - Stay in the user's lane: their notebook, their log, their part of `src/`, their cards on the board. Don't edit a file another teammate owns.
 - Shared logic goes in `src/*.py`, not copied between notebooks.
-- No secrets in git. Use Colab Secrets or a local `.env`, and list the variable name in `.env.example`.
+- No secrets in git. Use a local `.env` (ignored by git), and list the variable name in `.env.example`.
 - No datasets or model weights in git. Download them in the notebook from the public source.
 - If CI or `main` is red, that comes first. See "MAIN BROKEN" in `vault/Protocols/Git Workflow.md`.
 - After feature freeze (Sun 15 Nov 14:00 CET): bug fixes, evaluation, write-up and demo only.

@@ -58,7 +58,7 @@ One person submits for the whole team, on the submission form (link in the Whats
 
 | Item | Required | Details |
 |---|---|---|
-| Code | Yes | Colab notebook or GitHub repo, viewable by anyone with the link. **Notebook saved with its outputs visible** |
+| Code | Yes | GitHub repo (we don't use Colab), viewable by anyone with the link. **Notebook saved with its outputs visible** |
 | Write-up | Yes | About one page in the official template (see Write-up). Google Doc ("anyone with the link can view"), the GitHub README, or a PDF or Word upload |
 | Demo video | **Optional, recommended** | Up to 2 minutes. Unlisted YouTube or Drive with "anyone with the link" |
 | Team details | Yes | Track, and every member's name, email and school |

@@ -7,11 +7,11 @@ Target: a **first version at Sun 18:00 CET**, the **final version at 21:00 CET**
 A submission is complete once it has **working links to both code and write-up**.
 
 ## 1. Code
-- [ ] Everyone has run `git sync` and has nothing left on their computer or in an unsaved Colab tab
+- [ ] Everyone has run `git sync` and has nothing left unpushed on their computer
 - [ ] Repo is **public** (Settings → General → Danger Zone → Change visibility) and opens in a private browser window
-- [ ] `notebooks/main.ipynb` runs top to bottom in a fresh Colab session (the fresh-run test in Colab Workflow)
+- [ ] `notebooks/main.ipynb` runs top to bottom from a fresh clone (the fresh-run test in Notebook Workflow)
 - [ ] It is **saved with its outputs visible**, so judges see results without running it
-- [ ] An "Open in Colab" link is at the top of the README and works
+- [ ] The README links to `notebooks/main.ipynb` and its "Run it" steps work
 - [ ] README says in five lines what it is and how to run it, and the placeholder comments are gone
 - [ ] No full names, school, phone numbers, emails, private links or secrets anywhere in the repo: check notebook outputs and search `vault/`
 - [ ] `main` is green: the latest code commit on GitHub has a ✓

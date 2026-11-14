@@ -8,7 +8,7 @@ How we work. Read these once, in this order. They are short.
 4. [[Calls]]: how we use the WhatsApp call and chat
 5. [[Task Protocol]]: from idea to done
 6. [[Git Workflow]]: working on `main` together, and what to do when it breaks
-7. [[Colab Workflow]]: notebooks without merge pain
+7. [[Notebook Workflow]]: local Jupyter, notebooks without merge pain
 8. [[AI Agent Protocol]]: using Claude, ChatGPT and friends within the rules
 9. [[Evaluation Protocol]]: how we measure, worth 15 points
 10. [[Submission Checklist]]: the last two hours

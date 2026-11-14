@@ -34,7 +34,7 @@ With Claude Code you can say it instead: "start task 12", "I'm blocked on 12 bec
 
 ## Definition of done
 - [ ] Pushed to `main`, CI shows ✓
-- [ ] Runs in a fresh Colab session, not only on your machine
+- [ ] Runs top to bottom after Restart kernel and run all, with packages in `requirements.txt`
 - [ ] The closing comment says **how it works**, in your own words, in five bullets at most: what it does, why this way, where it could be wrong. You can say it out loud (see AI Agent Protocol)
 - [ ] New data, models or libraries are in Credits
 - [ ] Any new result is in Evaluation

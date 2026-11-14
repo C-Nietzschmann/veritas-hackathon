@@ -33,7 +33,7 @@ If the team wants a different rhythm, change the times here and on Home before k
 | 09:00–14:00 | **Build, last stretch.** | |
 | **14:00** | **Feature freeze.** After this: bug fixes, evaluation, write-up, video only. | The improvement is measured, the demo runs start to finish, final numbers are in Evaluation. |
 | 14:00–18:00 | Final evaluation and failure analysis. Write-up draft. Demo Script final, video recorded. Clean the notebook and README. | |
-| **18:00** | **Check-in: fresh-run test, first submission.** Someone who didn't write the notebook opens it from the repo link in a fresh Colab session and runs it. Then the coordinator **submits a first version** (code link and write-up link at least). | It runs without help. A first version is submitted. |
+| **18:00** | **Check-in: fresh-run test, first submission.** Someone who didn't write the notebook runs it from a fresh clone of GitHub (the fresh-run test in Notebook Workflow). Then the coordinator **submits a first version** (code link and write-up link at least). | It runs without help. A first version is submitted. |
 | 18:00–20:00 | Fix what the fresh run exposed. Upload the video as unlisted. Read the write-up aloud once. | |
 | **20:00** | **Submission call.** Go through [[Submission Checklist]] line by line, together. | |
 | **21:00** | **Final version resubmitted.** Post a screenshot of the confirmation in the WhatsApp group. | |

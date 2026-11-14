@@ -77,5 +77,5 @@ The real input that goes in and the result that comes out, as the judges will se
 | What could go wrong | How we'd notice | Plan B |
 |---|---|---|
 | The dataset is too messy or too small | | |
-| Training is too slow on free Colab | | |
+| Training is too slow on our laptops | | |
 | The model is no better than the baseline | | |
