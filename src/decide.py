@@ -111,8 +111,12 @@ def fit_failure_line(p_predecessors, failed):
     is cut to that range. A company with no P(predecessor) (no director records) is left out.
     It stays a straight line so that averaging over possible worlds stays exact (#32, ADR-004).
     """
-    points = pd.DataFrame({"p": pd.to_numeric(pd.Series(list(p_predecessors)), errors="coerce"),
-                           "failed": pd.Series(list(failed)).astype(float)}).dropna()
+    p_predecessors, failed = list(p_predecessors), list(failed)
+    if len(p_predecessors) != len(failed):
+        raise ValueError(f"{len(p_predecessors)} values of P(predecessor) but {len(failed)} labels: "
+                         "both must describe the same companies, in the same order")
+    points = pd.DataFrame({"p": pd.to_numeric(pd.Series(p_predecessors), errors="coerce"),
+                           "failed": pd.Series(failed).astype(float)}).dropna()
     if points["p"].nunique() < 2:
         raise ValueError("the failure line needs companies with at least two different values of "
                          "P(predecessor): with one value there is no line to fit")

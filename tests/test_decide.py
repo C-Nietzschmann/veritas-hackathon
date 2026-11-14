@@ -194,3 +194,9 @@ def test_one_value_of_p_predecessor_is_no_line():
 def test_company_p_predecessor_is_none_when_there_is_nothing_to_judge():
     from src.decide import company_p_predecessor
     assert company_p_predecessor(None) is None
+
+
+def test_the_line_stops_when_the_two_lists_are_not_the_same_length():
+    from src.decide import fit_failure_line
+    with pytest.raises(ValueError, match="same companies"):
+        fit_failure_line([0.0, 1.0, 1.0], [False, True])
