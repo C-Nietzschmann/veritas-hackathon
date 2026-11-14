@@ -23,3 +23,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) read the repo, created card #16, drafted the six notes from our TENSEGRITY concept at my request and pushed them.
 - **Next:** confirm or change them on the 08:00 call, drag #16 to In Progress, finish #5 Setup.
 - **Blocked by:** nothing
+
+## 2026-11-14 07:40
+- **Task:** #16 Prepare the architecture and build plan for the kickoff call (card on the board)
+- **Did:** Added Pipeline (the diagram and how it works) and Modules (the boxes, files, contracts, leads and cards) to Project. Drafted Idea around phoenix-company risk for small suppliers on Companies House data. Reviewed the ADRs against it: claim dates are now intervals with an as-of rule against leakage, ids come from stable keys, the register's officer id is a weak label and never the truth, worlds are sampled per query, and the file list matches Modules. Created build cards #19 to #48 on the board, unassigned.
+- **Result:** notes and cards only, all proposed until the call.
+- **AI used for:** Claude (claude.ai) drafted the notes and the cards at my request, checked the Companies House data limits on the web, and pushed.
+- **Next:** 08:00 call: confirm the use case, the ADR choices, the three costs and the roles. Then everyone claims cards.
+- **Blocked by:** nothing

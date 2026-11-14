@@ -2,7 +2,7 @@
 
 Up: [[Decisions]]
 
-- **Date:** 2026-11-14 07:09
+- **Date:** 2026-11-14 07:09, reviewed 07:35
 - **Decided by:** proposed by jonas. Confirm or change on the kickoff call (task #16)
 - **Status:** proposed
 
@@ -18,6 +18,7 @@ The alternative was thresholding at every stage. That's simpler, but it is the h
 - **Calibration first.** A model output is called a probability only after a calibration check on validation data (reliability plot and Brier score). Until then it's labelled "score", in the interface too.
 - **Dependencies:** every inferred link stores `depends_on`, the ids of the matches and claims it rests on.
 - **One random draw:** all random numbers come from the seed once, up front. Changing one input then changes only what depends on it (R7).
+- **Local:** worlds are sampled per query, only over its neighbourhood (the company's people and their other companies), so 400 runs stay small.
 - **The decision layer** uses three costs the user states: a wrong flag, a missed case, and asking or checking. With a calibrated `p`, it flags if `p ≥ 1 − cost_ask / cost_wrong_flag`, clears if `p ≤ cost_ask / cost_miss`, and abstains otherwise (Chow's reject rule, 1970). The costs are never tuned on test data.
 - **If time:** when it abstains, name the one missing detail whose answer would lower the expected cost the most (value of information).
 

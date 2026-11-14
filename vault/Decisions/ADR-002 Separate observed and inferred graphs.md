@@ -2,7 +2,7 @@
 
 Up: [[Decisions]]
 
-- **Date:** 2026-11-14 07:09
+- **Date:** 2026-11-14 07:09, reviewed 07:35
 - **Decided by:** proposed by jonas. Confirm or change on the kickoff call (task #16)
 - **Status:** proposed
 
@@ -11,12 +11,12 @@ We keep two graphs that never mix. The **observed graph** holds only relationshi
 
 - Nodes in both are mentions (ADR-001).
 - Observed edges are claims, one for one.
-- Inferred edges are "same entity?" links from entity resolution (ADR-003) and hidden relationships from inference.
+- Inferred edges are "same entity?" links from entity resolution (ADR-003) and hidden relationships from inference, such as "this company is a predecessor of that one".
 
 ## Why
 This is R3 made structural. With one graph and an "inferred" flag, a single forgotten filter in a query or a plot shows a guess as a fact. With two graphs, that mistake can't happen by accident.
 
-It also keeps evaluation clean: only the inferred graph is scored.
+It also keeps evaluation clean: only what the system infers is scored.
 
 The alternative was one graph with a flag on each edge. It's less code, but it's exactly the failure R3 forbids.
 
@@ -25,6 +25,6 @@ The alternative was one graph with a flag on each edge. It's less code, but it's
 - Entity resolution and inference write only to the inferred graph. Every inferred edge carries `p`, `method` and `depends_on` (ADR-004).
 - An entity in the interface is a group of mentions joined by "same entity?" links. The grouping is a view computed from the probabilities, never stored as a fact.
 - The interface draws the two kinds differently. Observed edges are solid, with their source one click away. Inferred edges are dashed, with their uncertainty shown in words or bands rather than false decimals.
-- Evaluation scores the inferred graph only, against links held out by date.
+- Evaluation scores only what the system infers, its links and its decisions, never the observed graph.
 
 Next: [[ADR-003 Probabilistic entity resolution]]
