@@ -88,7 +88,8 @@ def pair_draws(key, n, seed):
     They depend only on the seed and the pair's own two ids, never on which other pairs
     exist or in what order. So adding or changing another pair can't change these (R7).
     """
-    digest = hashlib.sha256(f"{seed}|{key[0]}|{key[1]}".encode("utf-8")).digest()
+    # repr keeps the three parts apart whatever characters the ids contain
+    digest = hashlib.sha256(repr((seed, key[0], key[1])).encode("utf-8")).digest()
     return np.random.default_rng(int.from_bytes(digest[:8], "big")).random(n)
 
 
@@ -142,8 +143,13 @@ def sample_worlds(pairs, n=400, seed=0):
     if len(set(keys)) != len(keys):
         raise ValueError("the same pair is listed twice: sample_worlds needs each pair once")
 
+    ps = [float(p) for p in pairs["p"]]
+    for p in ps:
+        if not 0 <= p <= 1:   # catches a missing p (NaN) too: an unscored pair is not a "no"
+            raise ValueError(f"a match probability must be between 0 and 1, not {p}")
+
     # 1. Every toss, up front: for each pair, the worlds in which it is "yes".
-    yes = {key: pair_draws(key, n, seed) < float(p) for key, p in zip(keys, pairs["p"])}
+    yes = {key: pair_draws(key, n, seed) < p for key, p in zip(keys, ps)}
 
     result = {}
     for group in groups(keys).values():

@@ -165,3 +165,14 @@ def test_person_pairs_makes_one_candidate_of_two_records_of_one_person():
 def test_person_pairs_lets_a_record_without_an_officer_id_stand_for_itself():
     people = person_pairs(pairs_of(("d", "x", 0.4)), {"d": "new", "x": None})
     assert list(zip(people["a"], people["b"])) == [("new", "x")]
+
+
+@pytest.mark.parametrize("bad", [-0.1, 1.7, float("nan")])
+def test_the_sampler_refuses_a_p_outside_0_to_1(bad):
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        sample_worlds(pairs_of(("d", "x", bad), ("d", "y", 0.5)))
+
+
+def test_ids_with_odd_characters_still_get_their_own_tosses():
+    from src.infer import pair_draws
+    assert list(pair_draws(("a|b", "c"), 5, 1)) != list(pair_draws(("a", "b|c"), 5, 1))
