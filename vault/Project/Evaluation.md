@@ -41,3 +41,4 @@ From reading 10 to 20 wrong predictions.
 ## Limits
 What we did not test, and who it might not work for.
 - The 2021 companies' 24-month outcomes run into 2023, past the start of the test year, so some training labels use information from after some test companies were formed. Every 24-month window ends by December 2024, so every label is fully observed in today's register.
+- A small company can also be struck off the register without a liquidation or administration, sometimes leaving debts behind. The label counts it as "not failed", so some real failures are missed.

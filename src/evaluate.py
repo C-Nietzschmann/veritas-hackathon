@@ -42,6 +42,10 @@ def label_failures(mentions, window_months=24):
     liquidation (a solvent wind-down), so the label only reads that column.
     No insolvency date, or a later one, means not failed.
 
+    Give it the mentions as downloaded, never the output of mentions_as_of: the
+    label looks into the future on purpose, and the as-of view hides that future,
+    so every company would come out "not failed" without any error.
+
     Returns a True/False Series named "failed", one row per company, indexed by
     company_number. People in mentions are skipped.
     """
