@@ -52,3 +52,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) proposed the split into lanes and the table contracts, and applied them at my request.
 - **Next:** on the call, confirm. Then start #22, schema v1 by 09:30.
 - **Blocked by:** nothing
+
+## 2026-11-14 08:12
+- **Task:** #16 Prepare the architecture and build plan for the kickoff call (card on the board)
+- **Did:** Switched to no fixed roles. Took everyone off the cards I had assigned, removed the owner suggestions from the cards, and emptied the role table in Team again. Rewrote Plan as a pick-your-own order of cards, wrote the decision "No fixed roles, everyone claims their own cards", and took the owner column out of Modules. The shared-schema rules stay.
+- **Result:** every build card is free to claim. Notes only.
+- **AI used for:** Claude (claude.ai) undid the assignments and rewrote the notes at my request.
+- **Next:** everyone claims their first card from the start of the order in Plan.
+- **Blocked by:** nothing

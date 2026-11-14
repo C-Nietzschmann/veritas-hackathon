@@ -4,11 +4,11 @@ Fill this in before kickoff. Your handle is your initials or a nickname, in lowe
 
 | Handle | Role | Owns | Leads these rubric points |
 |---|---|---|---|
-| _model lead: add your handle_ | **Model lead** | Model choice, training, `src/` model code: `resolve.py`, `decide.py`, `infer.py`, the rule tests | Technical execution (30) |
-| phantodevc | **Data and evaluation lead** | Dataset, train/test split, metrics, Evaluation, Credits: `ingest_companies_house.py`, `baseline.py`, `evaluate.py` | Testing and honesty (15) |
-| jonas | **Product and story lead**, also **coordinator** | Demo notebook or app, Write-up, Demo Script, the submission: `evidence.py` (the shared schema), the tiny world, `interface.py`, `main.ipynb` | Communication (15), Impact (20) |
+| _handle_ | **Model lead** | Model choice, training, `src/` model code | Technical execution (30) |
+| _handle_ | **Data and evaluation lead** | Dataset, train/test split, metrics, Evaluation, Credits | Testing and honesty (15) |
+| _handle_ | **Product and story lead**, also **coordinator** | Demo notebook or app, Write-up, Demo Script, the submission | Communication (15), Impact (20) |
 
-Proposed by jonas on Sat 08:00. Confirm or change on the call (task #3). The lanes and cards are in Plan.
+**This weekend we work without fixed roles:** everyone claims their own cards, in the order in Plan (decided Sat 08:10, see Decisions).
 
 Originality (20) belongs to all three and is settled at kickoff in Idea.
 

@@ -2,23 +2,23 @@
 
 Up: [[Project]]
 
-The boxes we build. Modularity is the point: each box is one file with fixed inputs and outputs (ADR-005), its own tests on the tiny world, and one owner. Boxes import only `src/evidence.py`, and only `main.ipynb` calls them. Swapping a method or a data source never touches another box. Who builds what, and when: Plan.
+The boxes we build. Modularity is the point: each box is one file with fixed inputs and outputs (ADR-005) and its own tests on the tiny world. Boxes import only `src/evidence.py`, and only `main.ipynb` calls them. Swapping a method or a data source never touches another box. Whoever holds a box's card owns its file until the card is done. The order to pick cards in is in Plan.
 
-| Box | File | Takes → gives | Enforces | Layer | Owner | Cards |
-|---|---|---|---|---|---|---|
-| Evidence schema and observed graph | `src/evidence.py` | nothing → the six shared tables, the id builder, the checks, and the observed graph as a filter on claims | R1, R2, R3, R7 | L0 | jonas | #22 |
-| Tiny world | `tests/tiny_world.py` | nothing → about 30 hand-made mentions and claims with invented names, plus the true answers | all rules | L0 | jonas | #21 |
-| Source adapter | `src/ingest_companies_house.py` | API key and slice settings → raw JSON (each hash kept in `record_ref`) → mentions, claims and labels, with masked display columns | R1, R2, masking | L0, L1 | phantodevc | #19, #24, #25, #49 |
-| Baselines | `src/baseline.py` | mentions and claims → pairs and decisions for flag nothing, same name means same person, and Companies House officer links | none (they're the bar) | L0 | phantodevc | #27 |
-| Entity resolution | `src/resolve.py` | mentions → pairs with `p`. The officer id is the label, never a feature | R6 | L1 | model lead | #30, #31 |
-| Decision layer | `src/decide.py` | pairs, claims, labels and costs → links and decisions: P(predecessor) by the formula, P(fail) by a straight line, then FLAG, CLEAR or NOT ENOUGH EVIDENCE with the reason and the flip | R4, R8 | L1, L2 | model lead | #33, #34, #37 |
-| One identity per director | `src/infer.py` | pairs and seed → P(predecessor) with the one-identity rule, closed form plus a possible-worlds check | R4, R7 | L2 | model lead | #32 |
-| Rule tests | `tests/test_rules.py` | tiny world → R2, R3, R4, R6 and R8 first, then R1 cheaply and R7 with #32. R5 is skipped with one source | R1–R8 | L0 | model lead | #23 |
-| Evaluation | `src/evaluate.py` | decisions and labels → metrics vs the three baselines, calibration, false flags by name commonness, failures, figures | none | L0–L2 | phantodevc | #28, #39, #40, #42, #45 |
-| Interface | `src/interface.py` | the shared tables → a static graph image for GitHub, a local view, what-if toggles, cost sliders. Display columns only | R3, masking | L1, L2 | jonas | #35, #38 |
-| Main notebook | `notebooks/main.ipynb` | every box → the story top to bottom, outputs saved | none | L0–L2 | jonas | #29, #36 |
+| Box | File | Takes → gives | Enforces | Layer | Cards |
+|---|---|---|---|---|---|
+| Evidence schema and observed graph | `src/evidence.py` | nothing → the six shared tables, the id builder, the checks, and the observed graph as a filter on claims | R1, R2, R3, R7 | L0 | #22 |
+| Tiny world | `tests/tiny_world.py` | nothing → about 30 hand-made mentions and claims with invented names, plus the true answers | all rules | L0 | #21 |
+| Source adapter | `src/ingest_companies_house.py` | API key and slice settings → raw JSON (each hash kept in `record_ref`) → mentions, claims and labels, with masked display columns | R1, R2, masking | L0, L1 | #19, #24, #25, #49 |
+| Baselines | `src/baseline.py` | mentions and claims → pairs and decisions for flag nothing, same name means same person, and Companies House officer links | none (they're the bar) | L0 | #27 |
+| Entity resolution | `src/resolve.py` | mentions → pairs with `p`. The officer id is the label, never a feature | R6 | L1 | #30, #31 |
+| Decision layer | `src/decide.py` | pairs, claims, labels and costs → links and decisions: P(predecessor) by the formula, P(fail) by a straight line, then FLAG, CLEAR or NOT ENOUGH EVIDENCE with the reason and the flip | R4, R8 | L1, L2 | #33, #34, #37 |
+| One identity per director | `src/infer.py` | pairs and seed → P(predecessor) with the one-identity rule, closed form plus a possible-worlds check | R4, R7 | L2 | #32 |
+| Rule tests | `tests/test_rules.py` | tiny world → R2, R3, R4, R6 and R8 first, then R1 cheaply and R7 with #32. R5 is skipped with one source | R1–R8 | L0 | #23 |
+| Evaluation | `src/evaluate.py` | decisions and labels → metrics vs the three baselines, calibration, false flags by name commonness, failures, figures | none | L0–L2 | #28, #39, #40, #42, #45 |
+| Interface | `src/interface.py` | the shared tables → a static graph image for GitHub, a local view, what-if toggles, cost sliders. Display columns only | R3, masking | L1, L2 | #35, #38 |
+| Main notebook | `notebooks/main.ipynb` | every box → the story top to bottom, outputs saved | none | L0–L2 | #29, #36 |
 
-Other cards: #20 repo skeleton (model lead), #46 write-up and #47 video (jonas), #50 Credits and README and #48 fresh-run test (phantodevc), #51 first and #52 final submission (jonas). The model lead adds their handle in Team.
+Other cards: #20 repo skeleton, #46 write-up, #47 video, #50 Credits and README, #48 fresh-run test, #51 first and #52 final submission.
 
 ## Build order
 - **L0, target Sat 13:00:** the tiny world runs through every box, the rule tests pass, the three baselines give their first numbers.
@@ -33,7 +33,7 @@ Defined once in `src/evidence.py`, each with its check. Change one only on a cal
 
 | Table | Written by | Read by | Columns |
 |---|---|---|---|
-| **mentions** | adapter | everyone | `mention_id`, `kind` (company or person), `name` as written, `display_name` (masked), attributes as written, provenance (`source`, `record_ref` with raw file, row and hash, `origin`, `adapter`) |
+| **mentions** | adapter | every box | `mention_id`, `kind` (company or person), `name` as written, `display_name` (masked), attributes as written, provenance (`source`, `record_ref` with raw file, row and hash, `origin`, `adapter`) |
 | **claims** | adapter | evidence, decision layer, interface | `claim_id`, `subject`, `relation` (`director_of` or `controls`), `object`, `valid_from`, `valid_to`, provenance |
 | **labels** | adapter | decision layer, evaluation | `company_id`, `formed_on`, `failed` (liquidation or administration within 24 months), `split` (train, validation or test) |
 | **pairs** | entity resolution, baselines | decision layer, evaluation, interface | `a`, `b`, `p`, `features`, `method`, `label` (same officer id, for training and checking only) |
