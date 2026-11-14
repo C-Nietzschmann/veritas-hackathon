@@ -14,6 +14,7 @@ nothing from src/ but the shared schema (ADR-005).
 
 import math
 
+import numpy as np
 import pandas as pd
 
 from src import evidence as ev
@@ -87,6 +88,43 @@ def p_predecessor(ps):
     return float(1 - math.prod(1 - p for p in ps))
 
 
+def company_p_predecessor(matches):
+    """P(predecessor) for one company, from what candidate_matches gave. None when there
+    was nothing to judge.
+
+    One match can lead to several insolvent companies; it is still one chance of being right.
+    """
+    if matches is None:
+        return None
+    return p_predecessor(matches.drop_duplicates("via")["p"])
+
+
+def fit_failure_line(p_predecessors, failed):
+    """33.1: the straight line from P(predecessor) to the failure rate, as (rate_without, rate_with).
+
+    p_predecessors: one P(predecessor) per training company. failed: True or False for the
+    same companies, in the same order. Training companies only, never validation or test.
+
+    The line is the least-squares fit: the straight line closest to the points. Its left
+    end, at P(predecessor) = 0, is the failure rate without an insolvent predecessor; its
+    right end, at 1, is the rate with one. A rate can't be below 0 or above 1, so each end
+    is cut to that range. A company with no P(predecessor) (no director records) is left out.
+    It stays a straight line so that averaging over possible worlds stays exact (#32, ADR-004).
+    """
+    p_predecessors, failed = list(p_predecessors), list(failed)
+    if len(p_predecessors) != len(failed):
+        raise ValueError(f"{len(p_predecessors)} values of P(predecessor) but {len(failed)} labels: "
+                         "both must describe the same companies, in the same order")
+    points = pd.DataFrame({"p": pd.to_numeric(pd.Series(p_predecessors), errors="coerce"),
+                           "failed": pd.Series(failed).astype(float)}).dropna()
+    if points["p"].nunique() < 2:
+        raise ValueError("the failure line needs companies with at least two different values of "
+                         "P(predecessor): with one value there is no line to fit")
+    slope, rate_without = np.polyfit(points["p"], points["failed"], 1)
+    rate_with = rate_without + slope
+    return float(np.clip(rate_without, 0, 1)), float(np.clip(rate_with, 0, 1))
+
+
 def p_fail(p_pred, line):
     """The chance the company fails, read off the straight line of #33 (card #93).
 
@@ -127,8 +165,7 @@ def decide(query, matches, line, costs):
                     p_predecessor=None, p_fail=None,
                     reason=f"We have no director records for {query}, so we can't judge it.", flip=None)
 
-    # One match can lead to several insolvent companies; it is still one chance of being right.
-    p_pred = p_predecessor(matches.drop_duplicates("via")["p"])
+    p_pred = company_p_predecessor(matches)
     chance = p_fail(p_pred, line)
     clear_below, flag_above = thresholds(*costs)
     if chance <= clear_below:

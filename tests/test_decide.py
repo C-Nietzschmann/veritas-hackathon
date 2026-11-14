@@ -159,3 +159,44 @@ def test_reasons_never_show_a_person():
     for row in decide_all(mentions, claims, hand_made_pairs(truth)).values():
         for private in list(people["name"]) + list(people["postcode"]):
             assert private not in row["reason"]
+
+
+# --- 33.1 The failure line -------------------------------------------------------------
+
+def test_the_line_recovers_the_two_failure_rates():
+    from src.decide import fit_failure_line
+    # 10 companies without a predecessor, 1 failed (10%); 10 with one, 6 failed (60%).
+    p = [0.0] * 10 + [1.0] * 10
+    failed = [True] + [False] * 9 + [True] * 6 + [False] * 4
+    assert fit_failure_line(p, failed) == pytest.approx((0.1, 0.6))
+
+
+def test_the_line_leaves_out_companies_with_no_p_predecessor():
+    from src.decide import fit_failure_line
+    p = [0.0] * 10 + [1.0] * 10 + [None, None]
+    failed = [True] + [False] * 9 + [True] * 6 + [False] * 4 + [True, True]
+    assert fit_failure_line(p, failed) == pytest.approx((0.1, 0.6))
+
+
+def test_the_ends_of_the_line_stay_between_0_and_1():
+    from src.decide import fit_failure_line
+    # The closest straight line through these points ends below 0 and above 1.
+    rate_without, rate_with = fit_failure_line([0.0, 0.05, 0.05, 0.9], [False, False, False, True])
+    assert (rate_without, rate_with) == (0.0, 1.0)
+
+
+def test_one_value_of_p_predecessor_is_no_line():
+    from src.decide import fit_failure_line
+    with pytest.raises(ValueError, match="two different values"):
+        fit_failure_line([0.0, 0.0, 0.0], [True, False, False])
+
+
+def test_company_p_predecessor_is_none_when_there_is_nothing_to_judge():
+    from src.decide import company_p_predecessor
+    assert company_p_predecessor(None) is None
+
+
+def test_the_line_stops_when_the_two_lists_are_not_the_same_length():
+    from src.decide import fit_failure_line
+    with pytest.raises(ValueError, match="same companies"):
+        fit_failure_line([0.0, 1.0, 1.0], [False, True])
