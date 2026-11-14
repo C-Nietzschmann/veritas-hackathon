@@ -53,3 +53,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote `what_if`, its tests and the Demo cells, shipped the PR and drafted the note and this entry. I can explain `what_if`.
 - **Next:** on the call: may we add ipywidgets for the cost sliders (#104) and buttons? Crawl part 2 keeps running.
 - **Blocked by:** #104 waits for the call's yes on ipywidgets
+
+## 2026-11-14 13:48
+- **Task:** #104 cost sliders (card on the board, parent #38)
+- **Did:** Added `interface.cost_sliders`: three sliders for the costs, the thresholds and decision next to them, and a Reset button to the agreed costs. A Demo cell in `main.ipynb` shows it and prints the agreed line for GitHub. Added ipywidgets to requirements.txt and Credits after the team agreed on the call. Shipped as PR #148.
+- **Result:** #104 closed, #38 at 2/2, `main` green with 207 tests.
+- **AI used for:** Claude Code wrote the sliders, tests and Demo cell, shipped the PR and drafted the note and this entry. I can explain how the sliders work.
+- **Next:** close #38 if the team agrees. Crawl part 2 keeps running.
+- **Blocked by:** nothing
