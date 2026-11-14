@@ -98,3 +98,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) merged the pull requests when I said go, drafted the "How it works" notes, and wrote the as-of view and its tests.
 - **Next:** read and ship #122, then the crawl (#24), as Cristiano suggested.
 - **Blocked by:** nothing
+
+## 2026-11-14 09:58
+- **Task:** #121 as-of view (card on the board)
+- **Did:** Shipped #122 as a squash merge. #121 is closed with its "How it works" note.
+- **Result:** `main` is green with 36 tests.
+- **AI used for:** Claude (claude.ai) merged it when I said go and drafted the note.
+- **Next:** set up Claude Code in VS Code on my PC for the code work, because the crawl needs the Companies House API and the cloud session can't reach it. Then #24.
+- **Blocked by:** nothing
