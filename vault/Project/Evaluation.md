@@ -7,7 +7,7 @@ Only numbers from code that was actually run go in here.
 - **Main metric:**
 - **Label:** a company failed if its first liquidation or administration started on or before the day 24 months after its incorporation (a members' voluntary liquidation, which is a solvent wind-down, does not count), and no insolvency or a later one means it did not fail. Code: `label_failures` in `src/evaluate.py`.
 - **Data split:** train: formed Jan–Sep 2021 / validation: formed Oct–Dec 2021 / test: formed in 2022 · seed: none needed, because the split is by formation date (`incorporated_on`), so a seed doesn't change it; `SEED = 42` in the notebook covers anything random. A company formed outside these dates is in none of the three. Code: `split` in `src/evaluate.py`.
-- **As-of rule:** a company formed on day t is judged only on director claims that started on or before t (the day itself counts, because directors are usually appointed the day the company forms), with these dates emptied when they fall after t: when an appointment ended, and when an earlier company went insolvent or was dissolved; company status is never used, because it has no date. Code: `history_as_of` and `mentions_as_of` in `src/evaluate.py`.
+- **As-of rule:** a company formed on day t is judged only on claims (who directs or controls which company) that started on or before t (the day itself counts, because directors are usually appointed the day the company forms), with these dates emptied when they fall after t: when an appointment ended, and when an earlier company went insolvent or was dissolved; company status is never used, because it has no date. Code: `history_as_of` and `mentions_as_of` in `src/evaluate.py`.
 - **Test set first used on:** _not yet_
 
 ## Results

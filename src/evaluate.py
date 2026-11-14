@@ -1,13 +1,34 @@
 """The evaluation box (card #28): the failure label, the time split and the as-of rule.
 
 Like every box, it imports nothing from src/ except evidence.py (ADR-005).
-Dates are read with pd.to_datetime, which stops with an error on a date it
-can't read, so a bad date can't quietly change a label or a set.
+Dates are read with read_dates, which stops with an error on a date that is not
+written as YYYY-MM-DD, so a bad date can't quietly change a label or a set.
 """
 
 import pandas as pd
 
 from src import evidence as ev
+
+
+def read_dates(dates):
+    """Read dates written as YYYY-MM-DD: a whole column, or one date.
+
+    An empty cell becomes NaT ("not a time"). Any other way of writing a date
+    stops with an error. Without the fixed format pandas guesses: it reads
+    01/10/2021 (1 October in the UK) as 10 January and says nothing.
+    """
+    return pd.to_datetime(dates, format="%Y-%m-%d")
+
+
+def as_of_date(date):
+    """Read the one date an as-of function is given, and stop if it is empty.
+
+    With no date, nothing counts as "after it", so the whole future would stay in.
+    """
+    date = read_dates(date)
+    if pd.isna(date):
+        raise ValueError("the as-of rule needs a date like 2021-05-01, and got an empty one")
+    return date
 
 
 # --- 28.1 The failure label ------------------------------------------------------
@@ -25,8 +46,8 @@ def label_failures(mentions, window_months=24):
     company_number. People in mentions are skipped.
     """
     companies = mentions.loc[mentions["kind"] == "company"]
-    formed = pd.to_datetime(companies["incorporated_on"])
-    insolvent = pd.to_datetime(companies["insolvency_on"])
+    formed = read_dates(companies["incorporated_on"])
+    insolvent = read_dates(companies["insolvency_on"])
     deadline = formed + pd.DateOffset(months=window_months)
     # An empty insolvency date is NaT ("not a time"), and NaT <= anything is False.
     failed = insolvent <= deadline
@@ -45,7 +66,7 @@ def split(companies):
     Returns three tables (train, validation, test) with the same columns as
     `companies`, which only needs an incorporated_on column.
     """
-    formed = pd.to_datetime(companies["incorporated_on"])
+    formed = read_dates(companies["incorporated_on"])
     # between() includes both ends, and an empty date (NaT) is never between.
     train = companies.loc[formed.between("2021-01-01", "2021-09-30")]
     validation = companies.loc[formed.between("2021-10-01", "2021-12-31")]
@@ -62,13 +83,17 @@ def history_as_of(claims, date):
     A claim with no start date is dropped: we can't show it existed by then.
     An end date after `date` is emptied: on that date the appointment was still
     running, and when it would end was still the future.
+    Stops with an error if `date` is empty.
 
     Returns the observed graph's edges (evidence.observed_graph).
     """
+    date = as_of_date(date)
+    # observed_graph guesses or drops a start date it can't read. Reading them here first stops instead.
+    read_dates(claims["valid_from"])
     history = ev.observed_graph(claims, as_of=date)
     # observed_graph may not empty future end dates yet (the patch on #117), so do it here too.
-    ends = pd.to_datetime(history["valid_to"])
-    history.loc[ends > pd.Timestamp(date), "valid_to"] = None
+    ends = read_dates(history["valid_to"])
+    history.loc[ends > date, "valid_to"] = None
     return history
 
 
@@ -82,10 +107,12 @@ def mentions_as_of(mentions, date):
     the status on download day and has no date we could check.
 
     Returns a copy; the table passed in is not changed.
+    Stops with an error if `date` is empty.
     """
+    date = as_of_date(date)
     seen = mentions.copy()
     for column in ("insolvency_on", "dissolved_on"):
-        later = pd.to_datetime(seen[column]) > pd.Timestamp(date)
+        later = read_dates(seen[column]) > date
         seen.loc[later, column] = None
     seen["status"] = None
     return seen
