@@ -182,7 +182,7 @@ def companies_to_mentions(raw):
             insolvency_on=insolvency_start(insolvency.get(number)),
             sic_code=pick_sic_code(profile.get("sic_codes", [])),
             postcode=postcode,
-            display_postcode=mask.mask_postcode(postcode),
+            display_postcode=mask.mask_postcode(postcode) or None,   # None, like every other empty cell
             **provenance(path, 0, raw_bytes),   # one company per file, so row 0
         )
         rows.append(row)
@@ -242,13 +242,13 @@ def officers_to_evidence(raw):
                 mention_id=ev.make_id(SOURCE, f"person{appointment}"),
                 kind="person",
                 name=officer["name"],
-                display_name=mask.pseudonym(officer["name"]),   # the only name an output may show
+                display_name=mask.pseudonym(officer["name"]) or None,   # the only name an output may show
                 birth_month=born.get("month"),
                 birth_year=born.get("year"),
                 nationality=officer.get("nationality"),
                 officer_id=officer_id(officer),
                 postcode=postcode,
-                display_postcode=mask.mask_postcode(postcode),
+                display_postcode=mask.mask_postcode(postcode) or None,   # None, like every other empty cell
                 **provenance(path, position, raw_bytes),
             )
             mentions.append(person)

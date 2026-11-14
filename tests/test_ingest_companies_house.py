@@ -348,4 +348,4 @@ def test_a_missing_postcode_gives_an_empty_display_postcode():
     raw[path] = json.dumps(officers).encode("utf-8")
     people, _ = ch.officers_to_evidence(raw)
     from_that_file = people[people["record_ref"].str.startswith(path)]
-    assert len(from_that_file) > 0 and ev.is_blank(from_that_file["display_postcode"]).all()
+    assert len(from_that_file) > 0 and from_that_file["display_postcode"].isna().all()   # None, not ""
