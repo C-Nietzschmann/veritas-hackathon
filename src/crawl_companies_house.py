@@ -28,9 +28,8 @@ query_companies.csv lists the query companies crawled in full: downstream takes 
 from there, never from all the company files (they hold the earlier companies too).
 
 Several computers can split a year: part K of N takes every N-th company of the fixed order,
-starting at the K-th. Parts that run at the same time must share one key, because Companies
-House doesn't allow several keys for one application. So each part keeps N times the usual
-gap between requests, and all of them together stay under the limit.
+starting at the K-th. Each part runs with its owner's own Companies House account and key,
+one crawl per key, so every key stays under its own limit. Never run two parts on one key.
 From the repo root:  python -m src.crawl_companies_house [sample size | all] [years ...] [K/N]
 """
 
@@ -85,7 +84,7 @@ TITLES = {"MR", "MRS", "MS", "MISS", "DR", "SIR", "PROF", "REV", "LADY", "LORD",
 stats = Counter()            # requests made, for card #24
 flags = defaultdict(set)     # what to report: companies and officers the crawl couldn't take in full
 last_request = 0.0           # when the last request started (time.monotonic), for the spacing
-spacing = SECONDS_BETWEEN_REQUESTS   # the gap get() keeps; crawl() widens it when parts share the key
+spacing = SECONDS_BETWEEN_REQUESTS   # the gap get() keeps between requests
 session = requests.Session() # one connection, reused: about twice as fast as a new one per request
 
 
@@ -368,12 +367,13 @@ def crawl(sample_size=SAMPLE_SIZE, years=YEARS, part=PART, parts=PARTS):
     """Crawl part `part` of `parts` of sample_size query companies per year (None: all of
     them), the years in order. Query companies already finished are skipped.
 
-    Parts that run at the same time share the key's limit, so each part keeps `parts` times
-    the usual gap between requests: together they stay under 600 requests per 5 minutes.
+    Each part runs on its own computer with its owner's own key, so each part keeps the
+    usual gap between requests: every key stays under its own 600 requests per 5 minutes.
+    Never run two parts on one key: together they would pass that key's limit.
     Prints a progress line every 100 companies, and returns the counts for card #24.
     """
     global spacing
-    spacing = SECONDS_BETWEEN_REQUESTS * parts
+    spacing = SECONDS_BETWEEN_REQUESTS
     stats.clear()
     flags.clear()
     started = time.monotonic()
