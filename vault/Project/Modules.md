@@ -48,3 +48,5 @@ Attributes as written, in this order in `MENTION_COLS`:
 Outputs show display columns only: names become pseudonyms, birth dates are never shown, and postcodes keep only the district.
 
 Conventions: dates are ISO strings (YYYY-MM-DD). `company_id`, `query` and `predecessor` are company numbers; `a`, `b`, `subject` and `object` are mention ids. Schema version 1 (`SCHEMA_VERSION` in `src/evidence.py`).
+
+`flip` in decisions is empty, or the match to check first: `via` (the pair), `predecessor`, `p`, `if_same_person` (which what-if changes the decision) and `becomes` (the new decision). Built by `flip` in `src/decide.py`.

@@ -152,12 +152,65 @@ def thresholds(cost_miss, cost_wrong_flag, cost_ask):
     return clear_below, flag_above
 
 
+# How each decision is worded in a reason.
+IN_WORDS = {
+    "CLEAR": "low enough to clear",
+    "FLAG": "high enough to flag",
+    "NOT ENOUGH EVIDENCE": "too close to call, so check it by hand",
+}
+
+
+def verdict(chance, costs):
+    """FLAG, CLEAR or NOT ENOUGH EVIDENCE for a chance of failing, by the thresholds the costs give."""
+    clear_below, flag_above = thresholds(*costs)
+    if chance <= clear_below:
+        return "CLEAR"
+    if chance >= flag_above:
+        return "FLAG"
+    return "NOT ENOUGH EVIDENCE"
+
+
+def flip(matches, line, costs):
+    """37.1: the one match that would change the decision if we knew the truth about it, or None.
+
+    For each match in turn, two what-ifs, with every other match left as it is:
+    - it is NOT the same person: its p becomes 0
+    - it IS the same person: its p becomes 1
+    If either changes the decision, that match is worth checking by hand. Of several such
+    matches, the least certain one is returned: the one whose p is closest to 0.5. If both
+    what-ifs change the decision, the "not the same person" one is reported.
+
+    Returns a dict: via (the pair), predecessor (the earlier company's number), p,
+    if_same_person (which what-if changes the decision) and becomes (the new decision).
+    None when there are no matches, or no single match changes the answer.
+    """
+    if matches is None or matches.empty:
+        return None
+    unique = matches.drop_duplicates("via")   # one match can lead to several insolvent companies
+    now = verdict(p_fail(p_predecessor(unique["p"]), line), costs)
+    ps = list(unique["p"])
+    found = []
+    for position in range(len(unique)):
+        match = unique.iloc[position]
+        others = ps[:position] + ps[position + 1:]   # every match but this one, by its place in the table
+        for if_same_person, p_if in ((False, 0.0), (True, 1.0)):
+            becomes = verdict(p_fail(p_predecessor(others + [p_if]), line), costs)
+            if becomes != now:
+                found.append(dict(via=match["via"], predecessor=match["predecessor"], p=float(match["p"]),
+                                  if_same_person=if_same_person, becomes=becomes))
+    if not found:
+        return None
+    # The least certain first; the pair and the what-if only settle ties, so reruns agree (R7).
+    return min(found, key=lambda one: (abs(one["p"] - 0.5), one["via"], one["if_same_person"]))
+
+
 def decide(query, matches, line, costs):
     """FLAG, CLEAR or NOT ENOUGH EVIDENCE for one company, as one row of the decisions table.
 
     matches: what candidate_matches gave for this query (None means nothing to judge).
     line: (rate_without, rate_with), see p_fail. costs: (cost_miss, cost_wrong_flag, cost_ask).
-    The reason names companies by number only, never a person (masking).
+    The reason names companies by number only, never a person (masking). `flip` is the
+    match to check first, see flip(); None when no single match would change the decision.
     """
     if matches is None:
         # R8: no records is not good news. Abstain, and give no number we don't have.
@@ -167,13 +220,7 @@ def decide(query, matches, line, costs):
 
     p_pred = company_p_predecessor(matches)
     chance = p_fail(p_pred, line)
-    clear_below, flag_above = thresholds(*costs)
-    if chance <= clear_below:
-        decision, verdict = "CLEAR", "low enough to clear"
-    elif chance >= flag_above:
-        decision, verdict = "FLAG", "high enough to flag"
-    else:
-        decision, verdict = "NOT ENOUGH EVIDENCE", "too close to call, so check it by hand"
+    decision = verdict(chance, costs)
 
     if matches.empty:
         evidence = f"No director of {query} matches anyone who ran a company that went insolvent before it was formed"
@@ -181,6 +228,13 @@ def decide(query, matches, line, costs):
         best = matches.loc[matches["p"].idxmax()]
         evidence = (f"{query} may share a director with {best['predecessor']}, an earlier company that "
                     f"went insolvent ({best['p']:.0%} sure it's the same person)")
+    reason = f"{evidence}: its {chance:.0%} chance of failing within two years is {IN_WORDS[decision]}."
+
+    # 37.2: say what to check first. By company number only, like the rest of the reason.
+    to_check = flip(matches, line, costs)
+    if to_check is not None:
+        turns_out = "to be" if to_check["if_same_person"] else "not to be"
+        reason += (f" This becomes {to_check['becomes']} if the director matched with "
+                   f"{to_check['predecessor']} turns out {turns_out} the same person.")
     return dict(query=query, method=METHOD, decision=decision, p_predecessor=p_pred, p_fail=chance,
-                reason=f"{evidence}: its {chance:.0%} chance of failing within two years is {verdict}.",
-                flip=None)   # what would flip it comes with #37
+                reason=reason, flip=to_check)

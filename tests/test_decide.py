@@ -200,3 +200,77 @@ def test_the_line_stops_when_the_two_lists_are_not_the_same_length():
     from src.decide import fit_failure_line
     with pytest.raises(ValueError, match="same companies"):
         fit_failure_line([0.0, 1.0, 1.0], [False, True])
+
+
+# --- 37 What would flip the decision ---------------------------------------------------
+
+def links(*rows):
+    """Hand-made candidate matches: (pair, predecessor, p) each."""
+    return pd.DataFrame([dict(query="Q", predecessor=predecessor, via=via, p=p, method="hand_made", depends_on=[])
+                         for via, predecessor, p in rows], columns=ev.LINK_COLS)
+
+
+def test_on_the_tiny_world_the_flip_names_the_look_alike_match():
+    from src.decide import flip
+    mentions, claims, truth = tiny_world()
+    person = truth["mention"]
+    matches = candidate_matches("TW000003", mentions, claims, hand_made_pairs(truth))
+    found = flip(matches, LINE, COSTS)
+    # Northgate Roofing is CLEAR. It would not be if its Daniel Harrow were the insolvent one.
+    assert found["via"] == tuple(sorted((person["p1"], person["p3"])))
+    assert (found["predecessor"], found["if_same_person"], found["becomes"]) == ("TW000001", True, "FLAG")
+
+
+def test_the_phoenix_flag_goes_away_if_its_match_is_not_the_same_person():
+    from src.decide import flip
+    mentions, claims, truth = tiny_world()
+    found = flip(candidate_matches("TW000002", mentions, claims, hand_made_pairs(truth)), LINE, COSTS)
+    assert (found["predecessor"], found["if_same_person"], found["becomes"]) == ("TW000001", False, "CLEAR")
+
+
+def test_no_flip_without_matches():
+    from src.decide import flip
+    assert flip(None, LINE, COSTS) is None
+    assert flip(links(), LINE, COSTS) is None
+
+
+def test_no_flip_when_no_single_match_changes_the_answer():
+    from src.decide import flip
+    # Three near-certain matches: take one away, or confirm one, and it is still a FLAG.
+    sure = links((("a", "x"), "TW1", 0.95), (("b", "y"), "TW2", 0.95), (("c", "z"), "TW3", 0.95))
+    assert decide("Q", sure, LINE, COSTS)["decision"] == "FLAG"
+    assert flip(sure, LINE, COSTS) is None
+
+
+def test_of_several_flips_the_least_certain_match_is_named():
+    from src.decide import flip
+    # Either match, if confirmed, turns this CLEAR into a FLAG. The 0.04 one is closer to 0.5.
+    two = links((("a", "x"), "TW1", 0.01), (("b", "y"), "TW2", 0.04))
+    assert decide("Q", two, LINE, COSTS)["decision"] == "CLEAR"
+    assert flip(two, LINE, COSTS)["predecessor"] == "TW2"
+
+
+def test_decide_fills_flip_and_says_it_in_the_reason_by_company_number():
+    mentions, claims, truth = tiny_world()
+    rows = decide_all(mentions, claims, hand_made_pairs(truth))
+    assert rows["TW000002"]["flip"]["becomes"] == "CLEAR"
+    assert rows["TW000002"]["reason"].endswith(
+        "This becomes CLEAR if the director matched with TW000001 turns out not to be the same person.")
+    assert rows["TW000006"]["flip"] is None and rows["TW000007"]["flip"] is None   # nothing to check
+    assert "This becomes" not in rows["TW000007"]["reason"]
+
+
+def test_flip_takes_away_one_match_at_a_time_whatever_the_tables_row_labels():
+    from src.decide import flip
+    sure = links((("a", "x"), "TW1", 0.95), (("b", "y"), "TW2", 0.95), (("c", "z"), "TW3", 0.95))
+    sure.index = [0, 0, 0]   # the same row label three times, as pd.concat leaves it
+    assert flip(sure, LINE, COSTS) is None
+
+
+def test_a_match_that_flips_both_ways_is_reported_as_not_the_same_person():
+    from src.decide import flip
+    # One 50% match: too close to call. Rejecting it clears the company, confirming it flags it.
+    unsure = links((("a", "x"), "TW1", 0.5))
+    assert decide("Q", unsure, LINE, COSTS)["decision"] == "NOT ENOUGH EVIDENCE"
+    found = flip(unsure, LINE, COSTS)
+    assert (found["if_same_person"], found["becomes"]) == (False, "CLEAR")
