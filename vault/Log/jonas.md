@@ -15,3 +15,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) read the new instructions and updated this log.
 - **Next:** on my own computer: Git, Obsidian, gh, clone, drag #5 on the board, read Rules, Timeline, Calls and Task Protocol.
 - **Blocked by:** nothing
+
+## 2026-11-14 07:12
+- **Task:** #16 Draft the architecture decisions and hard rules (card on the board)
+- **Did:** Drafted ADR-001 to ADR-005 and the hard rules R1–R8 as proposed notes in `Decisions/`. Open choices are marked for the call: the matcher in ADR-003, how uncertainty is propagated in ADR-004, and the attribute columns in ADR-001.
+- **Result:** notes only, status proposed. Not confirmed by the team yet.
+- **AI used for:** Claude (claude.ai) read the repo, created card #16, drafted the six notes from our TENSEGRITY concept at my request and pushed them.
+- **Next:** confirm or change them on the 08:00 call, drag #16 to In Progress, finish #5 Setup.
+- **Blocked by:** nothing
