@@ -62,7 +62,8 @@ def test_company_attributes_as_written():
     assert query["incorporated_on"] == "2021-04-20"
     assert query["postcode"] == "ZZ1 1AB"
     assert query["sic_code"] == "41202"   # the construction code, not the first one (68100)
-    assert ev.is_blank(company_rows()["display_name"]).all()   # masking is card #111
+    assert query["display_name"] == "HARROW BUILD SERVICES LTD"   # a company's name may be shown
+    assert query["display_postcode"] == "ZZ1"                     # the district only
 
 
 def test_dissolved_company_keeps_its_end_date():
@@ -312,3 +313,39 @@ def test_companies_and_officers_pass_the_schema_checks():
     people, claims = ch.officers_to_evidence(raw)
     mentions = pd.concat([ch.companies_to_mentions(raw), people], ignore_index=True)
     ev.check_rows(mentions, claims)   # raises SchemaError if any row is bad
+
+
+# --- 49.2 The display columns (#111) ---------------------------------------------------
+
+def test_every_person_has_a_display_name_that_hides_the_real_one():
+    people, _ = ch.officers_to_evidence(ch.load_raw(SAMPLE))
+    assert not ev.is_blank(people["display_name"]).any()
+    for name, shown in zip(people["name"], people["display_name"]):
+        assert shown.startswith("Person ")
+        for word in name.replace(",", " ").split():
+            assert word.lower() not in shown.lower()
+
+
+def test_the_same_name_gets_the_same_pseudonym_and_another_name_another():
+    people, _ = ch.officers_to_evidence(ch.load_raw(SAMPLE))
+    shown = people.groupby("name")["display_name"].nunique()
+    assert (shown == 1).all()                                   # one pseudonym per name
+    assert people["display_name"].nunique() == people["name"].nunique()
+
+
+def test_a_persons_display_postcode_is_the_district_only():
+    people, _ = ch.officers_to_evidence(ch.load_raw(SAMPLE))
+    look_alike = people.set_index("officer_id").loc["tw-officer-03"]
+    assert (look_alike["postcode"], look_alike["display_postcode"]) == ("ZZ7 2CD", "ZZ7")
+
+
+def test_a_missing_postcode_gives_an_empty_display_postcode():
+    raw = ch.load_raw(SAMPLE)
+    path = "tests/raw_sample/officers/TW000001.json"
+    officers = json.loads(raw[path])
+    for officer in officers["items"]:
+        officer.pop("address", None)
+    raw[path] = json.dumps(officers).encode("utf-8")
+    people, _ = ch.officers_to_evidence(raw)
+    from_that_file = people[people["record_ref"].str.startswith(path)]
+    assert len(from_that_file) > 0 and from_that_file["display_postcode"].isna().all()   # None, not ""

@@ -13,7 +13,13 @@ The functions below take `raw`: {path: the file's bytes}, for example
 Bytes, not parsed JSON, because every row keeps the file's hash in record_ref (R1).
 
 Names, dates and codes are kept as the register writes them. Nothing is merged (R6).
-The masked display columns stay empty here: that is card #111.
+
+Masking happens here, once, so no later box has to remember it (card #111). Outputs show
+the display columns only:
+- a person's display_name is a pseudonym, the same for the same name
+- a company's display_name is its name: a company is not a person, and it is public by number anyway
+- display_postcode keeps only the district
+- birth dates have no display column: they are never shown
 """
 
 import json
@@ -23,6 +29,7 @@ from pathlib import Path, PurePosixPath
 import pandas as pd
 
 from src import evidence as ev
+from src import mask
 
 ROOT = Path(__file__).resolve().parents[1]   # the repo folder: this file is in src/, one level below it
 
@@ -161,18 +168,21 @@ def companies_to_mentions(raw):
     rows = []
     for path, number, raw_bytes in files_in(raw, "company"):
         profile = json.loads(raw_bytes)
+        postcode = profile.get("registered_office_address", {}).get("postal_code")
         row = dict.fromkeys(ev.MENTION_COLS)   # every column, empty until filled
         row.update(
             mention_id=company_mention_id(number),
             kind="company",
             name=profile["company_name"],
+            display_name=profile["company_name"],   # a company's name may be shown
             company_number=profile["company_number"],
             status=profile.get("company_status"),
             incorporated_on=profile.get("date_of_creation"),
             dissolved_on=profile.get("date_of_cessation"),
             insolvency_on=insolvency_start(insolvency.get(number)),
             sic_code=pick_sic_code(profile.get("sic_codes", [])),
-            postcode=profile.get("registered_office_address", {}).get("postal_code"),
+            postcode=postcode,
+            display_postcode=mask.mask_postcode(postcode) or None,   # None, like every other empty cell
             **provenance(path, 0, raw_bytes),   # one company per file, so row 0
         )
         rows.append(row)
@@ -225,17 +235,20 @@ def officers_to_evidence(raw):
             # and stays the same on every crawl, so the ids do too (R7).
             appointment = officer["links"]["self"]
             born = officer.get("date_of_birth", {})
+            postcode = officer.get("address", {}).get("postal_code")
 
             person = dict.fromkeys(ev.MENTION_COLS)   # every column, empty until filled
             person.update(
                 mention_id=ev.make_id(SOURCE, f"person{appointment}"),
                 kind="person",
                 name=officer["name"],
+                display_name=mask.pseudonym(officer["name"]) or None,   # the only name an output may show
                 birth_month=born.get("month"),
                 birth_year=born.get("year"),
                 nationality=officer.get("nationality"),
                 officer_id=officer_id(officer),
-                postcode=officer.get("address", {}).get("postal_code"),
+                postcode=postcode,
+                display_postcode=mask.mask_postcode(postcode) or None,   # None, like every other empty cell
                 **provenance(path, position, raw_bytes),
             )
             mentions.append(person)
