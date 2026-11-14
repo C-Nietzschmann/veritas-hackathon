@@ -122,3 +122,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) reviewed and fixed the baselines and drafted the notes at my request.
 - **Next:** 27.4 `score()` once #126 merges, then the first numbers in Evaluation. The #24 crawl. Team call at 12:30 when Jan is back.
 - **Blocked by:** 27.4 waits for #126
+
+## 2026-11-14 12:20
+- **Task:** #27 baselines (27.4 scoring) and #132 decision layer fix (cards on the board), plus the #24 crawl on my PC
+- **Did:** Approved Cristiano's #125 (with follow-ups) and #126, and he merged both. He applied the follow-ups in #131, which I checked. Built `score()` and `score_methods()` in `src/evaluate.py` (PR #130), and put the baselines' first numbers, on the tiny world, in Evaluation. Fixed `decide.py` so only directorships count and its output is checked against the schema, as Cristiano asked (card #132, PR #133).
+- **Result:** on the tiny world, same name flags 3 with 2 false flags, while flag nothing and officer links miss the one failure. That's a code check, not a result. 105 tests pass on #133.
+- **AI used for:** Claude (claude.ai) reviewed the PRs, wrote `score()`, the decision layer fix and their tests, and drafted the approvals, all at my request.
+- **Next:** read and ship #130 and #133. The 12:30 call: owners for #29 and #30/#31, slice size, and splitting the crawl with Jan.
+- **Blocked by:** nothing
