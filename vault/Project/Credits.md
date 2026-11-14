@@ -5,7 +5,7 @@ Hackathon rule: public datasets, open-source libraries and pre-trained models ar
 ## Datasets
 | Name | Link | Licence | Used for |
 |---|---|---|---|
-| Companies House public data API | https://developer.company-information.service.gov.uk/ | Crown copyright. Companies House says: "We impose no rules or requirements on how the information on the public register is used" ([Companies House data products](https://www.gov.uk/guidance/companies-house-data-products)). Checked 14 Nov: the API has no separate licence. The same page says users must follow data protection and copyright law, which is why names, birth dates and postcodes are masked in every output (#49). | Company profiles, insolvency cases and officer lists of UK construction companies: the raw data behind the mentions, the claims and the failure label |
+| Companies House public data API | https://developer.company-information.service.gov.uk/ | Crown copyright. Companies House says: "We impose no rules or requirements on how the information on the public register is used" ([Companies House data products](https://www.gov.uk/guidance/companies-house-data-products)). Checked 14 Nov: the API has no separate licence. Rate limit: 600 requests per 5 minutes per key ([developer guidelines](https://developer.company-information.service.gov.uk/developer-guidelines)). The same page says users must follow data protection and copyright law, which is why names, birth dates and postcodes are masked in every output (#49). | Company profiles, insolvency cases and officer lists of UK construction companies: the raw data behind the mentions, the claims and the failure label |
 
 ## Pre-trained models
 | Name | Link | Licence | Used for |
