@@ -74,3 +74,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) wrote the schema, the tests and the draft "How it works" while I was away.
 - **Next:** read the code, open the pull request from `task-22` (description drafted), confirm I can explain it, then ship #22.
 - **Blocked by:** nothing
+
+## 2026-11-14 08:55
+- **Task:** #22 schema and #21 tiny world (cards on the board)
+- **Did:** Opened pull request #117 for the schema; its CI and the linked-task check pass. Built the tiny world on top of it: 28 hand-made rows with known answers (a phoenix with a new officer id, a same-name look-alike, a common name, a future insolvency that must not leak, a company with no evidence, a clean history, a copied source). Opened #118, stacked on #117.
+- **Result:** 26 tests pass locally. Both pull requests wait for me to read them before they merge.
+- **AI used for:** Claude (claude.ai) built the tiny world from the cases I approved and opened both pull requests at my request.
+- **Next:** read and ship #117, then #118. Then pick the next card: the baselines (#27) give the first numbers for the 14:00 gate.
+- **Blocked by:** nothing
