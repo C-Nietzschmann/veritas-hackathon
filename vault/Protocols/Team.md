@@ -27,6 +27,6 @@ Write when you are offline (sleep, meals, family, sport) so nobody waits for you
 
 | Handle | Saturday | Sunday |
 |---|---|---|
-| | | |
+| phantodevc | Always online | Always online |
 | | | |
 | | | |
