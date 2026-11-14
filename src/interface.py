@@ -11,6 +11,8 @@ from src/ but the shared schema (ADR-005), so show() takes the decisions the dec
 layer already made instead of running it.
 """
 
+import io
+
 import pandas as pd
 from matplotlib.figure import Figure
 
@@ -178,8 +180,10 @@ def show(query, mentions, claims, matches, decisions):
     fig = draw_graph(query, mentions, claims, links, row["decision"])
     table = evidence_table(query, mentions, claims, links)
     try:                # in a notebook, show both; elsewhere just return them
-        from IPython.display import display
-        display(fig)
+        from IPython.display import Image, display
+        png = io.BytesIO()
+        fig.savefig(png, format="png", dpi=100, bbox_inches="tight")   # a picture GitHub can show
+        display(Image(png.getvalue()))
         display(table)
     except ImportError:
         pass
