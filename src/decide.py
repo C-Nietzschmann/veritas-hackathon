@@ -188,10 +188,11 @@ def flip(matches, line, costs):
         return None
     unique = matches.drop_duplicates("via")   # one match can lead to several insolvent companies
     now = verdict(p_fail(p_predecessor(unique["p"]), line), costs)
+    ps = list(unique["p"])
     found = []
     for position in range(len(unique)):
         match = unique.iloc[position]
-        others = list(unique["p"].drop(unique.index[position]))
+        others = ps[:position] + ps[position + 1:]   # every match but this one, by its place in the table
         for if_same_person, p_if in ((False, 0.0), (True, 1.0)):
             becomes = verdict(p_fail(p_predecessor(others + [p_if]), line), costs)
             if becomes != now:

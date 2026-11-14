@@ -258,3 +258,19 @@ def test_decide_fills_flip_and_says_it_in_the_reason_by_company_number():
         "This becomes CLEAR if the director matched with TW000001 turns out not to be the same person.")
     assert rows["TW000006"]["flip"] is None and rows["TW000007"]["flip"] is None   # nothing to check
     assert "This becomes" not in rows["TW000007"]["reason"]
+
+
+def test_flip_takes_away_one_match_at_a_time_whatever_the_tables_row_labels():
+    from src.decide import flip
+    sure = links((("a", "x"), "TW1", 0.95), (("b", "y"), "TW2", 0.95), (("c", "z"), "TW3", 0.95))
+    sure.index = [0, 0, 0]   # the same row label three times, as pd.concat leaves it
+    assert flip(sure, LINE, COSTS) is None
+
+
+def test_a_match_that_flips_both_ways_is_reported_as_not_the_same_person():
+    from src.decide import flip
+    # One 50% match: too close to call. Rejecting it clears the company, confirming it flags it.
+    unsure = links((("a", "x"), "TW1", 0.5))
+    assert decide("Q", unsure, LINE, COSTS)["decision"] == "NOT ENOUGH EVIDENCE"
+    found = flip(unsure, LINE, COSTS)
+    assert (found["if_same_person"], found["becomes"]) == (False, "CLEAR")
