@@ -62,7 +62,7 @@ SECONDS_AFTER_ERROR = 30     # the first pause after an error; it doubles with e
 # The run settings: which years to crawl, in this order, how many query companies per year,
 # and which part of them this computer takes.
 YEARS = (2021, 2022)         # 2021 (train and validation) first, then 2022 (test); (2021,) crawls one year
-SAMPLE_SIZE = 25             # query companies per year for the fresh-run test; None means all
+SAMPLE_SIZE = 10             # query companies per year for the fresh-run test; None means all
 PART, PARTS = 1, 1           # part 1 of 1 is everything; part 2 of 3 takes every 3rd company from the 2nd
 
 # The slice (#71): construction, SIC 2007 divisions 41-43, companies formed in the YEARS above.

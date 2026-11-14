@@ -261,6 +261,22 @@ def test_the_query_order_is_fixed_and_a_bigger_sample_contains_a_smaller_one(mon
     assert crawl.query_companies(2021, sample_size=10) == everything[:10]  # same order, nested
 
 
+def test_a_run_without_settings_takes_10_companies_of_each_year(monkeypatch, raw_dir):
+    # The fresh-run test (#155) runs the crawler with no arguments, so it uses the defaults.
+    def fake_get(path, params=None):
+        if path == "/advanced-search/companies":       # 30 companies in each year's slice
+            year = params["incorporated_from"][:4]
+            items = [{"company_number": f"TW{year[2:]}{k:04d}"} for k in range(30)]
+            return 200, json.dumps({"hits": 30, "items": items}).encode()
+        return 404, b'{"error": "Not Found"}'           # no profiles: enough to count the companies
+
+    monkeypatch.setattr(crawl, "get", fake_get)
+    monkeypatch.setattr(crawl, "spacing", crawl.SECONDS_BETWEEN_REQUESTS)   # put back after the test
+    crawl.crawl()
+    rows = (raw_dir / crawl.DONE_FILE).read_text(encoding="utf-8").splitlines()[1:]
+    assert [row.split(",")[0] for row in rows] == ["2021"] * 10 + ["2022"] * 10
+
+
 def test_a_company_joining_the_slice_doesnt_move_the_others(monkeypatch, raw_dir):
     def order(numbers, folder):
         monkeypatch.setattr(crawl, "RAW_DIR", raw_dir / folder)
