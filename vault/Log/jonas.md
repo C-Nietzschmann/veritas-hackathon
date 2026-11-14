@@ -138,3 +138,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) in VS Code wrote the crawler and its tests from my decisions, probed the real API's answers, checked the API facts and the plan with a multi-agent workflow, ran the small crawl and the counts with the team's adapter and label code, and opened PR #134, all at my request.
 - **Next:** read the crawler line by line and write its "How it works" note. Pick SAMPLE_SIZE for the fresh run and the size of the 2021 and 2022 crawls. Part 2 of 2 runs on a second computer with the same key. Ship #24.
 - **Blocked by:** nothing
+
+## 2026-11-14 13:43
+- **Task:** #24 Crawl the Companies House slice (card on the board)
+- **Did:** Undid the rate part of C-Nietzschmann's 2ef2ca0 in PR #134: every part of the crawl shares my key, and part K of N keeps N times the gap, because Companies House treats several keys for one application as getting round the limit. Moved my 2021 crawl (part 1 of 2) out of VS Code into its own PowerShell window. Counted, read-only, how the query companies crawled so far ended.
+- **Result:** PR #134 checks green on 3e94e7b. 231 query companies of 2021 part 1 finished by 13:41. Of the 281 query companies crawled so far, 0 failed through insolvency within 24 months and 92 were dissolved within 24 months; 91 of those 92 never filed accounts.
+- **AI used for:** Claude Code (Opus 5.5) restored the rule, ran the tests and checks, restarted the crawl and counted the failure routes with the team's adapter and label code, at my request.
+- **Next:** go through the crawler and write the "How it works" note. Decide with the team whether the label should count dissolution. phantodevc runs part 2 of 2 on my key. Ship #24 when I say so.
+- **Blocked by:** nothing
