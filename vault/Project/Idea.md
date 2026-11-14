@@ -55,6 +55,20 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 
 **Slice (chosen 08:00, see Plan):** construction (SIC 41–43), companies formed in 2021 and 2022. Card #19 counts the positives first: if fewer than about 50 young companies fail within 24 months *and* have a director with an earlier insolvent company, we widen the years.
 
+**Positives counted (card #62, Sat 14:27, phantodevc's crawl: part 2 of 2021, the first 482 query companies):**
+
+| | Jan–Sep 2021 (train) | Oct–Dec 2021 (validation) | All |
+|---|---|---|---|
+| Companies | 380 | 102 | 482 |
+| Failed within 24 months (insolvent or dissolved, the label since #144) | 139 | 34 | 173 |
+| … of those, liquidation or administration | 2 | 0 | 2 |
+| A director with an earlier insolvent company, same officer id | 8 | 2 | 10 |
+| … or same name and birth month and year | 19 | 6 | 25 |
+| **Positives**: failed and such a director, same officer id | 3 | 0 | **3** |
+| **Positives**: failed and such a director, same name and birth date | 6 | 1 | **7** |
+
+So far 7 positives (3 by officer id), well under 50. At about 1.5% of companies, 50 needs roughly 3,400 companies (about 8,000 by officer id): an estimate from a small sample, not a measurement. 2022 isn't crawled yet. Counted with the team's adapter, `label_failures` and `split`; "earlier insolvent" means liquidation or administration before the company was formed, among the companies the crawl reached.
+
 ## Model
 - **Baselines (three):** flag nothing; same name means same person (the hard merge); and Companies House officer links only, which is what a careful supplier sees on the website today.
 - **First real model:** entity resolution that scores pairs of people (name, birth month and year, postcode, nationality) with a calibrated probability, trained on officer ids as labels and never as a feature. Then P(insolvent predecessor) = 1 − ∏(1 − pᵢ) over the candidate matches, a straight line from that to P(fail), and the cost-based decision layer.
@@ -63,8 +77,8 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 
 ## How we measure
 - **Main metric and why:** precision and recall of FLAG on 2022 companies, at the thresholds the stated costs give, next to all three baselines. Failures are rare, so accuracy would say nothing. PR-AUC alongside.
-- **Label (chosen):** the company goes into liquidation or administration within 24 months of incorporation.
-  - Exactly: a company failed if its first liquidation or administration started on or before the day 24 months after its incorporation (a members' voluntary liquidation, which is a solvent wind-down, does not count), and no insolvency or a later one means it did not fail.
+- **Label (chosen, changed 14 Nov: see the decision note Early dissolution counts as failure):** the company goes into liquidation or administration, or is dissolved, within 24 months of incorporation.
+  - Exactly: a company failed if, on or before the day 24 months after its incorporation, its first liquidation or administration started or it was dissolved (removed from the register). Neither, or only later, means it did not fail. A members' voluntary liquidation, which is a solvent wind-down, is not counted as an insolvency, but a dissolution inside the 24 months counts whatever led to it.
 - **Split (chosen):** train on companies formed Jan–Sep 2021, validate on Oct–Dec 2021, test on 2022. Directors' histories are only used up to each company's formation date (as-of rule, ADR-001).
 - **Limitation we state:** the 2021 companies' 24-month outcomes run into 2023, past the start of the test year.
 - **The three costs (chosen):** a missed case 10, a wrong flag 2, asking 1. That means flag above P(fail) 0.5, clear below 0.1, and NOT ENOUGH EVIDENCE in between. The call can still change them.

@@ -36,7 +36,7 @@ Defined once in `src/evidence.py`, each with its check. Change one only on a cal
 |---|---|---|---|
 | **mentions** | adapter | every box | `mention_id`, `kind` (company or person), `name` as written, `display_name` (masked), the attributes below, and provenance (`source`, `record_ref` with raw file, row and hash, `origin`, `adapter`) |
 | **claims** | adapter | evidence, decision layer, interface | `claim_id`, `subject`, `relation` (`director_of` or `controls`), `object`, `valid_from`, `valid_to`, provenance |
-| **labels** | adapter | decision layer, evaluation | `company_id`, `formed_on`, `failed` (liquidation or administration within 24 months), `split` (train, validation or test) |
+| **labels** | adapter | decision layer, evaluation | `company_id`, `formed_on`, `failed` (liquidation, administration or dissolution within 24 months), `split` (train, validation or test) |
 | **pairs** | entity resolution, baselines | decision layer, evaluation, interface | `a`, `b`, `p`, `features`, `method`, `label` (same officer id, for training and checking only) |
 | **links** | decision layer | interface, evaluation | `query`, `predecessor`, `via` (the pair it rests on), `p`, `method`, `depends_on` |
 | **decisions** | decision layer, baselines | interface, evaluation | `query`, `method`, `decision`, `p_predecessor`, `p_fail`, `reason`, `flip` |
@@ -49,3 +49,5 @@ Attributes as written, in this order in `MENTION_COLS`:
 Outputs show display columns only: names become pseudonyms, birth dates are never shown, and postcodes keep only the district.
 
 Conventions: dates are ISO strings (YYYY-MM-DD). `company_id`, `query` and `predecessor` are company numbers; `a`, `b`, `subject` and `object` are mention ids. Schema version 1 (`SCHEMA_VERSION` in `src/evidence.py`).
+
+`flip` in decisions is empty, or the match to check first: `via` (the pair), `predecessor`, `p`, `if_same_person` (which what-if changes the decision) and `becomes` (the new decision). Built by `flip` in `src/decide.py`.

@@ -50,6 +50,14 @@ scan() {
 }
 
 problems=$(scan)
+
+# Real directors' names in main.ipynb (#112). Only where the raw data and the project's
+# Python are on this computer: GitHub has neither, so there it is skipped.
+if [ -d data/raw ] && [ -x .venv/bin/python ]; then
+  names=$(.venv/bin/python scripts/name_guard.py) || problems="$problems
+$names"
+fi
+
 if [ -n "$problems" ]; then
   echo "$problems"
   echo "check failed: nothing was shared. Fix the lines above and run git sync again."

@@ -130,3 +130,35 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) reviewed the PRs, wrote `score()`, the decision layer fix and their tests, and drafted the approvals, all at my request.
 - **Next:** read and ship #130 and #133. The 12:30 call: owners for #29 and #30/#31, slice size, and splitting the crawl with Jan.
 - **Blocked by:** nothing
+
+## 2026-11-14 12:37
+- **Task:** #24 Crawl the Companies House slice, sub-tasks #71 to #73 (cards on the board)
+- **Did:** Built `src/crawl_companies_house.py` and 25 tests with a fake API. It lists the slice month by month with the advanced search, then fetches each query company's profile, insolvency file when flagged and officers, each director's appointments and every company in them, and a name search that follows up to 20 officers with the same name words (their active companies skipped). Settings for years, sample size and part K of N; it resumes where it stopped, reuses one connection and stays under 600 requests per 5 minutes. Moved the API key from `.env.example` into `.env` before anything was committed. Merged main into the branch, and C-Nietzschmann's Companies House row with mine in Credits. Ran the small real run and started the 2021 crawl as part 1 of 2.
+- **Result:** PR #134 open, checks green. The slice is 77,513 companies formed in 2021 and 84,250 in 2022. The small run took 1,140 requests in 32 minutes: median 8.5 requests per query company, mean 21.9, max 174. 0 of its 50 companies failed within 24 months. Numbers on #24.
+- **AI used for:** Claude Code (Opus 5.5) in VS Code wrote the crawler and its tests from my decisions, probed the real API's answers, checked the API facts and the plan with a multi-agent workflow, ran the small crawl and the counts with the team's adapter and label code, and opened PR #134, all at my request.
+- **Next:** read the crawler line by line and write its "How it works" note. Pick SAMPLE_SIZE for the fresh run and the size of the 2021 and 2022 crawls. Part 2 of 2 runs on a second computer with the same key. Ship #24.
+- **Blocked by:** nothing
+
+## 2026-11-14 13:43
+- **Task:** #24 Crawl the Companies House slice (card on the board)
+- **Did:** Undid the rate part of C-Nietzschmann's 2ef2ca0 in PR #134: every part of the crawl shares my key, and part K of N keeps N times the gap, because Companies House treats several keys for one application as getting round the limit. Moved my 2021 crawl (part 1 of 2) out of VS Code into its own PowerShell window. Counted, read-only, how the query companies crawled so far ended.
+- **Result:** PR #134 checks green on 3e94e7b. 231 query companies of 2021 part 1 finished by 13:41. Of the 281 query companies crawled so far, 0 failed through insolvency within 24 months and 92 were dissolved within 24 months; 91 of those 92 never filed accounts.
+- **AI used for:** Claude Code (Opus 5.5) restored the rule, ran the tests and checks, restarted the crawl and counted the failure routes with the team's adapter and label code, at my request.
+- **Next:** go through the crawler and write the "How it works" note. Decide with the team whether the label should count dissolution. phantodevc runs part 2 of 2 on my key. Ship #24 when I say so.
+- **Blocked by:** nothing
+
+## 2026-11-14 15:32
+- **Task:** #36 Run main.ipynb end to end on real data (card on the board)
+- **Did:** Built `src/real_slice.py`. It reads the crawl's finished query companies, runs the adapter over `data/raw`, and labels and splits them with the team's `label_failures` and `split`. It also builds the key table: each company under its strongest link to an insolvent earlier company, with 95% Wilson intervals. Ran every box of `main.ipynb` on part 1 of 2021 in my scratch notebook `notebooks/jonas_real.ipynb`, on a copy of the crawl's files taken at 15:04. The name guard doesn't run on Windows yet (#112), so I ran its functions on the notebook by hand: no real name found.
+- **Result:** Draft PR #154, checks green. 438 query companies (331 train, 107 validation): 137 failed under the team label, none through insolvency. With a predecessor by officer id or by name and birth month and year, 4 of 30 failed (13%, 5-30%); with none, 120 of 369 (33%, 28-37%). The failure line slopes down (35% to 9.6%), so FLAG can never fire, and the decision layer says NOT ENOUGH EVIDENCE for 106 of 107 validation companies. Blocking kept all 45 same-officer-id pairs in validation.
+- **AI used for:** Claude Code (Opus 5.5) in VS Code wrote the loader, its tests and the notebook, ran every box and the checks, and opened the draft PR, at my request.
+- **Next:** read `real_slice.py` and the notebook. Decide with the team on the label, the costs and the downward line (#94). Ship #24 when ready.
+- **Blocked by:** nothing
+
+## 2026-11-14 16:38
+- **Task:** #36 Run main.ipynb end to end on real data (card on the board)
+- **Did:** Defined a second key table in commit 469c621 (16:05), before it touched real data. A predecessor counts only if it failed the way our label defines failure (liquidation, administration or dissolution within 24 months of its own incorporation), dated on or before the new company's formation. Its links come from the saved appointment lists, because a predecessor that was only dissolved has no officer list. Ran it next to the first table on the same 438 companies. Also measured, read-only, the share of crawl requests that went to profiles of companies a director's own appointment list showed as active. Four independent read-only checks recounted and reviewed both.
+- **Result:** Second table: 24 of 71 companies with a predecessor by officer id or by name and birth month and year failed (34%, 24-45%), against 96 of 310 without one (31%, 26-36%). No row has a failure through insolvency. Skipping those active companies would save 1,036 of 8,824 requests (11.7%), under the 25% bar, so I prepared no crawler change. Draft PR #154 updated, checks green.
+- **AI used for:** Claude Code (Opus 5.5) wrote and tested the second table, ran it and the request replay, and had four subagents recount and review both, at my request.
+- **Next:** decide with the team what the two tables mean for the label and the predecessor signal. Keep #154 a draft until main.ipynb runs on real data.
+- **Blocked by:** nothing

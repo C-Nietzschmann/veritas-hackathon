@@ -19,13 +19,15 @@ from tests.tiny_world import tiny_world
 # exists the test runs for real. It shows as XPASS while its rule holds (then delete its
 # xfail line) and red when the rule is broken.
 #
-# Entity resolution (src/resolve.py, cards #30, #31) doesn't exist yet, so its function
-# name below is a guess. When the box lands, change the line marked GUESS to its real call.
+# Entity resolution (src/resolve.py, cards #30, #31) is built, so its tests run for real.
 
 def resolve_pairs(mentions):
-    """Entity resolution: mentions -> the pairs table (a, b, p, ...)."""
+    """Entity resolution: mentions -> the pairs table (a, b, p, ...), scored by a matcher
+    trained on the mentions' own labelled pairs."""
     from src import resolve
-    return resolve.candidate_pairs(mentions)   # GUESS: wire to the real call (cards #30, #31)
+    labelled = resolve.labelled_pairs(mentions)
+    model = resolve.train_matcher(resolve.pair_features(labelled, mentions), labelled["label"], seed=42)
+    return resolve.scored_pairs(model, labelled, mentions)
 
 
 # --- The rules ---------------------------------------------------------------------
@@ -77,7 +79,6 @@ def test_r3_every_observed_edge_is_a_stated_claim():
     assert "guess" not in set(edges["claim_id"])
 
 
-@pytest.mark.xfail(raises=ImportError, reason="needs entity resolution, cards #30, #31")
 def test_r4_every_pair_carries_a_p():
     """R4: uncertainty survives downstream. Every pair from entity resolution carries a
     probability p between 0 and 1. A missing p becomes NaN, which fails."""
@@ -123,7 +124,6 @@ def test_r6_look_alikes_stay_two_mentions():
         assert name[a] == name[b]   # same name: exactly what a careless merge would join
 
 
-@pytest.mark.xfail(raises=ImportError, reason="needs entity resolution, cards #30, #31")
 def test_r6_look_alikes_get_a_same_person_link_not_a_merge():
     """R6: entity resolution joins each look-alike pair with a "same person?" link and
     its probability, never a hard yes or no."""
@@ -135,14 +135,23 @@ def test_r6_look_alikes_get_a_same_person_link_not_a_merge():
         assert 0 < p_of[pair] < 1
 
 
-@pytest.mark.xfail(raises=ImportError, reason="placeholder until the one-identity task, card #32")
 def test_r7_same_input_and_seed_give_the_same_output():
-    """R7: inferences are reproducible and revisable. A placeholder: it checks nothing yet.
-    The day src/infer.py exists it turns red, until the real test is written here: same
-    input and seed give identical output, and changing one match changes only the links
-    that list it in depends_on."""
-    from src import infer  # noqa: F401
-    pytest.fail("src/infer.py exists now: write the R7 test (card #32)")
+    """R7: inferences are reproducible and revisable. The same pairs and seed give identical
+    output, and changing one match changes only the links that list it in depends_on."""
+    from src import infer
+    rows = [("d1", "x", 0.5, None, "by hand", None), ("d1", "y", 0.5, None, "by hand", None),
+            ("d2", "z", 0.6, None, "by hand", None), ("d2", "w", 0.3, None, "by hand", None)]
+    pairs = pd.DataFrame(rows, columns=ev.PAIR_COLS)
+    before = infer.sample_worlds(pairs, n=400, seed=42)
+    assert before.equals(infer.sample_worlds(pairs, n=400, seed=42))
+
+    changed = pairs.copy()
+    changed.loc[2, "p"] = 0.9   # we now know more about the match d2-z
+    after = infer.sample_worlds(changed, n=400, seed=42)
+    rests_on_it = before["depends_on"].map(lambda group: ("d2", "z") in group)
+    assert list(rests_on_it) == [False, False, True, True]
+    assert before.loc[~rests_on_it, "p"].equals(after.loc[~rests_on_it, "p"])   # d1's links: untouched
+    assert (before.loc[rests_on_it, "p"] != after.loc[rests_on_it, "p"]).all()  # d2's links: both moved
 
 
 def test_r8_no_evidence_gives_not_enough_evidence():
