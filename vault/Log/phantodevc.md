@@ -70,7 +70,7 @@ Up: [[Log]]
 - **Next:** #48 fresh-run test on Sunday, then ship the README. Crawl part 2 keeps running.
 - **Blocked by:** nothing
 
-## 2026-11-14 14:30
+## 2026-11-14 14:28
 - **Task:** #62 count the positives (card on the board, parent #19), and #37 closed
 - **Did:** Counted failures and positives on my crawl sample (part 2 of 2021, first 482 query companies) with the team's adapter, label and split code; wrote the table in Idea under the slice and the rate limit in Credits. Closed #37 after both sub-tasks shipped.
 - **Result:** 173 of 482 failed within 24 months (only 2 by insolvency), and 7 positives (3 by officer id): well under the 50 the plan asks for. Estimate: about 3,400 companies for 50.
