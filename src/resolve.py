@@ -18,12 +18,19 @@ similar the names are, and whether birth month and year, postcode district and
 nationality agree. A missing value is marked as missing, not counted as a difference.
 
 30.3 Blocking recall. The share of the register's own links that blocking proposed.
+
+31.1 Labelled pairs. The register's officer id gives the examples to learn from: the same
+id means the same person. It is wrong where the register split one person across two ids.
+
+31.2 The matcher. A logistic regression turns a pair's features into p, a number from 0 to
+1. It is only called a probability once the calibration check passes (31.3, ADR-004).
 """
 
 import re
 from difflib import SequenceMatcher
 
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
 from src import evidence as ev
 
@@ -184,11 +191,88 @@ def blocking_recall(pairs, mentions):
     true pairs). A true pair that blocking never proposes can never be matched (ADR-003).
     It can't see the people the register split across two officer ids: those have no label.
     """
-    people = mentions[mentions["kind"] == "person"]
-    linked = sharing(pd.DataFrame({"id": people["mention_id"].to_numpy(),
-                                   "officer_id": people["officer_id"].to_numpy()}), ["officer_id"])
-    true_pairs = set(zip(linked["id_x"], linked["id_y"]))
+    true_pairs = officer_pairs(mentions)
     proposed = {tuple(sorted(pair)) for pair in zip(pairs["a"], pairs["b"])}   # (a, b) or (b, a): one pair
     kept = len(true_pairs & proposed)
     return dict(true_pairs=len(true_pairs), kept=kept,
                 recall=kept / len(true_pairs) if true_pairs else None)
+
+
+def officer_pairs(mentions):
+    """Every two person mentions with the same officer id, as a set of (a, b) with a < b."""
+    people = mentions[mentions["kind"] == "person"]
+    linked = sharing(pd.DataFrame({"id": people["mention_id"].to_numpy(),
+                                   "officer_id": people["officer_id"].to_numpy()}), ["officer_id"])
+    return set(zip(linked["id_x"], linked["id_y"]))
+
+
+# --- 31.1 Labelled pairs --------------------------------------------------------------
+
+def labelled_pairs(mentions):
+    """31.1: the pairs the matcher learns from, as a pairs table with `label` filled.
+
+    - label 1: two mentions with the same officer id, whether blocking proposed them or not.
+    - label 0: a candidate pair from blocking whose officer ids differ.
+    - A pair where either officer id is missing has no label and is left out.
+
+    The labels copy the register's own linking. Where the register gave one person two
+    officer ids, label 0 is wrong: the tiny world's phoenix is exactly that case. So the
+    matcher is also checked by hand (31.4) and at the decision level against the baselines.
+    Give it the mentions of one split at a time: training mentions to train, validation
+    mentions to validate.
+    """
+    has_officer_id = set(mentions.loc[~ev.is_blank(mentions["officer_id"]), "mention_id"])
+    same_id = officer_pairs(mentions)
+    candidates = candidate_pairs(mentions)
+    proposed = set(zip(candidates["a"], candidates["b"]))
+    rows = []
+    for a, b in sorted(same_id | proposed):   # sorted: the same order every run (R7)
+        if a not in has_officer_id or b not in has_officer_id:
+            continue
+        rows.append(dict(a=a, b=b, p=None, features=None, method="labels", label=int((a, b) in same_id)))
+    pairs = pd.DataFrame(rows, columns=ev.PAIR_COLS)
+    ev.check_columns(pairs, "pairs")
+    return pairs
+
+
+# --- 31.2 The matcher -----------------------------------------------------------------
+
+def train_matcher(X, y, seed):
+    """31.2: fit a logistic regression on the feature rows X and their labels y (1 or 0).
+
+    A logistic regression learns one weight per feature. A positive weight means "when
+    this is 1, the two records are more likely the same person". The same X and y always
+    give the same model (R7): this way of fitting has no randomness, so the seed changes
+    nothing today. It is passed so the result stays repeatable if the fitting method changes.
+    """
+    model = LogisticRegression(random_state=seed)
+    model.fit(X[FEATURE_COLS], list(y))
+    return model
+
+
+def match_probability(model, features):
+    """31.2: the matcher's p for each feature row, between 0 and 1: how likely "same person" is."""
+    if len(features) == 0:
+        return []   # no pairs, no numbers: scikit-learn refuses an empty table
+    return model.predict_proba(features[FEATURE_COLS])[:, 1]
+
+
+def matcher_weights(model):
+    """The learned weight of each feature, plus the starting point ("intercept"), for printing."""
+    weights = pd.Series(model.coef_[0], index=FEATURE_COLS)
+    weights["intercept"] = model.intercept_[0]
+    return weights
+
+
+def scored_pairs(model, pairs, mentions):
+    """31.2: `pairs` with p from the matcher and the features behind it, as a pairs table.
+
+    Every pair stays in the table, however low its p: nothing is merged or dropped (R6).
+    """
+    features = pair_features(pairs, mentions)
+    scored = pairs.copy()
+    scored["p"] = match_probability(model, features)
+    scored["features"] = features.to_dict("records")
+    scored["method"] = "matcher"
+    ev.check_columns(scored, "pairs")
+    return scored

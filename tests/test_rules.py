@@ -19,15 +19,15 @@ from tests.tiny_world import tiny_world
 # exists the test runs for real. It shows as XPASS while its rule holds (then delete its
 # xfail line) and red when the rule is broken.
 #
-# Entity resolution (src/resolve.py) has its blocking (#30) but not its matcher (#31), and
-# only the matcher gives a pair its p. So these tests wait for match_probability (31.2).
-# When it lands, change the line marked GUESS to the call that returns the scored pairs.
+# Entity resolution (src/resolve.py, cards #30, #31) is built, so its tests run for real.
 
 def resolve_pairs(mentions):
-    """Entity resolution: mentions -> the pairs table (a, b, p, ...)."""
-    from src.resolve import match_probability  # noqa: F401  (an ImportError until card 31.2)
+    """Entity resolution: mentions -> the pairs table (a, b, p, ...), scored by a matcher
+    trained on the mentions' own labelled pairs."""
     from src import resolve
-    return resolve.candidate_pairs(mentions)   # GUESS: wire to the scored pairs (card #31)
+    labelled = resolve.labelled_pairs(mentions)
+    model = resolve.train_matcher(resolve.pair_features(labelled, mentions), labelled["label"], seed=42)
+    return resolve.scored_pairs(model, labelled, mentions)
 
 
 # --- The rules ---------------------------------------------------------------------
@@ -79,7 +79,6 @@ def test_r3_every_observed_edge_is_a_stated_claim():
     assert "guess" not in set(edges["claim_id"])
 
 
-@pytest.mark.xfail(raises=ImportError, reason="needs entity resolution, cards #30, #31")
 def test_r4_every_pair_carries_a_p():
     """R4: uncertainty survives downstream. Every pair from entity resolution carries a
     probability p between 0 and 1. A missing p becomes NaN, which fails."""
@@ -125,7 +124,6 @@ def test_r6_look_alikes_stay_two_mentions():
         assert name[a] == name[b]   # same name: exactly what a careless merge would join
 
 
-@pytest.mark.xfail(raises=ImportError, reason="needs entity resolution, cards #30, #31")
 def test_r6_look_alikes_get_a_same_person_link_not_a_merge():
     """R6: entity resolution joins each look-alike pair with a "same person?" link and
     its probability, never a hard yes or no."""

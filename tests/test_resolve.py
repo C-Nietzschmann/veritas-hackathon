@@ -156,3 +156,84 @@ def test_recall_is_none_when_the_register_links_nobody():
     mentions, _, _ = tiny_world()
     mentions = mentions.assign(officer_id=None)
     assert rs.blocking_recall(rs.candidate_pairs(mentions), mentions)["recall"] is None
+
+
+# --- 31.1 Labelled pairs ---------------------------------------------------------------
+
+def labels_of(mentions):
+    pairs = rs.labelled_pairs(mentions)
+    return dict(zip(zip(pairs["a"], pairs["b"]), pairs["label"]))
+
+
+def test_same_officer_id_is_label_1_and_a_different_id_is_label_0():
+    mentions, _, truth = tiny_world()
+    labels = labels_of(mentions)
+    assert labels[pair(truth, "p5", "p9")] == 1 and labels[pair(truth, "p6", "p7")] == 1
+    assert labels[pair(truth, "p1", "p3")] == 0             # a look-alike: other officer id
+    assert sorted(labels.values()) == [0, 0, 0, 0, 0, 1, 1]
+
+
+def test_the_phoenix_gets_label_0_which_is_the_labels_known_mistake():
+    # The same Daniel Harrow under a new officer id: the register says "different people".
+    mentions, _, truth = tiny_world()
+    assert pair(truth, "p1", "p2") in truth["same_person"]
+    assert labels_of(mentions)[pair(truth, "p1", "p2")] == 0
+
+
+def test_a_linked_pair_that_blocking_missed_is_still_label_1():
+    mentions, _, truth = tiny_world()
+    mentions = renamed(mentions, truth, "p9", name="Jim Smythe", birth_year=None)
+    assert labels_of(mentions)[pair(truth, "p5", "p9")] == 1
+
+
+def test_a_pair_with_a_missing_officer_id_has_no_label():
+    mentions, _, truth = tiny_world()
+    mentions = renamed(mentions, truth, "p3", officer_id=None)
+    labels = labels_of(mentions)
+    assert pair(truth, "p1", "p3") not in labels and pair(truth, "p2", "p3") not in labels
+
+
+# --- 31.2 The matcher ------------------------------------------------------------------
+
+def trained(mentions, seed=42):
+    """A matcher trained on the mentions' own labelled pairs, and those pairs scored."""
+    labelled = rs.labelled_pairs(mentions)
+    model = rs.train_matcher(rs.pair_features(labelled, mentions), labelled["label"], seed)
+    return model, rs.scored_pairs(model, labelled, mentions)
+
+
+def test_every_pair_gets_a_p_strictly_between_0_and_1_and_none_is_dropped():
+    mentions, _, _ = tiny_world()
+    _, scored = trained(mentions)
+    ev.check_columns(scored, "pairs")
+    assert len(scored) == len(rs.labelled_pairs(mentions))    # R6: nothing merged, nothing dropped
+    assert ((scored["p"] > 0) & (scored["p"] < 1)).all()
+    assert set(scored["method"]) == {"matcher"}
+
+
+def test_the_same_seed_gives_the_same_p():
+    mentions, _, _ = tiny_world()
+    assert list(trained(mentions, seed=42)[1]["p"]) == list(trained(mentions, seed=42)[1]["p"])
+
+
+def test_pairs_that_agree_on_birth_and_postcode_score_higher_than_look_alikes():
+    mentions, _, truth = tiny_world()
+    _, scored = trained(mentions)
+    p = dict(zip(zip(scored["a"], scored["b"]), scored["p"]))
+    for look_alike in truth["look_alikes"]:
+        assert p[pair(truth, "p6", "p7")] > p[look_alike]
+
+
+def test_each_scored_pair_carries_its_features_and_never_the_officer_id():
+    mentions, _, _ = tiny_world()
+    model, scored = trained(mentions)
+    assert all(list(row) == rs.FEATURE_COLS for row in scored["features"])
+    assert list(rs.matcher_weights(model).index) == rs.FEATURE_COLS + ["intercept"]
+
+
+def test_scoring_no_pairs_gives_an_empty_pairs_table():
+    mentions, _, _ = tiny_world()
+    model, _ = trained(mentions)
+    scored = rs.scored_pairs(model, ev.empty_table("pairs"), mentions)
+    ev.check_columns(scored, "pairs")
+    assert len(scored) == 0
