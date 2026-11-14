@@ -58,6 +58,7 @@ def name_parts(name):
     else:
         words = [word for word in name.split() if clean(word) not in TITLES]
         surname, forenames = (words[-1], words[:-1]) if words else ("", [])
+    forenames = [word for word in forenames if clean(word) not in TITLES]   # "SMITH, Mr John"
     initial = clean(forenames[0])[:1] if forenames else ""
     return clean(surname), initial
 
@@ -130,6 +131,8 @@ def district(postcode):
     postcode = postcode.strip().upper()
     if " " in postcode:
         return postcode.split()[0]
+    if len(postcode) <= 4:
+        return postcode    # only the district was written
     return postcode[:-3]   # written without the space: the last part is always three characters
 
 
@@ -185,6 +188,7 @@ def blocking_recall(pairs, mentions):
     linked = sharing(pd.DataFrame({"id": people["mention_id"].to_numpy(),
                                    "officer_id": people["officer_id"].to_numpy()}), ["officer_id"])
     true_pairs = set(zip(linked["id_x"], linked["id_y"]))
-    kept = len(true_pairs & set(zip(pairs["a"], pairs["b"])))
+    proposed = {tuple(sorted(pair)) for pair in zip(pairs["a"], pairs["b"])}   # (a, b) or (b, a): one pair
+    kept = len(true_pairs & proposed)
     return dict(true_pairs=len(true_pairs), kept=kept,
                 recall=kept / len(true_pairs) if true_pairs else None)

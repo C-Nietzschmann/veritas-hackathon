@@ -31,6 +31,7 @@ def test_name_parts_reads_both_ways_a_name_is_written():
     assert rs.name_parts("Mr Daniel Harrow") == ("harrow", "d")
     assert rs.name_parts("SMITH-JONES, Anna, Dr") == ("smith jones", "a")
     assert rs.name_parts("Harrow") == ("harrow", "")
+    assert rs.name_parts("SMITH, Mr John") == rs.name_parts("SMITH, John") == ("smith", "j")
     assert rs.name_parts(None) == ("", "")
 
 
@@ -129,6 +130,7 @@ def test_a_missing_value_is_marked_missing_not_different():
 
 def test_district_reads_a_postcode_with_or_without_its_space():
     assert rs.district("ZZ1 1AA") == rs.district("zz11aa") == "ZZ1"
+    assert rs.district("ZZ1") == "ZZ1"                        # only the district was written
     assert rs.district(None) == rs.district("  ") == ""
 
 
@@ -138,6 +140,8 @@ def test_blocking_keeps_every_pair_the_tiny_register_links():
     mentions, _, _ = tiny_world()
     result = rs.blocking_recall(rs.candidate_pairs(mentions), mentions)
     assert result == dict(true_pairs=2, kept=2, recall=1.0)   # p5-p9 and p6-p7 share an officer id
+    swapped = rs.candidate_pairs(mentions).rename(columns={"a": "b", "b": "a"})
+    assert rs.blocking_recall(swapped, mentions)["recall"] == 1.0   # (b, a) is the same pair
 
 
 def test_recall_drops_when_blocking_loses_a_linked_pair():
