@@ -37,3 +37,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code created the application and key in the browser (I pasted the key into .env myself), set up and measured the crawl, wrote `draw_graph` and its tests, opened the PR and wrote this entry.
 - **Next:** add the example picture to `main.ipynb` when Cristiano's notebook changes slow down, then ship #98. Agree with jonas when the crawl stops and how my data/raw reaches the adapter.
 - **Blocked by:** nothing
+
+## 2026-11-14 13:50
+- **Task:** #35 interface v1 (#98, #99, #100) and #109 example figure (cards on the board)
+- **Did:** Added `evidence_table` (#100) and `show()` (#99) to `src/interface.py`, and three cells to the Demo section of `main.ipynb` that show TW000002's decision, reason, graph and evidence table, plus the polite answer for a company outside our data (#109). Ran the notebook on a copy and kept only the new cells' outputs, so the teammates' cells are unchanged. Shipped as PR #143.
+- **Result:** #98, #99, #100 and #109 closed, #35 at 3/3, `main` green with 170 tests. The name guard checked 889 real names from my crawl against the notebook: none found.
+- **AI used for:** Claude Code wrote the table, `show()`, the Demo cells and tests, ran the notebook, shipped the PR and drafted the notes and this entry. I read `interface.py`.
+- **Next:** crawl part 2 keeps running. Pick the next free card.
+- **Blocked by:** nothing
