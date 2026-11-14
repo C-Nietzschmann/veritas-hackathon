@@ -49,6 +49,26 @@ def test_label_counts_only_failures_within_24_months():
     assert evaluate.label_failures(mentions, window_months=12).sum() == 1
 
 
+def test_label_counts_a_dissolution_within_24_months():
+    mentions = table([
+        company("TW100011", "2021-01-15", dissolved="2022-06-14"),                          # month 17: failed
+        company("TW100012", "2021-01-15", dissolved="2023-01-15"),                          # exactly 24 months: counts
+        company("TW100013", "2021-01-15", dissolved="2023-01-16"),                          # one day past 24 months: too late
+        company("TW100014", "2021-01-15", insolvent="2023-07-15", dissolved="2025-02-01"),  # both too late
+        company("TW100015", "2021-01-15", insolvent="2021-11-15", dissolved="2024-03-01"),  # insolvent in time
+        company("TW100016", "2021-01-15"),                                                  # still on the register
+    ])
+    assert evaluate.label_failures(mentions).to_dict() == {
+        "TW100011": True, "TW100012": True, "TW100013": False,
+        "TW100014": False, "TW100015": True, "TW100016": False}
+    # The label as it was before card #142: liquidation or administration only.
+    assert evaluate.label_failures(mentions, count_dissolved=False).to_dict() == {
+        "TW100011": False, "TW100012": False, "TW100013": False,
+        "TW100014": False, "TW100015": True, "TW100016": False}
+    # A 12-month window drops the month-17 dissolution and keeps the month-10 insolvency.
+    assert evaluate.label_failures(mentions, window_months=12).sum() == 1
+
+
 def test_a_date_not_written_as_iso_stops_instead_of_being_guessed():
     # 01/10/2021 is 1 October in the UK. Guessed month-first it is 10 January:
     # a validation company would land in train, and a month-25 failure would count.
@@ -56,6 +76,9 @@ def test_a_date_not_written_as_iso_stops_instead_of_being_guessed():
         evaluate.split(table([company("TW100006", "01/10/2021")]))
     with pytest.raises(ValueError):
         evaluate.label_failures(table([company("TW100007", "2021-02-01", insolvent="01/03/2023")]))
+    # The same for a dissolution on 1 March 2023 (month 25): read as 3 January it would count.
+    with pytest.raises(ValueError):
+        evaluate.label_failures(table([company("TW100008", "2021-02-01", dissolved="01/03/2023")]))
     # The as-of date itself: 01/05/2021 must not cut the history at 5 January.
     with pytest.raises(ValueError):
         evaluate.history_as_of(claims_table([claim("early", "p", "c", "2015-01-01")]), "01/05/2021")
