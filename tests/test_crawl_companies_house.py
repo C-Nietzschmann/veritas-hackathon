@@ -283,13 +283,13 @@ def test_parts_split_the_companies_without_overlap():
         crawl.part_of(numbers, 4, 3)
 
 
-def test_a_part_crawls_only_its_companies_and_keeps_the_usual_gap(monkeypatch, raw_dir):
+def test_a_part_crawls_only_its_companies_and_slows_down_to_share_the_key(monkeypatch, raw_dir):
     monkeypatch.setattr(crawl, "spacing", crawl.SECONDS_BETWEEN_REQUESTS)   # put back after the test
     monkeypatch.setattr(crawl, "get", FakeAPI(world()))
     done = raw_dir / crawl.DONE_FILE
     crawl.crawl(sample_size=None, years=[2021], part=1, parts=2)
     assert len(done.read_text(encoding="utf-8").splitlines()) == 2             # 1 of the 2 query companies
-    assert crawl.spacing == pytest.approx(crawl.SECONDS_BETWEEN_REQUESTS)      # each part has its own key
+    assert crawl.spacing == pytest.approx(2 * crawl.SECONDS_BETWEEN_REQUESTS)  # two parts share one limit
     crawl.crawl(sample_size=None, years=[2021], part=2, parts=2)
     assert len(done.read_text(encoding="utf-8").splitlines()) == 3             # now both, no overlap
 
