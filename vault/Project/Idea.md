@@ -64,6 +64,7 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 ## How we measure
 - **Main metric and why:** precision and recall of FLAG on 2022 companies, at the thresholds the stated costs give, next to all three baselines. Failures are rare, so accuracy would say nothing. PR-AUC alongside.
 - **Label (chosen):** the company goes into liquidation or administration within 24 months of incorporation.
+  - Exactly: a company failed if its first liquidation or administration started on or before the day 24 months after its incorporation (a members' voluntary liquidation, which is a solvent wind-down, does not count), and no insolvency or a later one means it did not fail.
 - **Split (chosen):** train on companies formed Jan–Sep 2021, validate on Oct–Dec 2021, test on 2022. Directors' histories are only used up to each company's formation date (as-of rule, ADR-001).
 - **Limitation we state:** the 2021 companies' 24-month outcomes run into 2023, past the start of the test year.
 - **The three costs (chosen):** a missed case 10, a wrong flag 2, asking 1. That means flag above P(fail) 0.5, clear below 0.1, and NOT ENOUGH EVIDENCE in between. The call can still change them.

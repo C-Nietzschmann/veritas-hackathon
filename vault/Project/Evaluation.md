@@ -5,6 +5,7 @@ Only numbers from code that was actually run go in here.
 
 ## Setup
 - **Main metric:**
+- **Label:** a company failed if its first liquidation or administration started on or before the day 24 months after its incorporation (a members' voluntary liquidation, which is a solvent wind-down, does not count), and no insolvency or a later one means it did not fail. Code: `label_failures` in `src/evaluate.py`.
 - **Data split:** train __ / validation __ / test __ · seed: __
 - **Test set first used on:** _not yet_
 
