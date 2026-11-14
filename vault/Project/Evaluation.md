@@ -17,6 +17,19 @@ Newest row at the bottom. One row per experiment.
 |---|---|---|---|---|---|---|
 | 0 | | Baseline: | | | | |
 
+### Tiny world check (a code check, not a result)
+The three baselines on the tiny world's 5 hand-made query companies (`tests/tiny_world.py`). One of them fails within 24 months: TW000002, the phoenix. These numbers show the code behaves the way the tiny world was built to show. They say nothing about real companies.
+
+Printed by `score_methods` in `src/evaluate.py`, and pinned by `tests/test_score.py::test_the_baselines_on_the_tiny_world` @ c648801 (jonas, Sat 12:25).
+
+| Baseline | Flags | False flags | Misses | Precision | Recall |
+|---|---|---|---|---|---|
+| Flag nothing | 0 | 0 | 1 | none (nothing flagged) | 0 |
+| Same name | 3 | 2 | 0 | 0.33 | 1 |
+| Officer links | 0 | 0 | 1 | none (nothing flagged) | 0 |
+
+Validation numbers follow once the crawl (#24) is in.
+
 ## Final result
 Filled in after feature freeze, from the one test-set run.
 
