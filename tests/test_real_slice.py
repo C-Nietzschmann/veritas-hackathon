@@ -5,12 +5,14 @@ The raw sample (see tests/test_ingest_companies_house.py): TW000002 is a query c
 liquidation on 2021-03-15. TW000001's profile says has_insolvency_history.
 """
 
+import json
 import math
 import warnings
 
 import pandas as pd
 import pytest
 
+from src import evaluate
 from src import evidence as ev
 from src import ingest_companies_house as adapter
 from src import real_slice
@@ -159,7 +161,7 @@ def test_rate_table_counts_each_company_under_its_link():
     link = pd.Series({"A": "no predecessor", "B": "same officer id", "C": "no predecessor"})
     failed = pd.Series({"A": True, "B": True, "C": False})
     insolvent = pd.Series({"A": False, "B": True, "C": False})
-    table = real_slice.rate_table(link, failed, insolvent).set_index("strongest link to an insolvent earlier company")
+    table = real_slice.rate_table(link, failed, insolvent).set_index("strongest link")
     assert list(table.index) == ["no predecessor"] + real_slice.LINKS   # no "no director records" row when there are none
     assert table.loc["no predecessor", "companies"] == 2
     assert table.loc["no predecessor", "failed (team label)"] == "1 of 2: 50% (9-91%)"
@@ -167,3 +169,115 @@ def test_rate_table_counts_each_company_under_its_link():
     assert table.loc["same officer id", "failed through insolvency only"] == "1 of 1: 100% (21-100%)"
     assert table.loc["same name only", "failed (team label)"] == "no companies"
     assert real_slice.rate(3, 10) == "3 of 10: 30% (11-60%)"
+
+
+# --- The second key table: predecessors that failed the way our label defines it -----------
+
+def appointments_from(mentions, claims):
+    """The appointment lists the crawl would have saved for the tiny world: one row per directorship."""
+    people = mentions.set_index("mention_id")
+    numbers = mentions.set_index("mention_id")["company_number"]
+    return pd.DataFrame({
+        "officer_id": claims["subject"].map(people["officer_id"]).to_numpy(),
+        "name": claims["subject"].map(people["name"]).to_numpy(),
+        "birth_month": claims["subject"].map(people["birth_month"]).to_numpy(),
+        "birth_year": claims["subject"].map(people["birth_year"]).to_numpy(),
+        "company_number": claims["object"].map(numbers).to_numpy(),
+        "appointed_on": claims["valid_from"].to_numpy(),
+    }, columns=real_slice.APPOINTMENT_COLS)
+
+
+def test_failure_dates_follow_the_teams_label():
+    mentions, _, _ = tiny_world()
+    failed_on = real_slice.failure_dates(mentions)
+    assert (failed_on.notna() == evaluate.label_failures(mentions)).all()   # failed exactly when the label says so
+    assert failed_on["TW000002"] == pd.Timestamp("2022-09-01")   # liquidation 16 months after it was formed
+    assert pd.isna(failed_on["TW000001"])   # insolvent, but 4 years after it was formed: not a failure by our label
+    assert pd.isna(failed_on["TW000008"])   # dissolved after nearly 5 years: not a failure either
+
+
+def test_the_failure_date_is_the_earlier_event_inside_the_window():
+    mentions, _, _ = tiny_world()
+    elm = mentions["company_number"] == "TW000005"            # formed 2021-02-10
+    mentions.loc[elm, ["insolvency_on", "dissolved_on"]] = ["2022-01-10", "2022-06-01"]
+    assert real_slice.failure_dates(mentions)["TW000005"] == pd.Timestamp("2022-01-10")
+
+
+def test_appointment_rows_keeps_directorships_with_their_start():
+    listing = {"name": "Daniel HARROW", "date_of_birth": {"month": 4, "year": 1979}, "items": [
+        {"name": "Daniel HARROW", "officer_role": "director", "appointed_on": "2017-02-01",
+         "appointed_to": {"company_number": "TW000001", "company_status": "liquidation"}},
+        {"name": "Daniel HARROW", "officer_role": "secretary", "appointed_on": "2018-01-01",
+         "appointed_to": {"company_number": "TW000005", "company_status": "active"}},
+        {"name": "Daniel HARROW", "officer_role": "director", "appointed_before": "1991-10-01",
+         "appointed_to": {"company_number": "TW000004", "company_status": "dissolved"}},
+    ]}
+    raw = {"data/raw/appointments/tw-officer-01.json": json.dumps(listing).encode("utf-8")}
+    rows = real_slice.appointment_rows(raw)
+    assert list(rows.columns) == real_slice.APPOINTMENT_COLS
+    assert list(rows["company_number"]) == ["TW000001", "TW000004"]   # the secretary role is skipped
+    assert list(rows["appointed_on"]) == ["2017-02-01", "1991-10-01"]  # appointed_before when there is no appointed_on
+    assert set(rows["officer_id"]) == {"tw-officer-01"}                # the file name
+    assert list(rows["birth_year"]) == [1979, 1979]
+
+
+def test_the_appointment_route_with_the_first_tables_rule_gives_the_first_table():
+    mentions, claims, truth = tiny_world()
+    companies = mentions[mentions["kind"] == "company"].set_index("company_number")
+    insolvent_on = evaluate.read_dates(companies["insolvency_on"])   # the first table's rule: insolvent, any age
+    first = real_slice.strongest_link(truth["queries"], mentions, claims, real_slice.link_pairs(mentions))
+    again = real_slice.strongest_failed_link(truth["queries"], mentions, claims,
+                                             appointments_from(mentions, claims), insolvent_on)
+    assert again.to_dict() == first.to_dict()
+
+
+def failed_tiny_world():
+    """The tiny world with two earlier companies that failed within 24 months of being formed."""
+    mentions, claims, truth = tiny_world()
+    harrow_build = mentions["company_number"] == "TW000001"
+    mentions.loc[harrow_build, "incorporated_on"] = "2020-01-01"   # liquidation 2021-03-15: 14 months later
+    lambert = mentions["company_number"] == "TW000008"
+    mentions.loc[lambert, "dissolved_on"] = "2017-06-01"           # dissolved 15 months after 2016-03-01
+    return mentions, claims, truth
+
+
+def test_strongest_failed_link_counts_only_failures_under_our_label_before_the_formation():
+    mentions, claims, truth = failed_tiny_world()
+    found = real_slice.strongest_failed_link(truth["queries"], mentions, claims, appointments_from(mentions, claims),
+                                             real_slice.failure_dates(mentions))
+    assert found.to_dict() == {
+        "TW000002": "same name and birth month and year",   # Harrow Build failed 2021-03-15, before 2021-04-20
+        "TW000003": "same name only",                       # the look-alike, other birth date
+        "TW000005": "no predecessor",   # Smith and Sons went insolvent 5 years after it was formed: not a failure by our label
+        "TW000006": "no director records",
+        "TW000007": "same officer id",  # her own earlier company was dissolved within 24 months
+    }
+
+
+def test_a_failure_after_the_formation_does_not_count():
+    mentions, claims, truth = failed_tiny_world()
+    failed_on = real_slice.failure_dates(mentions)
+    failed_on["TW000008"] = pd.Timestamp("2021-05-16")   # the day after TW000007 was formed
+    found = real_slice.strongest_failed_link(["TW000007"], mentions, claims, appointments_from(mentions, claims), failed_on)
+    assert found["TW000007"] == "no predecessor"
+    failed_on["TW000008"] = pd.Timestamp("2021-05-15")   # the formation day itself counts, as in the first table
+    found = real_slice.strongest_failed_link(["TW000007"], mentions, claims, appointments_from(mentions, claims), failed_on)
+    assert found["TW000007"] == "same officer id"
+
+
+def test_an_appointment_that_starts_after_the_formation_does_not_count():
+    mentions, claims, truth = failed_tiny_world()
+    appointments = appointments_from(mentions, claims)
+    appointments.loc[appointments["company_number"] == "TW000008", "appointed_on"] = "2021-06-01"   # after 2021-05-15
+    found = real_slice.strongest_failed_link(["TW000007"], mentions, claims, appointments, real_slice.failure_dates(mentions))
+    assert found["TW000007"] == "no predecessor"
+
+
+def test_the_officer_id_beats_a_name_link_in_the_second_table_too():
+    mentions, claims, truth = failed_tiny_world()
+    appointments = appointments_from(mentions, claims)
+    extra = pd.DataFrame([["tw-officer-02", "Daniel Harrow", 4, 1979, "TW000008", "2016-03-01"]],
+                         columns=real_slice.APPOINTMENT_COLS)   # the phoenix's director also ran Lambert Electrical
+    found = real_slice.strongest_failed_link(["TW000002"], mentions, claims, pd.concat([appointments, extra]),
+                                             real_slice.failure_dates(mentions))
+    assert found["TW000002"] == "same officer id"   # and the name and birth link to Harrow Build doesn't count on top

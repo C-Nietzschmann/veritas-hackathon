@@ -10,9 +10,12 @@ directors: it is evidence, never a query.
 
 The second half answers one question on the slice: does an insolvent predecessor raise the
 failure rate? It counts each company under the strongest link it has to an insolvent
-earlier company, and gives each failure rate with its 95% interval.
+earlier company, and gives each failure rate with its 95% interval. The second key table
+asks the same with another predecessor: an earlier company that failed the way our own
+label defines failure.
 """
 
+import json
 import math
 from pathlib import Path
 
@@ -221,7 +224,105 @@ def rate_table(link, failed, failed_insolvency):
         n = len(group)
         if name == "no director records" and n == 0:
             continue
-        rows.append({"strongest link to an insolvent earlier company": name, "companies": n,
+        rows.append({"strongest link": name, "companies": n,
                      "failed (team label)": rate(int(group["failed"].sum()), n),
                      "failed through insolvency only": rate(int(group["failed_insolvency"].sum()), n)})
     return pd.DataFrame(rows)
+
+
+# --- The second key table: earlier companies that failed the way our label defines it ----
+
+def failure_dates(mentions, window_months=24):
+    """Each company's failure date under the team's label, or NaT ("not a time") if it didn't fail.
+
+    The label (evaluate.label_failures) calls a company failed when it went into liquidation
+    or administration (insolvency_on), or was dissolved (dissolved_on), within window_months of
+    its own incorporation. The failure date is the earlier of those two dates inside the window.
+    Returns a Series indexed by company number.
+    """
+    companies = mentions[mentions["kind"] == "company"].set_index("company_number")
+    deadline = evaluate.read_dates(companies["incorporated_on"]) + pd.DateOffset(months=window_months)
+    insolvent = evaluate.read_dates(companies["insolvency_on"])
+    dissolved = evaluate.read_dates(companies["dissolved_on"])
+    in_window = pd.DataFrame({"insolvent": insolvent.where(insolvent <= deadline),
+                              "dissolved": dissolved.where(dissolved <= deadline)})
+    return in_window.min(axis=1).rename("failed_on")   # the earlier date; NaT when there is neither
+
+
+APPOINTMENT_COLS = ["officer_id", "name", "birth_month", "birth_year", "company_number", "appointed_on"]
+
+
+def appointment_rows(raw):
+    """One row per directorship in the saved appointment lists, with the columns APPOINTMENT_COLS.
+
+    The crawl saved one page of up to 50 appointments, newest first, for each query company's
+    directors and their same-name officers: data/raw/appointments/{officer id}.json. The name
+    is as written on that appointment; birth month and year come from the top of the list. The
+    start date is appointed_on, or appointed_before for an appointment from before 1992, as in
+    the adapter. Only directors who are people count (adapter.DIRECTOR_ROLES), as in the adapter.
+    """
+    rows = []
+    for path, officer, raw_bytes in adapter.files_in(raw, "appointments"):
+        listing = json.loads(raw_bytes)
+        born = listing.get("date_of_birth") or {}
+        for item in listing.get("items", []):
+            if item.get("officer_role") not in adapter.DIRECTOR_ROLES:
+                continue
+            rows.append(dict(officer_id=officer, name=item.get("name") or listing.get("name"),
+                             birth_month=born.get("month"), birth_year=born.get("year"),
+                             company_number=item.get("appointed_to", {}).get("company_number"),
+                             appointed_on=item.get("appointed_on") or item.get("appointed_before")))
+    return pd.DataFrame(rows, columns=APPOINTMENT_COLS)
+
+
+def birth(table):
+    """Birth month and year as one text, like "1979-4". Missing when either part is missing."""
+    year = pd.to_numeric(table["birth_year"], errors="coerce").astype("Int64").astype("string")
+    month = pd.to_numeric(table["birth_month"], errors="coerce").astype("Int64").astype("string")
+    return year + "-" + month
+
+
+def strongest_failed_link(queries, mentions, claims, appointments, failed_on):
+    """Each query company's strongest link to an earlier company that failed, through the
+    saved appointment lists. With failure_dates, this is the second key table.
+
+    failed_on: a failure date per company number (NaT: it never failed). An earlier company
+    counts when that date is on or before the query company's formation date: the as-of rule
+    of the first table, which counts the formation day itself. The links, strongest first (LINKS):
+    - same officer id: the earlier company is in one of the directors' own appointment lists
+    - same name and birth month and year: another officer with the director's name
+      (baseline.normalise_name) and the same birth month and year was its director
+    - same name only: the same, with a different or unknown birth month and year
+    The directors are the ones on record by the formation date, as in strongest_link. An
+    appointment at the earlier company counts if it started by that date too.
+    Returns a Series indexed by company number: one of LINKS, "no predecessor" or "no director records".
+    """
+    people = mentions.set_index("mention_id")
+    companies = mentions[mentions["kind"] == "company"].set_index("company_number")
+    people_born = birth(people)
+    rows = appointments.assign(
+        key=appointments["name"].map(baseline.normalise_name),
+        born=birth(appointments),
+        started=evaluate.read_dates(appointments["appointed_on"]),
+        failed_on=appointments["company_number"].map(failed_on))
+    found = {}
+    for query in queries:
+        formed = pd.Timestamp(companies.loc[query, "incorporated_on"])
+        edges = ev.observed_graph(claims, as_of=formed)   # the register as it stood that day
+        directors = edges.loc[edges["object"] == companies.loc[query, "mention_id"], "subject"]
+        if directors.empty:
+            found[query] = "no director records"
+            continue
+        earlier = rows[(rows["company_number"] != query) & (rows["started"] <= formed) & (rows["failed_on"] <= formed)]
+        links = set()
+        for director in directors:
+            own_id, name = people.loc[director, "officer_id"], baseline.normalise_name(people.loc[director, "name"])
+            if (earlier["officer_id"] == own_id).any():
+                links.add("same officer id")
+            others = earlier[(earlier["officer_id"] != own_id) & (earlier["key"] == name) & (earlier["key"] != "")]
+            if not others.empty:
+                born = people_born[director]
+                same_birth = pd.notna(born) and (others["born"] == born).fillna(False).any()
+                links.add("same name and birth month and year" if same_birth else "same name only")
+        found[query] = next((link for link in LINKS if link in links), "no predecessor")
+    return pd.Series(found, name="link")
