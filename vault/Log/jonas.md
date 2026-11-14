@@ -130,3 +130,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) reviewed the PRs, wrote `score()`, the decision layer fix and their tests, and drafted the approvals, all at my request.
 - **Next:** read and ship #130 and #133. The 12:30 call: owners for #29 and #30/#31, slice size, and splitting the crawl with Jan.
 - **Blocked by:** nothing
+
+## 2026-11-14 12:37
+- **Task:** #24 Crawl the Companies House slice, sub-tasks #71 to #73 (cards on the board)
+- **Did:** Built `src/crawl_companies_house.py` and 25 tests with a fake API. It lists the slice month by month with the advanced search, then fetches each query company's profile, insolvency file when flagged and officers, each director's appointments and every company in them, and a name search that follows up to 20 officers with the same name words (their active companies skipped). Settings for years, sample size and part K of N; it resumes where it stopped, reuses one connection and stays under 600 requests per 5 minutes. Moved the API key from `.env.example` into `.env` before anything was committed. Merged main into the branch, and C-Nietzschmann's Companies House row with mine in Credits. Ran the small real run and started the 2021 crawl as part 1 of 2.
+- **Result:** PR #134 open, checks green. The slice is 77,513 companies formed in 2021 and 84,250 in 2022. The small run took 1,140 requests in 32 minutes: median 8.5 requests per query company, mean 21.9, max 174. 0 of its 50 companies failed within 24 months. Numbers on #24.
+- **AI used for:** Claude Code (Opus 5.5) in VS Code wrote the crawler and its tests from my decisions, probed the real API's answers, checked the API facts and the plan with a multi-agent workflow, ran the small crawl and the counts with the team's adapter and label code, and opened PR #134, all at my request.
+- **Next:** read the crawler line by line and write its "How it works" note. Pick SAMPLE_SIZE for the fresh run and the size of the 2021 and 2022 crawls. Part 2 of 2 runs on a second computer with the same key. Ship #24.
+- **Blocked by:** nothing
