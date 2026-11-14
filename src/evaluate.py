@@ -7,6 +7,8 @@ can't read, so a bad date can't quietly change a label or a set.
 
 import pandas as pd
 
+from src import evidence as ev
+
 
 # --- 28.1 The failure label ------------------------------------------------------
 
@@ -29,3 +31,61 @@ def label_failures(mentions, window_months=24):
     # An empty insolvency date is NaT ("not a time"), and NaT <= anything is False.
     failed = insolvent <= deadline
     return pd.Series(failed.to_numpy(), index=companies["company_number"], name="failed")
+
+
+# --- 28.2 The time split and the as-of rule ------------------------------------
+
+def split(companies):
+    """Split companies by formation date: train on earlier, test on later.
+
+    Train: formed Jan-Sep 2021. Validation: Oct-Dec 2021. Test: formed in 2022.
+    A company formed outside those dates, or with no date, is in none of the
+    three. The split is by date only, so no random seed changes it.
+
+    Returns three tables (train, validation, test) with the same columns as
+    `companies`, which only needs an incorporated_on column.
+    """
+    formed = pd.to_datetime(companies["incorporated_on"])
+    # between() includes both ends, and an empty date (NaT) is never between.
+    train = companies.loc[formed.between("2021-01-01", "2021-09-30")]
+    validation = companies.loc[formed.between("2021-10-01", "2021-12-31")]
+    test = companies.loc[formed.between("2022-01-01", "2022-12-31")]
+    return train, validation, test
+
+
+def history_as_of(claims, date):
+    """Directors' history as it stood on `date`, the query company's formation date.
+
+    Keeps claims that started on or before `date`. "On" counts on purpose:
+    directors are normally appointed on the day the company forms. (ADR-001 says
+    "before"; the review on pull request #117 asks to change that word.)
+    A claim with no start date is dropped: we can't show it existed by then.
+    An end date after `date` is emptied: on that date the appointment was still
+    running, and when it would end was still the future.
+
+    Returns the observed graph's edges (evidence.observed_graph).
+    """
+    history = ev.observed_graph(claims, as_of=date)
+    # observed_graph may not empty future end dates yet (the patch on #117), so do it here too.
+    ends = pd.to_datetime(history["valid_to"])
+    history.loc[ends > pd.Timestamp(date), "valid_to"] = None
+    return history
+
+
+def mentions_as_of(mentions, date):
+    """The mentions with company insolvency and dissolution dates after `date` emptied, and no status.
+
+    A company's dates and status are copied from the register on the day we
+    downloaded it, so they can show the future (review on #117, point 1).
+    insolvency_on and dissolved_on after `date` are emptied: on that date they
+    hadn't happened yet. status is emptied for every company, because it is
+    the status on download day and has no date we could check.
+
+    Returns a copy; the table passed in is not changed.
+    """
+    seen = mentions.copy()
+    for column in ("insolvency_on", "dissolved_on"):
+        later = pd.to_datetime(seen[column]) > pd.Timestamp(date)
+        seen.loc[later, column] = None
+    seen["status"] = None
+    return seen
