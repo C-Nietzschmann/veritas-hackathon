@@ -34,6 +34,9 @@ def candidate_matches(query, mentions, claims, pairs):
     An appointment counts if it started by t, and an earlier company only if it was
     insolvent by t. A company with no formation date gets no edges at all, so it ends
     as "nothing to judge" instead of seeing the future.
+
+    Only directorships count, on both sides: a `controls` claim (a person with significant
+    control) is not a directorship. The baselines count the same evidence (#127, card #132).
     """
     companies = mentions[mentions["kind"] == "company"]
     company = companies[companies["company_number"] == query]
@@ -41,6 +44,7 @@ def candidate_matches(query, mentions, claims, pairs):
         return None
     formed = ev.parse_dates(company["incorporated_on"]).iloc[0]
     edges = ev.observed_graph(claims, as_of=formed)
+    edges = edges[edges["relation"] == "director_of"]   # directorships only, never "controls"
 
     at_query = edges[edges["object"].isin(company["mention_id"])]
     if at_query.empty:
@@ -73,7 +77,9 @@ def candidate_matches(query, mentions, claims, pairs):
     }, columns=ev.LINK_COLS)
     # A copied claim states the same appointment again (R5), and a pairs table may list
     # one pair both ways round: either way it is still one link.
-    return links.drop_duplicates(["via", "predecessor"], ignore_index=True)
+    links = links.drop_duplicates(["via", "predecessor"], ignore_index=True)
+    ev.check_columns(links, "links")   # every box checks its own output (ADR-005)
+    return links
 
 
 def p_predecessor(ps):
@@ -123,9 +129,10 @@ def decide(query, matches, line, costs):
     """
     if matches is None:
         # R8: no records is not good news. Abstain, and give no number we don't have.
-        return dict(query=query, method=METHOD, decision="NOT ENOUGH EVIDENCE",
-                    p_predecessor=None, p_fail=None,
-                    reason=f"We have no director records for {query}, so we can't judge it.", flip=None)
+        return checked_row(dict(query=query, method=METHOD, decision="NOT ENOUGH EVIDENCE",
+                                p_predecessor=None, p_fail=None,
+                                reason=f"We have no director records for {query}, so we can't judge it.",
+                                flip=None))
 
     # One match can lead to several insolvent companies; it is still one chance of being right.
     p_pred = p_predecessor(matches.drop_duplicates("via")["p"])
@@ -144,6 +151,12 @@ def decide(query, matches, line, costs):
         best = matches.loc[matches["p"].idxmax()]
         evidence = (f"{query} may share a director with {best['predecessor']}, an earlier company that "
                     f"went insolvent ({best['p']:.0%} sure it's the same person)")
-    return dict(query=query, method=METHOD, decision=decision, p_predecessor=p_pred, p_fail=chance,
-                reason=f"{evidence}: its {chance:.0%} chance of failing within two years is {verdict}.",
-                flip=None)   # what would flip it comes with #37
+    return checked_row(dict(query=query, method=METHOD, decision=decision, p_predecessor=p_pred, p_fail=chance,
+                            reason=f"{evidence}: its {chance:.0%} chance of failing within two years is {verdict}.",
+                            flip=None))   # what would flip it comes with #37
+
+
+def checked_row(row):
+    """Check one decisions row against the schema before anyone reads it (ADR-005), then return it."""
+    ev.check_columns(pd.DataFrame([row]), "decisions")
+    return row

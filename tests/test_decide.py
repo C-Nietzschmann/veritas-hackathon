@@ -159,3 +159,30 @@ def test_reasons_never_show_a_person():
     for row in decide_all(mentions, claims, hand_made_pairs(truth)).values():
         for private in list(people["name"]) + list(people["postcode"]):
             assert private not in row["reason"]
+
+
+# --- Card #132: directorships only (follow-up from the baselines review, #127) -----------
+
+def with_relation(claims, subject, company, relation):
+    """The claims with one appointment's relation changed, for example to "controls"."""
+    claims = claims.copy()
+    claims.loc[(claims["subject"] == subject) & (claims["object"] == company), "relation"] = relation
+    return claims
+
+
+def test_controlling_the_earlier_company_is_not_running_it():
+    # Regression: the old Daniel Harrow record (p1) only controls Harrow Build Ltd, it doesn't direct it.
+    mentions, claims, truth = tiny_world()
+    key = truth["mention"]
+    for relation, links in [("director_of", 1), ("controls", 0)]:
+        changed = with_relation(claims, key["p1"], key["TW000001"], relation)
+        assert len(candidate_matches("TW000002", mentions, changed, hand_made_pairs(truth))) == links
+
+
+def test_controlling_the_query_company_is_not_directing_it():
+    # Regression: the phoenix (p2) only controls Harrow Build Services; its other director doesn't match.
+    mentions, claims, truth = tiny_world()
+    key = truth["mention"]
+    for relation, links in [("director_of", 1), ("controls", 0)]:
+        changed = with_relation(claims, key["p2"], key["TW000002"], relation)
+        assert len(candidate_matches("TW000002", mentions, changed, hand_made_pairs(truth))) == links
