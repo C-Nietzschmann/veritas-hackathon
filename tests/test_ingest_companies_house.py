@@ -18,18 +18,30 @@ And their officers:
 """
 
 import json
+import warnings
 
 import pandas as pd
+import pytest
 
 from src import evidence as ev
 from src import ingest_companies_house as ch
 
-SAMPLE = "tests/raw_sample"   # pytest runs from the repo folder (pytest.ini)
+SAMPLE = "tests/raw_sample"   # counted from the repo folder, wherever pytest runs (see load_raw)
 
 
 def company_rows():
     """The company mentions, one row per company number."""
     return ch.companies_to_mentions(ch.load_raw(SAMPLE)).set_index("company_number")
+
+
+# --- Loading the raw files ------------------------------------------------------------
+
+def test_load_raw_reads_from_the_repo_folder_wherever_python_runs(tmp_path, monkeypatch):
+    raw = ch.load_raw(SAMPLE)
+    assert "tests/raw_sample/company/TW000001.json" in raw   # counted from the repo folder
+    assert all(path.startswith("tests/raw_sample/") for path in raw)
+    monkeypatch.chdir(tmp_path)   # another working folder, like a notebook started in notebooks/
+    assert ch.load_raw(SAMPLE) == raw
 
 
 # --- 25.1 Company profiles become company mentions (#74) ----------------------------
@@ -92,6 +104,36 @@ def test_insolvency_start_date_left_empty_is_skipped():
     assert ch.insolvency_start({"cases": [empty]}) is None
     dated = {"type": "in-administration", "dates": [{"type": "administration-started-on", "date": "2020-02-01"}]}
     assert ch.insolvency_start({"cases": [empty, dated]}) == "2020-02-01"
+
+
+def flagged_company(has_insolvency_history):
+    """A raw dict holding one invented company profile, TW000009, with the flag set as given."""
+    profile = {"company_name": "FLAGGED LTD", "company_number": "TW000009", "has_insolvency_history": has_insolvency_history}
+    return {"data/raw/company/TW000009.json": json.dumps(profile).encode()}
+
+
+def test_flag_without_an_insolvency_file_is_reported_as_missing():
+    raw = flagged_company(True)
+    assert ch.companies_missing_insolvency(raw) == ["TW000009"]
+    with pytest.warns(UserWarning, match="1 companies .* no insolvency file.*TW000009"):
+        mentions = ch.companies_to_mentions(raw)
+    # The mention stays, because officer claims point at it. Its insolvency date is empty.
+    assert len(mentions) == 1 and ev.is_blank(mentions["insolvency_on"]).all()
+
+
+def test_no_flag_and_no_insolvency_file_means_no_insolvency():
+    assert ch.companies_missing_insolvency(flagged_company(False)) == []
+    assert ch.companies_missing_insolvency(ch.load_raw(SAMPLE)) == []   # both flagged companies have their file
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")   # any warning would fail the test here
+        ch.companies_to_mentions(flagged_company(False))
+
+
+def test_insolvency_file_is_used_whatever_the_flag_says():
+    raw = flagged_company(False)
+    case = {"type": "compulsory-liquidation", "dates": [{"type": "ordered-to-wind-up-on", "date": "2019-03-01"}]}
+    raw["data/raw/insolvency/TW000009.json"] = json.dumps({"cases": [case]}).encode()
+    assert ch.companies_to_mentions(raw).loc[0, "insolvency_on"] == "2019-03-01"
 
 
 def test_company_with_only_a_name_and_a_number():
@@ -157,7 +199,7 @@ def director_appointments(raw):
 def test_one_claim_per_director_appointment():
     raw = ch.load_raw(SAMPLE)
     people, claims = ch.officers_to_evidence(raw)
-    assert len(claims) == len(people) == director_appointments(raw) == 5
+    assert len(claims) == len(people) == director_appointments(raw) == 5   # nothing skipped in the sample
     assert set(people["kind"]) == {"person"}
     assert set(claims["relation"]) == {"director_of"}
 
@@ -201,6 +243,30 @@ def test_director_with_only_the_required_fields():
     assert len(people) == len(claims) == 1
     assert ev.is_blank(people.loc[0, ["birth_month", "birth_year", "nationality", "postcode"]]).all()
     assert pd.isna(claims.loc[0, "valid_from"]) and pd.isna(claims.loc[0, "valid_to"])
+
+
+def test_resignation_before_the_appointment_is_skipped_and_counted():
+    good = bare_officer("director", "tw-appointment-0901")
+    good.update(appointed_on="2016-03-01", resigned_on="2019-08-31")
+    bad = bare_officer("director", "tw-appointment-0902")
+    bad.update(appointed_on="2019-08-31", resigned_on="2016-03-01")
+    raw = officers_file([good, bad])
+    with pytest.warns(UserWarning, match="1 director records skipped"):
+        people, claims = ch.officers_to_evidence(raw)
+    # Director records in = claims out + skipped. No mention and no claim for the bad record.
+    assert len(claims) == len(people) == director_appointments(raw) - 1 == 1
+    assert claims.loc[0, "valid_to"] == "2019-08-31"
+    company = ch.companies_to_mentions({"data/raw/company/TW000009.json": b'{"company_name": "BARE BONES LTD", "company_number": "TW000009"}'})
+    ev.check_rows(pd.concat([company, people], ignore_index=True), claims)   # the strict check passes
+
+
+def test_appointment_before_1992_starts_at_appointed_before():
+    # Old appointments have no appointed_on. The register only says the date they were made before.
+    old = bare_officer("director", "tw-appointment-0901")
+    old.update(appointed_before="1991-06-30", is_pre_1992_appointment=True)
+    _, claims = ch.officers_to_evidence(officers_file([old]))
+    assert claims.loc[0, "valid_from"] == "1991-06-30"
+    assert len(ev.observed_graph(claims, as_of="2020-01-01")) == 1   # the as-of rule keeps it
 
 
 def test_same_person_at_two_companies_stays_two_mentions():

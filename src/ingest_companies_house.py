@@ -1,11 +1,12 @@
 """The Companies House adapter: raw API responses become mentions and claims (card #25).
 
-The raw layout. The crawler (#72, #73) saves each response once, untouched (R1):
+The raw layout. The crawler (#72, #73) saves each response once, untouched (R1),
+in the repo folder:
 - data/raw/company/{number}.json     the response of GET /company/{number}
-- data/raw/insolvency/{number}.json  GET /company/{number}/insolvency, only for companies that have one
-- data/raw/officers/{number}.json    GET /company/{number}/officers, with every officer of the
-                                     company in one file (the API pages its answer, so the crawler
-                                     asks for a page big enough or joins the pages)
+- data/raw/insolvency/{number}.json  GET /company/{number}/insolvency, fetched only when the
+                                     company profile says has_insolvency_history
+- data/raw/officers/{number}.json    GET /company/{number}/officers, one page of up to 100
+                                     officers (the crawl flags any company that has more)
 
 The functions below take `raw`: {path: the file's bytes}, for example
 {"data/raw/company/TW000001.json": b'{"company_name": ...}'}. load_raw() builds it.
@@ -16,11 +17,14 @@ The masked display columns stay empty here: that is card #111.
 """
 
 import json
+import warnings
 from pathlib import Path, PurePosixPath
 
 import pandas as pd
 
 from src import evidence as ev
+
+ROOT = Path(__file__).resolve().parents[1]   # the repo folder: this file is in src/, one level below it
 
 SOURCE = "companies_house"           # source and origin of every row
 ADAPTER = "ingest_companies_house"   # the code that made the row
@@ -53,12 +57,15 @@ DIRECTOR_ROLES = {"director", "nominee-director"}
 def load_raw(raw_dir="data/raw"):
     """Read every raw response under raw_dir into {path: bytes}.
 
-    The path is kept as given (for example "data/raw/company/TW000001.json")
-    because it goes into record_ref.
+    raw_dir is a folder inside the repo, counted from the repo folder and not from where
+    Python was started, so a notebook running in notebooks/ reads the same files.
+    The paths are counted from the repo folder too (for example
+    "data/raw/company/TW000001.json"). They go into record_ref, so they are the same
+    on every machine and never carry a local folder name.
     """
     raw = {}
-    for path in sorted(Path(raw_dir).glob("*/*.json")):
-        raw[path.as_posix()] = path.read_bytes()
+    for path in sorted((ROOT / raw_dir).glob("*/*.json")):
+        raw[path.relative_to(ROOT).as_posix()] = path.read_bytes()
     return raw
 
 
@@ -115,8 +122,38 @@ def pick_sic_code(sic_codes):
     return None
 
 
+def companies_missing_insolvency(raw):
+    """The numbers of the companies whose insolvency data is missing.
+
+    The crawl fetches the insolvency file only when the profile says has_insolvency_history.
+    So a profile with that flag and no insolvency file means we don't know whether the
+    company failed. Without the flag, no file simply means no insolvency.
+
+    These companies still get a mention, with insolvency_on empty, because officer claims
+    point at them. Whoever builds the labels (card #76 and the notebook) must leave them
+    out: an empty insolvency_on would otherwise read as "not failed".
+    """
+    have_file = {number for path, number, raw_bytes in files_in(raw, "insolvency")}
+    missing = []
+    for path, number, raw_bytes in files_in(raw, "company"):
+        if json.loads(raw_bytes).get("has_insolvency_history") and number not in have_file:
+            missing.append(number)
+    return missing
+
+
 def companies_to_mentions(raw):
-    """One company mention per company profile file (#74)."""
+    """One company mention per company profile file (#74).
+
+    An insolvency file that exists is always used, whatever has_insolvency_history says.
+    Companies with the flag and no file are reported in a warning: see companies_missing_insolvency.
+    """
+    missing = companies_missing_insolvency(raw)
+    if missing:
+        warnings.warn(
+            f"{len(missing)} companies have has_insolvency_history but no insolvency file: {missing}. "
+            "Their insolvency_on is empty because the data is missing. Leave them out of the labels."
+        )
+
     insolvency = {}
     for path, number, raw_bytes in files_in(raw, "insolvency"):
         insolvency[number] = json.loads(raw_bytes)
@@ -157,12 +194,31 @@ def officers_to_evidence(raw):
     directors are skipped. Every appointment gets its own mention, even when the same
     person appears at two companies under the same officer id: deciding who is who
     is entity resolution's job (R6).
+
+    A director record that ends before it starts is skipped too, with no mention and
+    no claim, and a warning says how many there were. So:
+    director records in = claims out + records skipped.
     """
     mentions, claims = [], []
+    skipped = 0
     for path, number, raw_bytes in files_in(raw, "officers"):
         items = json.loads(raw_bytes).get("items", [])
         for position, officer in enumerate(items):
             if officer.get("officer_role") not in DIRECTOR_ROLES:
+                continue
+
+            # Appointments from before 1992 have no appointed_on, only appointed_before.
+            # The appointment certainly existed by that date, so the as-of rule keeps it.
+            # (A claim with no start date is dropped by the as-of rule.)
+            valid_from = officer.get("appointed_on") or officer.get("appointed_before")
+            valid_to = officer.get("resigned_on")   # None while the director still serves
+
+            # A resignation dated before the appointment can't be right, and check_rows
+            # refuses such a claim, so the record is skipped and counted here. The same goes
+            # for a pre-1992 appointment that ended before its appointed_before date: it has
+            # no start date we can use. ISO dates (YYYY-MM-DD) compare correctly as text.
+            if valid_from and valid_to and valid_to < valid_from:
+                skipped += 1
                 continue
 
             # The appointment's own link, "/company/{number}/appointments/{id}", is unique
@@ -189,8 +245,10 @@ def officers_to_evidence(raw):
                 subject=person["mention_id"],
                 relation="director_of",
                 object=company_mention_id(number),   # the company mention from companies_to_mentions
-                valid_from=officer.get("appointed_on"),
-                valid_to=officer.get("resigned_on"),   # None while the director still serves
+                valid_from=valid_from,
+                valid_to=valid_to,
                 **provenance(path, position, raw_bytes),
             ))
+    if skipped:
+        warnings.warn(f"{skipped} director records skipped: the resignation is dated before the appointment.")
     return pd.DataFrame(mentions, columns=ev.MENTION_COLS), pd.DataFrame(claims, columns=ev.CLAIM_COLS)
