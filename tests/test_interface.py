@@ -53,3 +53,47 @@ def test_in_words():
     assert interface.in_words(0.9) == "likely"
     assert interface.in_words(0.5) == "possible"
     assert interface.in_words(0.05) == "unlikely"
+
+
+# --- #100 evidence table and #99 show() ----------------------------------------------
+
+LINE, COSTS = (0.05, 0.6), (10, 2, 1)   # a made-up failure line for the tests, and the team's costs
+matches = {q: decide.candidate_matches(q, mentions, claims, pairs) for q in truth["queries"]}
+decisions = pd.DataFrame([decide.decide(q, matches[q], LINE, COSTS) for q in truth["queries"]],
+                         columns=ev.DECISION_COLS)
+
+
+def test_the_table_has_one_row_per_line_and_every_guess_has_its_uncertainty():
+    table = interface.evidence_table("TW000002", mentions, claims, matches["TW000002"])
+    guesses = table[table["line"] == "dashed (guess)"]
+    assert len(guesses) == 1
+    assert guesses["p"].notna().all() and (guesses["how sure"] != "").all()
+    assert guesses["record or depends on"].str.len().gt(0).all()
+    facts = table[table["line"] == "solid (fact)"]
+    assert facts["source"].notna().all() and facts["record or depends on"].notna().all()
+
+
+def test_the_table_shows_masked_values_only():
+    hidden = mentions.copy()
+    hidden.loc[hidden["kind"] == "person", "display_name"] = ""
+    links = decide.candidate_matches("TW000002", hidden, claims, pairs)
+    table = interface.evidence_table("TW000002", hidden, claims, links)
+    assert "Daniel" not in table.to_string()
+
+
+def test_show_gives_the_decision_the_picture_and_the_table(capsys):
+    row, fig, table = interface.show("tw000002", mentions, claims, matches, decisions)
+    assert row["decision"] == decisions.set_index("query").loc["TW000002", "decision"]
+    assert fig is not None and len(table) > 0
+    assert "TW000002" in capsys.readouterr().out
+
+
+def test_show_is_polite_about_a_company_outside_the_slice(capsys):
+    assert interface.show("00000006", mentions, claims, matches, decisions) is None
+    assert "Sorry, 00000006 isn't one of the companies" in capsys.readouterr().out
+
+
+def test_show_without_director_records_gives_only_the_decision():
+    quiet = [q for q in truth["queries"] if matches[q] is None][0]
+    row, fig, table = interface.show(quiet, mentions, claims, matches, decisions)
+    assert row["decision"] == "NOT ENOUGH EVIDENCE" and fig is None and table is None
