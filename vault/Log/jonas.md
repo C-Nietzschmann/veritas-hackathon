@@ -31,3 +31,16 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) drafted the notes and the cards at my request, checked the Companies House data limits on the web, and pushed.
 - **Next:** 08:00 call: confirm the use case, the ADR choices, the three costs and the roles. Then everyone claims cards.
 - **Blocked by:** nothing
+
+## 2026-11-14 07:58
+- **Task:** #16 Prepare the architecture and build plan for the kickoff call (card on the board)
+- **Did:** Applied the review on #16.
+  - Plan: the lighter MVP uses P(insolvent predecessor) = 1 − ∏(1 − pᵢ) and a straight line from that to P(fail), so the cost thresholds run on failure. One identity per director becomes Sunday's measured improvement.
+  - Data and evaluation: officer ids are the matcher's label, never a feature; three baselines (flag nothing, same name, Companies House officer links); 2021 train and 2022 test cohorts; masking in every output.
+  - Rules: R1 kept in its cheapest form, R5 skipped while we have one source, R7 tested once #32 exists.
+  - Notes updated: Pipeline, Modules, Idea, ADR-001, ADR-003, ADR-004, ADR-005 and Hard rules.
+  - Cards: 15 updated, #26 merged into #22, #41, #43 and #44 cut, #49 to #52 added.
+- **Result:** notes and cards only, all proposed until the call.
+- **AI used for:** Claude (claude.ai) checked the review, worked out the two maths fixes (the step from predecessor to failure, and the one-identity rule) and applied everything at my request.
+- **Next:** 08:00 call: confirm the lighter MVP, the slice, the label, the costs and the roles.
+- **Blocked by:** nothing

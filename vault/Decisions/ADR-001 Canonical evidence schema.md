@@ -2,7 +2,7 @@
 
 Up: [[Decisions]]
 
-- **Date:** 2026-11-14 07:09, reviewed 07:35
+- **Date:** 2026-11-14 07:09, revised 07:55 after the review on card #16
 - **Decided by:** proposed by jonas. Confirm or change on the kickoff call (task #16)
 - **Status:** proposed
 
@@ -23,7 +23,7 @@ The alternative was letting each source keep its own table and having later code
 
 ## What it changes
 - Ingestion adapters output exactly these two tables. Nothing downstream opens a raw file.
-- Raw downloads land in `data/raw/` and are never edited. They are hashed into a manifest at download (R1), and datasets stay out of git: the notebook downloads them.
+- Raw downloads land in `data/raw/` and are never edited. Each raw response's hash is stored in the `record_ref` of the rows it produced (R1), with no separate manifest. Datasets stay out of git: the notebook downloads them.
 - **As-of rule:** a decision about date t only uses rows dated before t. A crawl made today also shows what happened after t, so this is where leakage would creep in. The train-on-earlier, test-on-later split (Finance must-have) runs on these dates.
 
 ## Open, set at scope lock
