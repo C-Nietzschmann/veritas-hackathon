@@ -53,7 +53,7 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 
 **30-minute rule** (from the workshops): no usable data within 30 minutes means we change the question.
 
-**Slice, proposal:** construction (SIC 41–43), companies formed in 2021 and 2022. Card #19 counts the positives first: if fewer than about 50 young companies fail within 24 months *and* have a director with an earlier insolvent company, we widen the years.
+**Slice (chosen 08:00, see Plan):** construction (SIC 41–43), companies formed in 2021 and 2022. Card #19 counts the positives first: if fewer than about 50 young companies fail within 24 months *and* have a director with an earlier insolvent company, we widen the years.
 
 ## Model
 - **Baselines (three):** flag nothing; same name means same person (the hard merge); and Companies House officer links only, which is what a careful supplier sees on the website today.
@@ -63,10 +63,10 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 
 ## How we measure
 - **Main metric and why:** precision and recall of FLAG on 2022 companies, at the thresholds the stated costs give, next to all three baselines. Failures are rare, so accuracy would say nothing. PR-AUC alongside.
-- **Label, proposal:** the company goes into liquidation or administration within 24 months of incorporation.
-- **Split, proposal:** train on companies formed Jan–Sep 2021, validate on Oct–Dec 2021, test on 2022. Directors' histories are only used up to each company's formation date (as-of rule, ADR-001).
+- **Label (chosen):** the company goes into liquidation or administration within 24 months of incorporation.
+- **Split (chosen):** train on companies formed Jan–Sep 2021, validate on Oct–Dec 2021, test on 2022. Directors' histories are only used up to each company's formation date (as-of rule, ADR-001).
 - **Limitation we state:** the 2021 companies' 24-month outcomes run into 2023, past the start of the test year.
-- **The three costs, proposal:** a missed case 10, a wrong flag 2, asking 1. That means flag above P(fail) 0.5, clear below 0.1, and NOT ENOUGH EVIDENCE in between. **Open** until the call agrees.
+- **The three costs (chosen):** a missed case 10, a wrong flag 2, asking 1. That means flag above P(fail) 0.5, clear below 0.1, and NOT ENOUGH EVIDENCE in between. The call can still change them.
 - **What score would make this useful to our user:** **open.** Proposal: fewer false flags than the name-match rule at the same recall, with calibrated probabilities.
 - **Also:** calibration, false flags by name-commonness group (our main claim), at least five failures with a one-line reason each, and a hand-check of about 50 identity pairs.
 - Details: [[Evaluation Protocol]]

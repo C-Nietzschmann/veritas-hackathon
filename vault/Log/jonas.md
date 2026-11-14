@@ -44,3 +44,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai) checked the review, worked out the two maths fixes (the step from predecessor to failure, and the one-identity rule) and applied everything at my request.
 - **Next:** 08:00 call: confirm the lighter MVP, the slice, the label, the costs and the roles.
 - **Blocked by:** nothing
+
+## 2026-11-14 08:05
+- **Task:** #16 Prepare the architecture and build plan for the kickoff call, and #3 Agree roles and schedule (cards on the board)
+- **Did:** Made the five choices as coordinator: the lighter MVP, construction 2021 and 2022, liquidation or administration within 24 months, costs 10/2/1, and roles. Wrote Plan: three lanes, each owning its own files, meeting only through the six shared tables in `evidence.py`. Updated Modules (owners, the six tables), ADR-005 (no spider web), Idea (choices) and Team (roles). Assigned every build card to its owner, moved the rule tests to the model lead, and moved masking into the schema and adapter.
+- **Result:** notes and card assignments. The call can still change them.
+- **AI used for:** Claude (claude.ai) proposed the split into lanes and the table contracts, and applied them at my request.
+- **Next:** on the call, confirm. Then start #22, schema v1 by 09:30.
+- **Blocked by:** nothing
