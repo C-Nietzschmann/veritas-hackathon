@@ -221,13 +221,13 @@ def labelled_pairs(mentions):
     Give it the mentions of one split at a time: training mentions to train, validation
     mentions to validate.
     """
-    officer = mentions.set_index("mention_id")["officer_id"]
+    has_officer_id = set(mentions.loc[~ev.is_blank(mentions["officer_id"]), "mention_id"])
     same_id = officer_pairs(mentions)
     candidates = candidate_pairs(mentions)
     proposed = set(zip(candidates["a"], candidates["b"]))
     rows = []
     for a, b in sorted(same_id | proposed):   # sorted: the same order every run (R7)
-        if pd.isna(officer[a]) or pd.isna(officer[b]) or not str(officer[a]).strip() or not str(officer[b]).strip():
+        if a not in has_officer_id or b not in has_officer_id:
             continue
         rows.append(dict(a=a, b=b, p=None, features=None, method="labels", label=int((a, b) in same_id)))
     pairs = pd.DataFrame(rows, columns=ev.PAIR_COLS)
@@ -241,8 +241,9 @@ def train_matcher(X, y, seed):
     """31.2: fit a logistic regression on the feature rows X and their labels y (1 or 0).
 
     A logistic regression learns one weight per feature. A positive weight means "when
-    this is 1, the two records are more likely the same person". The same X, y and seed
-    always give the same model (R7).
+    this is 1, the two records are more likely the same person". The same X and y always
+    give the same model (R7): this way of fitting has no randomness, so the seed changes
+    nothing today. It is passed so the result stays repeatable if the fitting method changes.
     """
     model = LogisticRegression(random_state=seed)
     model.fit(X[FEATURE_COLS], list(y))
@@ -251,6 +252,8 @@ def train_matcher(X, y, seed):
 
 def match_probability(model, features):
     """31.2: the matcher's p for each feature row, between 0 and 1: how likely "same person" is."""
+    if len(features) == 0:
+        return []   # no pairs, no numbers: scikit-learn refuses an empty table
     return model.predict_proba(features[FEATURE_COLS])[:, 1]
 
 

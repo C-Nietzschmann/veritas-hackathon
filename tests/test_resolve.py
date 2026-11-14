@@ -229,3 +229,11 @@ def test_each_scored_pair_carries_its_features_and_never_the_officer_id():
     model, scored = trained(mentions)
     assert all(list(row) == rs.FEATURE_COLS for row in scored["features"])
     assert list(rs.matcher_weights(model).index) == rs.FEATURE_COLS + ["intercept"]
+
+
+def test_scoring_no_pairs_gives_an_empty_pairs_table():
+    mentions, _, _ = tiny_world()
+    model, _ = trained(mentions)
+    scored = rs.scored_pairs(model, ev.empty_table("pairs"), mentions)
+    ev.check_columns(scored, "pairs")
+    assert len(scored) == 0
