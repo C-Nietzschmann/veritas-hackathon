@@ -57,6 +57,20 @@ The main metric for each group on the test set. Hackathon rule: say so if it's u
 - **Ours flags nothing, so its zeros say nothing yet.** The failure line slopes down (34.1% without a predecessor, 14.4% with one, fitted on 5,362 training companies), so every validation company lands between CLEAR (10%) and FLAG (50%): 1,552 of 1,552 are NOT ENOUGH EVIDENCE. See the comments on #19.
 - The counts are small: 9 false flags in the common band.
 
+### The failure line, checked on validation (card #94)
+**Validation, not test:** the 1,552 companies formed Oct–Dec 2021; one has no director on record and is left out. The line is fitted on the 5,346 training companies with director records, under the team's label (insolvent or dissolved within 24 months). Printed by `notebooks/cristiano_failure_line.ipynb` (costs 10/2/1, seed 42), AI worker-1 with cristiano, Sun 11:03.
+
+| P(predecessor) | Companies | Failed | Line predicts | Really failed (95% interval) |
+|---|---|---|---|---|
+| 0 | 1,065 | 407 | 34.1% | 38.2% (35.3% to 41.2%) |
+| Above 0, up to 0.5 | 381 | 105 | 34.0% | 27.6% (23.3% to 32.3%) |
+| Above 0.5 | 105 | 14 | 17.1% | 13.3% (8.1% to 21.1%) |
+
+- **The line slopes down, so FLAG never fires.** Fitted on train, it falls from 34.1% with no likely insolvent predecessor to 14.4% with a certain one. Every P(fail) it gives lies between those two, below FLAG (50%) and above CLEAR (10%), so the decision layer answers NOT ENOUGH EVIDENCE for every company.
+- **It misses the two lower groups:** the prediction lies below the interval at 0 and above it in the middle group; only the top group's is inside. On average it looks right (32.9% predicted, 33.9% failed, over the 1,551 companies with director records) because the two misses go opposite ways.
+- **Insolvency only can't replace the label:** 15 training companies and 1 validation company failed through liquidation or administration. The line fitted on those 15 is flat at 0.3%, and 1 failure checks nothing.
+- Reported as found: the label, the costs and the line were not tuned.
+
 ## Where it fails
 From reading 10 to 20 wrong predictions.
 
@@ -69,3 +83,4 @@ What we did not test, and who it might not work for.
 - The 2021 companies' 24-month outcomes run into 2023, past the start of the test year, so some training labels use information from after some test companies were formed. Every 24-month window ends by December 2024, so every label is fully observed in today's register.
 - The label counts every dissolution within 24 months as a failure. The register's profile doesn't say why a company was dissolved, so this includes companies closed by their owners with no debts, and companies struck off because they never filed anything, which may never have traded. Some of these "failures" cost no supplier any money. The old label (liquidation or administration only) made the opposite mistake: it missed every company that was struck off leaving debts behind.
 - The matcher learns from the register's officer ids: the same id counts as the same person, different ids as two people. The register sometimes gives one person two officer ids, so some "two people" labels are wrong, and the matcher is taught to miss exactly those people. We hand-check about 50 such pairs (card #89) and judge the method at the decision level against the officer-links baseline. Code: `labelled_pairs` in `src/resolve.py`.
+- With the team's label and the failure line fitted on the crawl, the decision layer can't flag any company: the line slopes down, so every P(fail) stays below FLAG (and above CLEAR), and every company gets NOT ENOUGH EVIDENCE. See the subsection The failure line, checked on validation (card #94), above.
