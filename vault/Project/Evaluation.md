@@ -99,11 +99,17 @@ The main metric for each group on the test set. Hackathon rule: say so if it's u
 - Reported as found: the labels, the costs and the line were not tuned.
 
 ## Where it fails
-From reading 10 to 20 wrong predictions.
+The matcher's wrong links on the 9,171 validation pairs (card #40): the 15 missed links (the same officer id, `p` under 0.5) and the 353 possible false links (different officer ids, `p` of 0.5 or more). Each example is a pair id, never a name.
 
 | Kind of failure | Example | How often | Why we think it happens |
 |---|---|---|---|
-| | | | |
+| Surname changed | `10c47a09f0c9674d` | 6 of the 15 missed links | The matcher leans hardest on name similarity (weight 17.88), so a new surname, for example after a marriage, outweighs the same birth month and year. |
+| Middle name on one record only | `64adbfe28b96c411` | 3 of the 15 missed links | Name similarity compares whole names, so a middle name missing from one record pulls the score under 0.5 even with the same birth month and year. |
+| Different first name | `74ee622353d9c6f5` | 2 of the 15 missed links | One record uses another first name (perhaps a middle name or a short form), and "English" against "British" counts as a different nationality. |
+| Nationality written differently | `175e5f9bb2dc84b3` | 4 of the 15 missed links | Same name and birth month and year, but "British" against "Irish", or a second nationality on one record, counts as a mismatch. Together with a different postcode district, that keeps the score at 0.29. |
+| Possible false link: common name | `06e42263c856e26b` | 43 of the 353 possible false links | Two people with a common surname can share a name and a birth month and year, and the matcher has no feature for how common a name is. Not proven wrong: the register gives two officer ids, but the hand check (#89, an AI's verdicts) judged pairs like these as one person, all 12 of these 43 that it included. |
+
+The reasons were drafted by an AI (Claude Opus 5.5) and accepted by the user. Source: `notebooks/cristiano_calibration.ipynb`, section "Where the matcher fails (#40)": the missed links are sorted into kinds by the notebook's rule (`kind_of_miss`), the possible false links by name-commonness band.
 
 ## Limits
 What we did not test, and who it might not work for.
