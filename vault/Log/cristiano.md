@@ -47,3 +47,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code repeated the count, wrote the label option, the adapter function and their tests, counted both labels, and wrote the decision note, the card texts and this entry, at my request.
 - **Next:** decide on the call whether the stricter label becomes the main label, and whether the headline moves to the matcher (phantodevc's plan B on #19). Then whoever owns `real_slice.py` and `main.ipynb` (#170) switches the label.
 - **Blocked by:** nothing
+
+## 2026-11-15 12:05
+- **Task:** #175 use the stricter failure label in the real slice (card on the board)
+- **Did:** Made the label call myself, since there was no call: the stricter label is the main label, the matcher is the headline (phantodevc's plan B), and the decision layer stays as it is. Marked the note "A strike-off counts only after real accounts" decided. `real_slice.slice_from_raw` now passes `companies_that_traded(raw)` to the label. Told both crew sessions (#170, #88) and wrote it on #19.
+- **Result:** pull request #177 is merged and main is green. 309 tests pass, 1 skipped. Real-slice labels on 2021: train 77 failed of 5,362, validation 23 of 1,552.
+- **AI used for:** Claude Code weighed the options against our data, made the change and its test, updated the decision note, and wrote the card texts, the messages and this entry, at my request.
+- **Next:** the README and the write-up (#46) say "failed" as in the note and lead with the matcher. `failure_dates` still uses the old label.
+- **Blocked by:** nothing
