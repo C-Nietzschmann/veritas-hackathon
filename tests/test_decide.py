@@ -304,3 +304,14 @@ def test_controlling_the_query_company_is_not_directing_it():
     for relation, expected in [("director_of", 1), ("controls", 0)]:
         changed = with_relation(claims, key["p2"], key["TW000002"], relation)
         assert len(candidate_matches("TW000002", mentions, changed, hand_made_pairs(truth))) == expected
+
+
+def test_a_company_with_only_controllers_is_not_judged():
+    # Every appointment at the phoenix is "controls": no director is on record, so there is
+    # nothing to judge (R8), the same answer as for a company with no records at all.
+    mentions, claims, truth = tiny_world()
+    claims = claims.copy()
+    claims.loc[claims["object"] == truth["mention"]["TW000002"], "relation"] = "controls"
+    matches = candidate_matches("TW000002", mentions, claims, hand_made_pairs(truth))
+    assert matches is None
+    assert decide("TW000002", matches, LINE, COSTS)["decision"] == "NOT ENOUGH EVIDENCE"
