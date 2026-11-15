@@ -39,3 +39,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the script and its test from the scratch version that did the merge, ran the tests and the rebuild, opened and merged the pull request, and wrote the card texts and this entry, at my request.
 - **Next:** jonas and phantodevc load `raw_merged.zip` (steps on #159). `vault/Project/Modules.md` does not list the new file yet.
 - **Blocked by:** nothing
+
+## 2026-11-15 11:40
+- **Task:** #171 a failure label that needs filed accounts before a strike-off (card on the board), from phantodevc's finding on #19
+- **Did:** Checked phantodevc's finding on 2021 (train and validation; 2022 not read). His numbers hold, and 95% of the early strike-offs never filed accounts. Added a stricter label: `label_failures(mentions, traded=adapter.companies_that_traded(raw))` counts a strike-off only after a set of non-dormant accounts. The default label is unchanged. Wrote the proposal "A strike-off counts only after real accounts" in Decisions for the 14:00 call.
+- **Result:** pull request #172 is merged and main is green. 305 tests pass, 1 skipped. 2021 train: 77 failures of 5,362 (1.4%) by the stricter label, against 1,778 (33%) by the current one; validation 23 of 1,552. With an insolvent predecessor (same officer id) 3 of 186 failed (1.6%), without one 97 of 6,711 (1.4%): no lift either way, and too few cases to rule one out.
+- **AI used for:** Claude Code repeated the count, wrote the label option, the adapter function and their tests, counted both labels, and wrote the decision note, the card texts and this entry, at my request.
+- **Next:** decide on the call whether the stricter label becomes the main label, and whether the headline moves to the matcher (phantodevc's plan B on #19). Then whoever owns `real_slice.py` and `main.ipynb` (#170) switches the label.
+- **Blocked by:** nothing
