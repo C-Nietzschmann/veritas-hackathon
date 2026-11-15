@@ -70,3 +70,14 @@ def test_a_name_with_no_letter_is_skipped(tmp_path):
     # The register has a director whose name is written "."; it must not match the ".." in a path.
     nb = write_notebook(tmp_path / "nb.ipynb", "ok", source='sys.path.insert(0, "..")  # see notes..')
     assert name_guard.find_names(nb, ["."]) == []
+
+
+def test_catches_a_name_that_ends_in_a_full_stop(tmp_path):
+    # Invented name. With \b the search missed it, because nothing word-like follows the "." (#166).
+    nb = write_notebook(tmp_path / "nb.ipynb", "director: Daniel Jr. Harrow, and HARROW, Daniel Jr. again")
+    assert name_guard.find_names(nb, ["HARROW, Daniel Jr."]) == [(1, "HARROW, Daniel Jr.")]
+
+
+def test_a_full_stop_name_inside_a_longer_word_is_not_a_match(tmp_path):
+    nb = write_notebook(tmp_path / "nb.ipynb", "see LEE, Jo.Smith in the list")
+    assert name_guard.find_names(nb, ["LEE, Jo."]) == []

@@ -200,3 +200,37 @@ def test_history_without_a_date_stops_instead_of_showing_the_future():
     for no_date in (None, float("nan"), ""):   # the ways an empty cell can arrive
         with pytest.raises(ValueError):
             evaluate.history_as_of(claims, no_date)
+
+
+# --- 31.3 Is the matcher's p a probability? (card #88) --------------------------------
+
+def test_calibration_gives_the_brier_score_and_the_bar_to_beat():
+    # Brier: (0.9 - 1)² + (0.2 - 0)² + (0.6 - 0)² + (0.1 - 0)² = 0.01 + 0.04 + 0.36 + 0.01 = 0.42, / 4 = 0.105
+    # The bar, 0.25 for every pair: (0.25 - 1)² + 3 × (0.25 - 0)² = 0.5625 + 0.1875 = 0.75, / 4 = 0.1875
+    brier, bar, _ = evaluate.calibration([0.9, 0.2, 0.6, 0.1], [1, 0, 0, 0], base_share=0.25)
+    assert brier == pytest.approx(0.105)
+    assert bar == pytest.approx(0.1875)
+
+
+def test_calibration_table_puts_each_p_in_its_bin():
+    # 0 goes in the first bin, 0.2 is on an edge and goes in the lower bin, 1 goes in the last.
+    # 0-0.2:   0, 0.1, 0.2 -> 3 pairs, mean p 0.3 / 3 = 0.1,  1 with the same officer id
+    # 0.4-0.6: 0.5         -> 1 pair,  mean p 0.5,            0 with the same officer id
+    # 0.8-1:   0.9, 1      -> 2 pairs, mean p 1.9 / 2 = 0.95, 2 with the same officer id
+    # 0.2-0.4 and 0.6-0.8 have no pairs, so no row.
+    _, _, table = evaluate.calibration([0, 0.1, 0.2, 0.5, 0.9, 1], [0, 0, 1, 0, 1, 1], base_share=0.5)
+    assert list(table.index) == ["0-0.2", "0.4-0.6", "0.8-1"]
+    assert list(table["pairs"]) == [3, 1, 2]
+    assert list(table["same_officer_id"]) == [1, 0, 2]
+    assert list(table["mean_p"]) == pytest.approx([0.1, 0.5, 0.95])
+
+
+def test_calibration_stops_on_a_bad_input():
+    with pytest.raises(ValueError):
+        evaluate.calibration([0.5, 0.5], [1], base_share=0.5)       # two values of p, one label
+    with pytest.raises(ValueError):
+        evaluate.calibration([1.2], [1], base_share=0.5)            # a p above 1
+    with pytest.raises(ValueError):
+        evaluate.calibration([float("nan")], [1], base_share=0.5)   # a missing p
+    with pytest.raises(ValueError):
+        evaluate.calibration([0.5], [2], base_share=0.5)            # a label that is not 0 or 1

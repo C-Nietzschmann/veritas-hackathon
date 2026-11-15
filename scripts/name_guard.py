@@ -50,15 +50,18 @@ def notebook_texts(notebook_path):
 
 def find_names(notebook_path, names):
     """Return (cell number, name) for every real name found in the notebook."""
+    # Each name's spellings, worked out once instead of once per text. A "name" with no
+    # letter (the register has one written ".") is skipped: it would match punctuation.
+    spellings = [(name, name_forms(name)) for name in names if re.search(r"[^\W\d_]", name)]
     found = []
     for number, text in notebook_texts(notebook_path):
         text = clean(text)
-        for name in names:
-            if not re.search(r"[^\W\d_]", name):
-                continue   # a "name" with no letter (the register has one written ".") would match punctuation
-            for form in name_forms(name):
-                # \b = a word edge, so "jo lee" is not found inside "jo leeds"
-                if re.search(r"\b" + re.escape(form) + r"\b", text):
+        for name, forms in spellings:
+            for form in forms:
+                # 1. A quick test first: almost every name is not in the text at all (#166).
+                # 2. Then the edges: no letter or digit right before or after, so "jo lee" is not
+                #    found inside "jo leeds". Unlike \b, this also works for "jr." at the end.
+                if form in text and re.search(r"(?<!\w)" + re.escape(form) + r"(?!\w)", text):
                     found.append((number, name))
                     break
     return found
@@ -84,7 +87,11 @@ def main():
     sys.path.insert(0, str(ROOT))
     from src import ingest_companies_house as ingest
 
-    mentions, _ = ingest.officers_to_evidence(ingest.load_raw())
+    # The people come only from the officers folder, so only it is read: about a tenth of the
+    # crawl's files, which keeps the guard to seconds (#166).
+    officers = {path.relative_to(ROOT).as_posix(): path.read_bytes()
+                for path in sorted((RAW_DIR / "officers").glob("*.json"))}
+    mentions, _ = ingest.officers_to_evidence(officers)
     found = find_names(NOTEBOOK, real_names(mentions))
     for number, name in found:
         print(f"  x real name in notebooks/main.ipynb, cell {number}: {name}. Show display_name instead")
