@@ -54,6 +54,8 @@ def find_names(notebook_path, names):
     for number, text in notebook_texts(notebook_path):
         text = clean(text)
         for name in names:
+            if not re.search(r"[^\W\d_]", name):
+                continue   # a "name" with no letter (the register has one written ".") would match punctuation
             for form in name_forms(name):
                 # \b = a word edge, so "jo lee" is not found inside "jo leeds"
                 if re.search(r"\b" + re.escape(form) + r"\b", text):
