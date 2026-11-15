@@ -141,3 +141,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code ran the audits with three read-only agents, checked their findings, wrote the README and Credits changes, the #59 comment and this entry, at my request. I read the README diff before it shipped.
 - **Next:** whatever the team needs before 18:00.
 - **Blocked by:** nothing
+
+## 2026-11-15 15:35
+- **Task:** a judge's read of the project and a stress test of the matcher (for the write-up, #46)
+- **Did:** Ran `main.ipynb`'s cells 0–28 in a scratch copy with extra cells on the validation companies: a "same name and same birth month and year" rule next to the matcher, the matcher's weights, and one record of each of the 730 confirmed pairs altered (typos, dropped middle names, birth date off or missing, moved). 2022 stayed closed. Posted the tables on #46.
+- **Result:** the name + birth rule makes 138 unconfirmed links and finds 83 of 84 confirmed ones; the matcher 130 and 80, and all its 130 are also the rule's. Altered records still linked by the matcher: surname typo 56.4%, first-name typo 81.0% (same-name rule under 5%), middle names dropped 32.3%, birth month one off 0%.
+- **AI used for:** Claude Code wrote and ran the scratch cells, read the outputs and wrote the #46 comment and this entry, at my request.
+- **Next:** jonas and cristiano decide what goes into the notebook and the write-up.
+- **Blocked by:** nothing
