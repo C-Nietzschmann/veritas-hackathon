@@ -101,3 +101,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the figure functions, tests and cells, checked the pictures, shipped the PR and drafted the notes and this entry. I can explain each change.
 - **Next:** #48 real fresh-run at 17:00; close #42 once the figures show real data.
 - **Blocked by:** #19 decision and #170
+
+## 2026-11-15 11:25
+- **Task:** #166 name guard: names ending in a full stop, and speed
+- **Did:** Swapped `\b` for "no letter or digit next to it" edges, added a quick `in` test before the regular expression, and read only the officers folder (PR #181).
+- **Result:** `check.sh` with the real crawl: about 9 s instead of several minutes, the same 49,253 names, no real name in main.ipynb. 314 tests pass.
+- **AI used for:** Claude Code wrote the change and tests, timed it, shipped the PR and drafted the note and this entry. I can explain it.
+- **Next:** #48 real fresh-run at 17:00; close #42 once #170 brings real data.
+- **Blocked by:** nothing
