@@ -81,7 +81,7 @@ So far 7 positives (3 by officer id), well under 50. At about 1.5% of companies,
 | **Positives**: failed and such a director, same officer id | 18 | 4 | **22** |
 | **Positives**: failed and such a director, same name and birth date | 62 | 14 | **76** |
 
-76 positives by the loose match, past the 50 the plan asks for, so the years stay as they are; 22 by officer id. Validation is thin (14). **A predecessor goes with a lower failure rate, not a higher one:** 10.7% (22 of 206) with one by officer id against 33.9% without, and 16.2% (76 of 469) against 34.4% by the loose match. The team decides on the call what this means for the failure line (#94), the costs and the write-up.
+76 positives by the loose match, past the 50 the plan asks for, so the years stay as they are; 22 by officer id. Validation is thin (14). **A predecessor goes with a lower failure rate, not a higher one:** 10.7% (22 of 206) with one by officer id against 33.9% without, and 16.2% (76 of 469) against 34.4% by the loose match. The "without" rates count only the companies with at least one director on record, so they differ slightly from the table's totals. The team decides on the call what this means for the failure line (#94), the costs and the write-up.
 
 ## Model
 - **Baselines (three):** flag nothing; same name means same person (the hard merge); and Companies House officer links only, which is what a careful supplier sees on the website today.
