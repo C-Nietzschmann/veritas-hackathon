@@ -77,3 +77,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the counting script (kept outside the repo), ran it, and drafted the Idea table, the card note and this entry.
 - **Next:** on the call: keep crawling, widen the years, or use the looser predecessor definition (#19 stays open for that). Crawl part 2 keeps running.
 - **Blocked by:** nothing
+
+## 2026-11-15 09:23
+- **Task:** #24 / #159 stop and upload my crawl, #19 count the positives on the merged data
+- **Did:** Stopped crawl part 2 of 2021 at 08:58 (a minute early) with 6,066 companies, uploaded `raw_phantodevc.zip` to the draft release and wrote it on #159. Downloaded cristiano's merged database and checked it (6,914 of 2021, 6,847 of 2022). Counted failures and positives on all of 2021 and posted them on #19 and in Idea.
+- **Result:** 2,305 of 6,914 failed (16 by insolvency). Positives: 76 by name and birth date, 22 by officer id. A predecessor goes with a lower failure rate: 10.7% against 33.9% by officer id.
+- **AI used for:** Claude Code ran the stop and upload at 09:00 as I asked, ran the counting script (kept outside the repo) and drafted the #19 comment, the Idea table and this entry.
+- **Next:** the call decides what the lower failure rate means for the line (#94) and the costs. #48 fresh-run test, then ship the README.
+- **Blocked by:** nothing
