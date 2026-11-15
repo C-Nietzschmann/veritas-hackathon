@@ -1,0 +1,5 @@
+# Only for the demo app (app/server.py), on top of requirements.txt. Kept apart so the
+# notebook's fresh-run test installs exactly what it did before.
+-r requirements.txt
+fastapi==0.163.1
+uvicorn==0.54.0
