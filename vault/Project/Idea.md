@@ -29,7 +29,7 @@ The owner of a small UK supplier, for example a builders' merchant, deciding whe
 A wrong "yes" means an unpaid invoice when the customer goes under and the same people carry on in a new company (a "phoenix"). A wrong "no" turns away an honest customer, often one whose director simply has a common name.
 
 ## Our approach
-A company number goes in. The model gathers the company's directors from Companies House and works out, with a probability, which earlier companies the same people ran, because a matching name is not proof. From those probabilities it computes the chance that the company has an insolvent predecessor, and from that the chance it fails.
+A company number goes in. The model gathers the company's directors from Companies House and gives each possible match a score between 0 and 1 for whether it is the same person who ran an earlier company, because a matching name is not proof. The score ranks matches but is not a probability: the calibration check found it runs too high (#88, #180). From those scores it computes the chance that the company has an insolvent predecessor, and from that the chance it fails.
 
 What comes out: FLAG, CLEAR or NOT ENOUGH EVIDENCE for this credit decision, the evidence graph (solid lines are stated in the register, dashed lines are inferred), and the one uncertain match that would change the answer.
 
@@ -85,7 +85,7 @@ So far 7 positives (3 by officer id), well under 50. At about 1.5% of companies,
 
 ## Model
 - **Baselines (three):** flag nothing; same name means same person (the hard merge); and Companies House officer links only, which is what a careful supplier sees on the website today.
-- **First real model:** entity resolution that scores pairs of people (name, birth month and year, postcode, nationality) with a calibrated probability, trained on officer ids as labels and never as a feature. Then P(insolvent predecessor) = 1 − ∏(1 − pᵢ) over the candidate matches, a straight line from that to P(fail), and the cost-based decision layer.
+- **First real model:** entity resolution that scores pairs of people (name, birth month and year, postcode, nationality) with a match score (calibration was checked and failed, so it is called a score, not a probability: #180), trained on officer ids as labels and never as a feature. Then P(insolvent predecessor) = 1 − ∏(1 − pᵢ) over the candidate matches, a straight line from that to P(fail), and the cost-based decision layer.
 - **The one measured improvement (Sunday):** one identity per director. A director is at most one of their candidate earlier people, which is a closed form, with possible worlds as the check. We measure whether it improves the flags against the formula.
 - **If there's time:** what would flip each decision, what-if toggles and cost sliders.
 
