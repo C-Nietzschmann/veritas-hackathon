@@ -109,3 +109,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the change and tests, timed it, shipped the PR and drafted the note and this entry. I can explain it.
 - **Next:** #48 real fresh-run at 17:00; close #42 once #170 brings real data.
 - **Blocked by:** nothing
+
+## 2026-11-15 11:41
+- **Task:** #180 call the matcher's p a score, not a probability
+- **Did:** Changed the decision reason to "match score 0.90 out of 1" and the two Idea sentences (PR #184). Asked cristiano on PR #182 to change the two notebook sentences in his rewrite; noted the write-up wording and the 2 unsure pairs on #46. Checked every tracked file against the crawl's real names: none leaked (only invented test names).
+- **Result:** #180 closed. 318 tests pass.
+- **AI used for:** Claude Code made the change, the test and the comments, shipped the PR and drafted the note and this entry. I can explain it.
+- **Next:** #48 real fresh-run at 17:00; close #42 once #182 merges.
+- **Blocked by:** nothing
