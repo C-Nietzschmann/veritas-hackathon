@@ -349,3 +349,15 @@ def test_a_missing_postcode_gives_an_empty_display_postcode():
     people, _ = ch.officers_to_evidence(raw)
     from_that_file = people[people["record_ref"].str.startswith(path)]
     assert len(from_that_file) > 0 and from_that_file["display_postcode"].isna().all()   # None, not ""
+
+
+def test_traded_means_real_accounts_filed():
+    def profile(accounts):
+        return json.dumps({"accounts": accounts}).encode()
+    raw = {
+        "r/company/TW000101.json": profile({"last_accounts": {"made_up_to": "2022-01-31", "type": "micro-entity"}}),
+        "r/company/TW000102.json": profile({"last_accounts": {"made_up_to": "2022-01-31", "type": "dormant"}}),
+        "r/company/TW000103.json": profile({"last_accounts": {"type": "null"}}),   # never filed
+        "r/company/TW000104.json": profile(None),                                   # no accounts block
+    }
+    assert ch.companies_that_traded(raw) == {"TW000101"}

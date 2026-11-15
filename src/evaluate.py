@@ -35,7 +35,7 @@ def as_of_date(date):
 
 # --- 28.1 The failure label ------------------------------------------------------
 
-def label_failures(mentions, window_months=24, count_dissolved=True):
+def label_failures(mentions, window_months=24, count_dissolved=True, traded=None):
     """Did each company fail within `window_months` months of incorporation?
 
     Failed means that, on or before incorporated_on + window_months, the company
@@ -53,6 +53,11 @@ def label_failures(mentions, window_months=24, count_dissolved=True):
     debts counts as failed too. count_dissolved=False gives the label as it was
     before: liquidation or administration only.
 
+    traded (card #171) is the stricter label: give it the numbers of the companies that
+    filed real accounts (the adapter's companies_that_traded), and a dissolution counts
+    only for those. Most young companies struck off never filed anything: they most likely
+    never traded, so they left no supplier unpaid. On 2021 they are 95% of the dissolutions.
+
     Give it the mentions as downloaded, never the output of mentions_as_of: the
     label looks into the future on purpose, and the as-of view hides that future,
     so every company would come out "not failed" without any error.
@@ -66,7 +71,10 @@ def label_failures(mentions, window_months=24, count_dissolved=True):
     # An empty date is NaT ("not a time"), and NaT <= anything is False.
     failed = read_dates(companies["insolvency_on"]) <= deadline
     if count_dissolved:
-        failed = failed | (read_dates(companies["dissolved_on"]) <= deadline)
+        dissolved = read_dates(companies["dissolved_on"]) <= deadline
+        if traded is not None:
+            dissolved = dissolved & companies["company_number"].isin(traded)
+        failed = failed | dissolved
     return pd.Series(failed.to_numpy(), index=companies["company_number"], name="failed")
 
 
