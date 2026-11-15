@@ -202,3 +202,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai, Opus 5.5) wrote the three texts from Evaluation's numbers, which I approved, opened and merged the pull request, and ran the fresh-run test, at my request.
 - **Next:** the write-up (#46), then the demo video (#47) and the submissions (#51, #52).
 - **Blocked by:** nothing
+
+## 2026-11-15 15:55
+- **Task:** #198 Remove jonas_real.ipynb before judging; Idea.md brought up to date
+- **Did:** The repo is public, so I removed my Saturday scratch notebook `notebooks/jonas_real.ipynb` (its outputs showed real company names, and its 438-company numbers on the earlier label disagreed with `main.ipynb` and Evaluation); Evaluation now names `real_slice.handcheck_sample` instead. Updated Idea.md's "How we measure" to Sunday's decisions: the main metric (unconfirmed links next to recall), the stricter label, and the open question on what score makes it useful, now settled.
+- **Result:** pull request #199, merged as 71be093; checks green; #198 closed with its "How it works" note. Idea.md shared straight to main.
+- **AI used for:** Claude (claude.ai, Opus 5.5) made the removal and the text changes from the decision notes, which I approved, and opened and merged the pull request, at my request.
+- **Next:** the write-up (#46) and the demo video (#47), each in its own chat; the submissions (#51, #52).
+- **Blocked by:** nothing
