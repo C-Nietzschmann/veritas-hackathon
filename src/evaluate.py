@@ -6,6 +6,7 @@ Dates are read with read_dates, which stops with an error on a date that is not
 written as YYYY-MM-DD, so a bad date can't quietly change a label or a set.
 """
 
+import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score
 
@@ -262,3 +263,44 @@ def false_flags_by_band(decisions, labels, bands):
                              false_flag_rate=false_flags / not_failed if not_failed else None))
     return pd.DataFrame(rows, columns=["method", "band", "companies", "not_failed", "flags",
                                        "false_flags", "false_flag_rate"])
+
+
+# --- 31.3 Is the matcher's p a probability? (card #88) --------------------------------
+
+def calibration(p, same, base_share):
+    """The calibration check ADR-004 asks for before the matcher's p may be called a probability.
+
+    Give it the validation pairs. p is the matcher's p for each pair. same is 1 when the pair
+    has the same officer id (label 1) and 0 when not. base_share is the share of label 1
+    among the training pairs.
+
+    Returns (brier, bar, table):
+    - brier: the Brier score, the mean of (p - label)². 0 is perfect.
+    - bar: the Brier score of answering base_share for every pair. That knows only how
+      common label 1 is, so it is the bar the matcher must beat.
+    - table: the reliability table, one row per bin of p (0-0.2, ..., 0.8-1) that has pairs:
+      pairs, mean_p, and same_officer_id, how many of them have label 1. Where p means
+      what it says, same_officer_id / pairs is close to mean_p.
+    A p on the edge between two bins goes in the lower one, and 0 goes in the first.
+    Stops with an error if p and same differ in length, a p is not between 0 and 1,
+    or a label is not 0 or 1.
+    """
+    p = np.asarray(p, dtype=float)
+    same = np.asarray(same)
+    if len(p) != len(same):
+        raise ValueError(f"one p and one label per pair, got {len(p)} values of p and {len(same)} labels")
+    # Asked as "is every p between 0 and 1?", so a missing p (NaN) stops too: NaN >= 0 is False.
+    if not ((p >= 0) & (p <= 1)).all():
+        raise ValueError("every p must be between 0 and 1")
+    if not np.isin(same, [0, 1]).all():
+        raise ValueError("every label must be 0 or 1")
+    same = same.astype(int)
+
+    brier = float(np.mean((p - same) ** 2))
+    bar = float(np.mean((base_share - same) ** 2))
+    by_pair = pd.DataFrame({"p": p, "same_officer_id": same})
+    bins = pd.cut(by_pair["p"], [0, 0.2, 0.4, 0.6, 0.8, 1],
+                  labels=["0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1"], include_lowest=True)
+    table = by_pair.groupby(bins, observed=True).agg(
+        pairs=("p", "size"), mean_p=("p", "mean"), same_officer_id=("same_officer_id", "sum"))
+    return brier, bar, table
