@@ -186,3 +186,27 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) in VS Code downloaded and checked the merged zip, set up the kernel, ran the notebook once, built the blind page, compared my verdicts with the AI's, drafted the Evaluation text, the "What it shows" cell and the "How it works" note, and shared the work, at my request. The 50 verdicts are mine.
 - **Next:** share the person-check file with #46 and write the write-up; record the video (#47); fresh-run test (#48) at about 16:30–17:00. Tell cristiano that `main.ipynb`'s own hand-check sample (cell 31) is not the 50 pairs the AI judged: they share only 8.
 - **Blocked by:** nothing
+
+## 2026-11-15 15:14
+- **Task:** #193 Person-check the 50 AI-judged pairs
+- **Did:** Created and started #193. Rewrote `notebooks/jonas_handcheck.csv` as UTF-8 without BOM with LF line endings (header `pair_id,verdict`, my 50 verdicts unchanged) and added `**/data/` to `.gitignore`, so all of `data/` stays out of git. Shipped both through pull request #194.
+- **Result:** #193 closed with its "How it works" note, and CI on `main` passed. Evaluation's hand-check section points to the file.
+- **AI used for:** Claude Code (Opus 5.5) in VS Code created the card, changed the file's format and the ignore line, shipped them and drafted the "How it works" note, at my request. The verdicts are mine.
+- **Next:** write-up (#46), video (#47), first submission (#51) at 18:00.
+- **Blocked by:** nothing
+
+## 2026-11-15 15:40
+- **Task:** #196 Update three outdated text cells in main.ipynb (agreed with cristiano in the team chat)
+- **Did:** Fixed three markdown cells in `main.ipynb`: the hand-check cell now says the judged pairs were drawn in `cristiano_calibration.ipynb` (8 of 50 overlap with the notebook's own sample); "Where it fails" item 2 reports the verdicts of #89 and #46 with their caveats; item 7 says 2022 ran once (#45). Also re-ran the fresh-run test on a clean clone of `main` @ 803a8fa: no error in 12 s (posted on #48).
+- **Result:** pull request #197, merged as 8b3bfab; checks green; #196 closed with its "How it works" note.
+- **AI used for:** Claude (claude.ai, Opus 5.5) wrote the three texts from Evaluation's numbers, which I approved, opened and merged the pull request, and ran the fresh-run test, at my request.
+- **Next:** the write-up (#46), then the demo video (#47) and the submissions (#51, #52).
+- **Blocked by:** nothing
+
+## 2026-11-15 15:55
+- **Task:** #198 Remove jonas_real.ipynb before judging; Idea.md brought up to date
+- **Did:** The repo is public, so I removed my Saturday scratch notebook `notebooks/jonas_real.ipynb` (its outputs showed real company names, and its 438-company numbers on the earlier label disagreed with `main.ipynb` and Evaluation); Evaluation now names `real_slice.handcheck_sample` instead. Updated Idea.md's "How we measure" to Sunday's decisions: the main metric (unconfirmed links next to recall), the stricter label, and the open question on what score makes it useful, now settled.
+- **Result:** pull request #199, merged as 71be093; checks green; #198 closed with its "How it works" note. Idea.md shared straight to main.
+- **AI used for:** Claude (claude.ai, Opus 5.5) made the removal and the text changes from the decision notes, which I approved, and opened and merged the pull request, at my request.
+- **Next:** the write-up (#46) and the demo video (#47), each in its own chat; the submissions (#51, #52).
+- **Blocked by:** nothing

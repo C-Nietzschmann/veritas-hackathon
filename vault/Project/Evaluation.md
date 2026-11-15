@@ -55,7 +55,7 @@ Is the matcher's `p` a probability? ADR-004 asks for this check before we call i
 - **Verdict:** `p` is a score, not a probability. The two top bins sit clearly below the diagonal.
 - **A cause this check can't rule out:** the matcher learned from pairs where label 1 is common (41%) and is checked on pairs where it is rare (8%). A model fitted on the first mix gives a `p` that is too high on the second. So the gap in the top bins may come from that mismatch, and not only from label error or a matcher that is too sure. Not tested.
 
-**Hand check (#89): judged by an AI (Claude Opus 5.5) at the user's request, not by hand.** 50 pairs with different officer ids that the same-name rule or the matcher links, sampled as in `jonas_real.ipynb` (seed 42). The rule: the same name and the same birth month and year gives yes; a different birth month or year gives no; evidence both ways gives unsure. The verdicts, by pair id only: `notebooks/cristiano_handcheck.csv`.
+**Hand check (#89): judged by an AI (Claude Opus 5.5) at the user's request, not by hand.** 50 pairs with different officer ids that the same-name rule or the matcher links, sampled by `real_slice.handcheck_sample` (seed 42), the steps first run in jonas's scratch notebook for card #36 (removed before judging: its outputs showed real company names). The rule: the same name and the same birth month and year gives yes; a different birth month or year gives no; evidence both ways gives unsure. The verdicts, by pair id only: `notebooks/cristiano_handcheck.csv`.
 
 | Which method links the pair | Pairs | Same person | Two people | Unsure |
 |---|---|---|---|---|
