@@ -4,6 +4,8 @@ Filled in together on our kickoff call, Sat 08:00–10:00 CET. Locked at 10:00. 
 Owner after lock: the coordinator.
 
 > **Draft by jonas for the 08:00 call, updated after the review on card #16.** Everything here is a proposal until the call confirms it. Points still to settle are marked **open**.
+>
+> **Since the call:** this note is the plan we started from. Where it differs from a note in Decisions or from Credits (the data licence), those are what we did.
 
 ## Track and challenge
 - **Track:** Finance

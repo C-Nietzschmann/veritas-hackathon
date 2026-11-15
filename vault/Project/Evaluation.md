@@ -9,6 +9,7 @@ Only numbers from code that was actually run go in here.
 - **Data split:** train: formed Jan–Sep 2021 / validation: formed Oct–Dec 2021 / test: formed in 2022 · seed: none needed, because the split is by formation date (`incorporated_on`), so a seed doesn't change it; `SEED = 42` in the notebook covers anything random. A company formed outside these dates is in none of the three. Code: `split` in `src/evaluate.py`.
 - **As-of rule:** a company formed on day t is judged only on claims (who directs or controls which company) that started on or before t (the day itself counts, because directors are usually appointed the day the company forms), with these dates emptied when they fall after t: when an appointment ended, and when an earlier company went insolvent or was dissolved; companies formed after t are left out, and company status is never used, because it has no date. Code: `history_as_of` in `src/evaluate.py` and `mentions_as_of` in `src/evidence.py`.
 - **Test set first used on:** Sun 15 Nov 14:11, main.ipynb @ 74d8a97
+- **One earlier contact with the 2022 files, no result:** `notebooks/cristiano_calibration.ipynb` ran the adapter over the whole crawl, 2022 files included, before it split the companies. Its saved output counts the 2022 companies (6,847) and shows nothing else about them: no label, no rate, no score. Its training and validation pair counts (145,518 and 9,171) are the same as in `main.ipynb`, where the 2022 files are dropped first.
 
 ## Results
 Newest row at the bottom. One row per experiment. Validation and Test give the main metric: the links to an earlier insolvent company that the register doesn't confirm, how many of them are for common surnames, and recall against the register.
@@ -29,7 +30,7 @@ Printed by `score_methods` in `src/evaluate.py`, and pinned by `tests/test_score
 | Same name | 3 | 2 | 0 | 0.33 | 1 |
 | Officer links | 0 | 0 | 1 | none (nothing flagged) | 0 |
 
-Validation numbers follow once the crawl (#24) is in.
+The validation numbers from the real crawl are in the sections below.
 
 ### Blocking recall, on validation (card #85)
 Blocking is the cheap rule that proposes which pairs of person records the matcher compares: the same surname and first initial, or the same birth month and year with a similar surname (`candidate_pairs` in `src/resolve.py`). A true pair it never proposes can never be matched (ADR-003), so we count how many of the register's own links it keeps. A true pair is two records with the same officer id.

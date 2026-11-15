@@ -66,7 +66,12 @@ def test_reads_the_real_notebook():
     assert len(name_guard.notebook_texts(name_guard.NOTEBOOK)) > 0
 
 
-def test_a_name_with_no_letter_is_skipped(tmp_path):
+def test_every_notebook_is_searched_not_only_main():
+    assert name_guard.NOTEBOOK in name_guard.NOTEBOOKS
+    assert len(name_guard.NOTEBOOKS) > 1
+
+
+def test_a_name_with_no_letter_is_not_searched_for(tmp_path):
     # The register has a director whose name is written "."; it must not match the ".." in a path.
     nb = write_notebook(tmp_path / "nb.ipynb", "ok", source='sys.path.insert(0, "..")  # see notes..')
     assert name_guard.find_names(nb, ["."]) == []

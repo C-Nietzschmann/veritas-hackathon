@@ -20,6 +20,8 @@ cmd=$1; n=$2; text=$3
 # Put the current changes on a branch for this task, push it, and make sure a linked pull request is open.
 # Sets $pr to the pull request's number.
 share_on_branch() {
+  # Without gh the steps below would switch branch, commit and push, and only then fail.
+  command -v gh >/dev/null 2>&1 || { echo "The GitHub CLI (gh) is missing, so nothing was changed. Install it, then: gh auth login"; return 1; }
   cd "$(git rev-parse --show-toplevel)" || return 1
   if [ "$(git branch --show-current)" = main ]; then
     git fetch -q origin main

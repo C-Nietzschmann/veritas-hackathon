@@ -25,10 +25,11 @@ def clean_name(name):
 
 
 def pseudonym(name):
-    """The same name always gets the same label, and the label can't be turned back into the name.
+    """The same name always gets the same label, so the name itself is never shown.
 
-    The label is the start of a SHA-256 hash, a one-way function: easy from name to label,
-    impossible from label to name. Missing or empty names give an empty string.
+    The label is the start of a SHA-256 hash, which has no "undo". That keeps names off the page,
+    but it is not secrecy: the register is public, so someone who already has a list of names can
+    hash each one and compare the labels. Missing or empty names give an empty string.
     """
     if name is None or not str(name).strip():
         return ""
