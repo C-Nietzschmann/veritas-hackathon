@@ -170,3 +170,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) in VS Code switched the crawl, wrote and rehearsed the merge scripts, wrote Jan's steps, the #155 change and the headline code and tests, and had subagents review, mutation-test and recount the work, at my request.
 - **Next:** hand-check the 28 pairs (verdicts in notebooks/jonas_handcheck.csv). Settle the key rule with Cristiano at the check-in. Run the merge when Jan's and Cristiano's zips arrive, then rerun the headline on more 2021 data to reach 50 pairs. Keep 2022 out of every number until the test run.
 - **Blocked by:** nothing
+
+## 2026-11-15 12:52
+- **Task:** review of #40 (Cristiano's card), #45 Run the test set once (taken, as agreed on the call), #48 Run the fresh-run test (taking it over, as agreed on the call), planning #46 and #47
+- **Did:** Reviewed pull request #183 (failure gallery): every number in its Evaluation rows matches the notebook's saved outputs; posted two wording points. Took #45 (it starts after 14:00) and asked Cristiano for a switch in `main.ipynb` that opens 2022, and for the main metric. Asked Jan to hand #48 over: I have no commits on `main.ipynb`. Copied the matcher-against-baselines table from `main.ipynb` @ f38cebd into Evaluation. Checked `raw_merged.zip` from the team's release (251,180 valid files, 13,761 companies, all 5,061 of mine inside); it still has to be merged into my `data/raw`. Planned the structure of the write-up and the video.
+- **Result:** Evaluation, "The matcher against the baselines, on validation (card #170)": the matcher keeps 80 of the 84 links the register confirms and makes 130 it doesn't confirm, against 375 for the same-name rule (9 against 85 for common surnames).
+- **AI used for:** Claude (claude.ai, Opus 5.5) reviewed #183, wrote and posted the comments on #183, #45 and #48, checked the zip, copied the table into Evaluation from the saved outputs and drafted the write-up and video plans, at my request.
+- **Next:** merge `raw_merged.zip` into `data/raw`. After 14:00, run #45 once. Write the write-up text and record the video. Decide whether I person-check the 2 unsure pairs and a sample of the matcher's 130 unconfirmed links (#46). Fresh-run test at about 16:30–17:00.
+- **Blocked by:** #45 waits for the model at 14:00 and the 2022 switch.

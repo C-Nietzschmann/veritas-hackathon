@@ -53,6 +53,26 @@ The 50 pairs were spread over the three groups on purpose, so "24 of 50" is not 
 
 Source: `notebooks/cristiano_calibration.ipynb`, merged with pull request #174.
 
+### The matcher against the baselines, on validation (card #170)
+**Validation, not test:** the 1,552 companies formed Oct–Dec 2021, from the merged crawl (#159), under the main (stricter) label. Each method links a validation company's director to a record at an earlier insolvent company. The register confirms a link when both records have the same officer id. Printed by `notebooks/main.ipynb` @ f38cebd (#182), section "Evaluation: which earlier insolvent companies does each method find?". Copied from the saved outputs by jonas (with Claude), Sun 12:50.
+
+| Method | Links | Confirmed (same officer id) | Not confirmed (different ids) | Confirmed links it misses | Precision vs the register | Recall vs the register | Companies linked |
+|---|---|---|---|---|---|---|---|
+| Same name | 458 | 83 | 375 | 1 | 0.181 | 0.988 | 219 |
+| Officer links | 84 | 84 | 0 | 0 | 1.000 | 1.000 | 42 |
+| Matcher (score 0.5 or more) | 210 | 80 | 130 | 4 | 0.381 | 0.952 | 105 |
+
+| Surname band | Same name: not confirmed | Matcher: not confirmed | Confirmed (same officer id) | Confirmed, missed by the matcher |
+|---|---|---|---|---|
+| Rare | 0 | 0 | 0 | 0 |
+| Medium | 290 | 121 | 66 | 2 |
+| Common | 85 | 9 | 18 | 2 |
+
+- **Officer links are perfect against the register by construction:** they are the register's own links, so they can't see a person the register split across two ids.
+- **The matcher keeps 80 of the 84 confirmed links and makes 130 unconfirmed ones, against 375 for the same-name rule;** for common surnames 9 against 85.
+- **Precision vs the register is a lower bound:** some unconfirmed links are one person under two ids (#89). How many is unknown until a person checks them.
+- **On links to any earlier record** (not only insolvent ones), the same picture: 832 unconfirmed links by the same-name rule against 261 by the matcher (195 against 23 for common surnames), precision 0.383 against 0.663, and the matcher misses 13 of the 527 confirmed links.
+
 ## Final result
 Filled in after feature freeze, from the one test-set run.
 
