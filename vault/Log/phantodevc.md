@@ -133,3 +133,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code ran the clone, the install and both runs, compared the outputs, and wrote the card comment and this entry, at my request.
 - **Next:** if `main.ipynb` changes after the 2022 run (#45), run the same three lines once more before 18:00.
 - **Blocked by:** nothing
+
+## 2026-11-15 14:55
+- **Task:** submission readiness check; #187 Bring the README up to date with the decisions
+- **Did:** Ran three read-only audits (submission checklist, credits and privacy, numbers against `main.ipynb`). Fixed the README (warning as the output, score not probability, saved outputs from the real crawl, current team workflow) and pinned pytest in requirements (PR #188, shipped). Added Obsidian, gh and the AI worker names to Credits, and which companies the predecessor rates count to Idea. Posted the rest on #59 for its owners.
+- **Result:** no number in the notes contradicts the notebook's saved outputs. Blocks 18:00: the repo is private, the write-up is empty, nobody holds #51 and #52. For the team: real names and emails in commit author metadata.
+- **AI used for:** Claude Code ran the audits with three read-only agents, checked their findings, wrote the README and Credits changes, the #59 comment and this entry, at my request. I read the README diff before it shipped.
+- **Next:** whatever the team needs before 18:00.
+- **Blocked by:** nothing
