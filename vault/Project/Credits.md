@@ -39,3 +39,17 @@ Which assistants we used and what for. Summarised from the "AI used for" lines i
 - **Claude Code (Anthropic), models Claude Opus 5.5 and Claude Fable 5.2**: wrote code and tests at our request (crawler, adapter fixes, label, masking, name guard, interface, what-if and sliders), ran the crawl and the notebook, judged the 50 hand-check pairs at our request (#89, marked as AI verdicts in `notebooks/cristiano_handcheck.csv` and Evaluation), checked API facts on the web, opened and merged our pull requests after we read the code, and drafted log entries.
 - **"AI worker-1" and "AI Review Worker"**: the names under which AI agents did and reviewed some of cristiano's cards (for example in `notebooks/cristiano_calibration.ipynb` and Evaluation). Which assistant and model they ran on: cristiano to confirm.
 - Our rules for AI help: a team member reads the code before it is merged, the task's owner confirms its "How it works" note, and every number in Evaluation comes from code that was run, never from an AI's guess.
+
+## Demo app and video (#47)
+Added with the demo app. The app runs on this computer only (`python app/server.py`); its packages are in `requirements-demo.txt`, apart from `requirements.txt`.
+
+| Name | Link | Licence | Used for |
+|---|---|---|---|
+| FastAPI | https://fastapi.tiangolo.com | MIT | The demo app's small JSON API (`app/server.py`) |
+| Uvicorn | https://www.uvicorn.org | BSD-3-Clause | Runs the demo app's server |
+| Inter, via Fontsource | https://rsms.me/inter/ | SIL Open Font License 1.1 | The demo app's and the video's type (`app/static/fonts/`) |
+| IBM Plex Mono, via Fontsource | https://github.com/IBM/plex | SIL Open Font License 1.1 | Labels and code in the demo app and the video |
+| Kokoro-82M (pre-trained text-to-speech model), run with kokoro-onnx | https://huggingface.co/hexgrad/Kokoro-82M | Apache-2.0 | The demo video's narration voice |
+| "Deep Techno Ambience" (Mixkit, track 134) | https://mixkit.co/free-stock-music/ | Mixkit License (Stock Music Free License, no attribution required) | The demo video's background music |
+
+AI: Claude (claude.ai, Anthropic), model Claude Opus 5.5, built the demo app (`app/`) and recorded and edited the demo video at jonas's request.

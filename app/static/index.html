@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TENSEGRITY — has this director done it before?</title>
+  <link rel="stylesheet" href="app.css">
+  <link rel="icon" href="mark.jpg">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#check" aria-label="TENSEGRITY, check a company">
+      <span>TENSEGRITY</span>
+    </a>
+    <div class="top-mid mono">Due diligence <i>/</i> UK construction <i>/</i> Companies House register</div>
+    <nav class="tabs" aria-label="Views">
+      <button type="button" data-view="check" class="on"><span class="mono">01</span>Check</button>
+      <button type="button" data-view="how"><span class="mono">02</span>How it works</button>
+    </nav>
+  </header>
+
+  <div class="index mono">
+    <span>TENSEGRITY <i>/</i> Phoenix check for trade credit</span>
+    <span id="index-mid">Did a director of this company run one that went insolvent?</span>
+    <span id="index-right">Construction companies formed in 2021</span>
+  </div>
+
+  <main>
+    <!-- 01 / CHECK: one company, step by step -->
+    <section id="view-check" class="view on" aria-label="Check a company">
+      <div class="hero">
+        <div class="hero-left">
+          <div class="kicker mono"><b class="sq"></b>01 <i>/</i> Check a company before giving credit</div>
+          <h1>Has this director<br>done it before<span class="sig">?</span></h1>
+          <form id="check-form" class="query" autocomplete="off">
+            <label class="mono" for="number">Company number<small>Hidden on screen</small></label>
+            <input id="number" type="password" spellcheck="false" placeholder="8 characters">
+            <button type="submit"><span>Check</span><span class="arrow" aria-hidden="true">→</span></button>
+          </form>
+        </div>
+        <div class="result" id="result" aria-live="polite">
+          <div class="result-top mono"><span>Result <i>/</i> <b id="result-id">—</b></span><span id="result-state">Waiting for a company</span></div>
+          <div class="result-body">
+            <div class="verdict" id="verdict"></div>
+            <div class="score"><span class="score-num" id="score">—</span><span class="score-note mono" id="score-note"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="engine" id="engine" aria-label="The engine, step by step"></div>
+
+      <div class="work">
+        <div class="graph-wrap">
+          <div class="bar mono"><span>02 <i>/</i> Evidence</span><span><b class="key solid"></b>On the register <b class="key dashed"></b>Our guess <i>/</i> select a line</span></div>
+          <svg id="graph" viewBox="0 0 1300 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evidence graph"></svg>
+        </div>
+        <aside class="inspector" id="inspector" aria-live="polite"></aside>
+      </div>
+
+      <div class="verdicts" id="verdicts" aria-label="What the register and two simple rules say"></div>
+    </section>
+
+    <!-- 02 / HOW IT WORKS: the pipeline, its real code and the test -->
+    <section id="view-how" class="view" aria-label="How it works">
+      <div class="how-hero">
+        <div class="kicker mono"><b class="sq"></b>02 <i>/</i> How it works</div>
+        <h1>From the register<br>to a match score<span class="sig">.</span></h1>
+        <p class="deck">Six steps, each one real code from our repository running on our own crawl. Select a step to read its source.</p>
+      </div>
+      <div class="modules" id="modules"></div>
+      <div class="detail">
+        <div class="code" id="code">
+          <div class="code-bar mono"><span id="code-file">src/</span><span id="code-name"></span></div>
+          <div class="code-body"><div class="scroller" id="scroller"><pre class="gutter" id="gutter"></pre><pre class="source" id="source"></pre></div></div>
+        </div>
+        <aside class="side" id="side"></aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot mono">
+    <span>This project is a prototype and is not financial advice.</span>
+    <span>Companies House public data <i>/</i> people shown as pseudonyms <i>/</i> company names and numbers hidden</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

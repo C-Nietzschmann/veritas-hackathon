@@ -210,3 +210,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai, Opus 5.5) made the removal and the text changes from the decision notes, which I approved, and opened and merged the pull request, at my request.
 - **Next:** the write-up (#46) and the demo video (#47), each in its own chat; the submissions (#51, #52).
 - **Blocked by:** nothing
+
+## 2026-11-15 22:01
+- **Task:** #47 Record the 2-minute video (the demo app it is filmed from)
+- **Did:** Ran the demo app (`python app/server.py`) on my PC on the real crawl. The film's last restyle had never reached my copy, so `app/static/index.html` and `app.css` were re-applied from the video chat's own edits (OKLCH colours, wordmark-only header, no logo in the result panel). Checked the notebook's demo company on the page: Warning, match score 0.95, no console errors. Shared `app/`, `requirements-demo.txt` and the demo's credits as a pull request, still open.
+- **Result:** pull request linked to #47, open. `scripts/check.sh` ok; `pytest -q` 323 passed, 1 skipped; on a fresh clone the app starts on the tiny world and answers every endpoint.
+- **AI used for:** Claude (claude.ai, Opus 5.5) built the demo app and the video earlier at my request; in this session it re-applied the film's styling, tested the page and opened the pull request, at my request.
+- **Next:** read the app code before it merges, then ship #47; final submission (#52).
+- **Blocked by:** nothing
