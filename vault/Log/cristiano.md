@@ -63,3 +63,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code checked the cards against the code and the notebook, ran the recount, wrote the Evaluation subsection, the closing comments on the cards and this entry, at my request.
 - **Next:** the switch in `main.ipynb` that opens 2022 for jonas's one test run (#45), and the main metric in Evaluation.
 - **Blocked by:** nothing
+
+## 2026-11-15 13:45
+- **Task:** the main metric for the test run (jonas's question on #45), and loose ends on my cards
+- **Did:** Chose the main metric, on jonas's suggestion and before the test set was opened: the links to an earlier insolvent company that the register doesn't confirm, overall and for common surnames, next to recall against the register, with the same-name rule as the baseline. Wrote the decision note "The main metric is unconfirmed links next to recall" and the Setup line in Evaluation. Added `src/merge_crawls.py` to Modules. Moved #81's card to Done and added the missing "How it works" note to #32, which was already closed.
+- **Result:** no new number. On validation the metric reads 375 unconfirmed links for the same-name rule against 130 for the matcher (85 against 9 for common surnames), at a recall of 0.988 against 0.952 (`main.ipynb` @ f38cebd).
+- **AI used for:** Claude Code wrote the decision note, the Evaluation line, the Modules row, the card note and this entry, at my request. The choice of metric is mine.
+- **Next:** card #185, the switch in `main.ipynb` that opens 2022 for jonas's run. The `crawl-data` draft release is deleted once jonas confirms on #159 that he has the merged data.
+- **Blocked by:** nothing
