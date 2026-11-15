@@ -8,14 +8,15 @@ Only numbers from code that was actually run go in here.
 - **Label (since Sun 15 Nov, decision note A strike-off counts only after real accounts):** a company failed if, on or before the day 24 months after its incorporation, its first liquidation or administration started, or it was dissolved (removed from the register) after filing at least one set of accounts that were not dormant. Neither, or only later, means it did not fail. A members' voluntary liquidation, which is a solvent wind-down, is not counted as an insolvency. Code: `label_failures(mentions, traded=companies_that_traded(raw))`; `real_slice.load_slice` uses it (#171, #175). The tiny world keeps the earlier label. Earlier labels: liquidation or administration only, until 14 Nov (`count_dissolved=False`); then any dissolution, until 15 Nov (no `traded`, card #142).
 - **Data split:** train: formed Jan–Sep 2021 / validation: formed Oct–Dec 2021 / test: formed in 2022 · seed: none needed, because the split is by formation date (`incorporated_on`), so a seed doesn't change it; `SEED = 42` in the notebook covers anything random. A company formed outside these dates is in none of the three. Code: `split` in `src/evaluate.py`.
 - **As-of rule:** a company formed on day t is judged only on claims (who directs or controls which company) that started on or before t (the day itself counts, because directors are usually appointed the day the company forms), with these dates emptied when they fall after t: when an appointment ended, and when an earlier company went insolvent or was dissolved; companies formed after t are left out, and company status is never used, because it has no date. Code: `history_as_of` in `src/evaluate.py` and `mentions_as_of` in `src/evidence.py`.
-- **Test set first used on:** _not yet_
+- **Test set first used on:** Sun 15 Nov 14:11, main.ipynb @ 74d8a97
 
 ## Results
-Newest row at the bottom. One row per experiment.
+Newest row at the bottom. One row per experiment. Validation and Test give the main metric: the links to an earlier insolvent company that the register doesn't confirm, how many of them are for common surnames, and recall against the register.
 
 | # | When | What changed | Validation | Test | Notebook @ commit | Who |
 |---|---|---|---|---|---|---|
-| 0 | | Baseline: | | | | |
+| 0 | Sun 15 Nov | Baseline: the same-name rule | 375 unconfirmed, 85 for common surnames, recall 0.988 | 1,537 unconfirmed, 442 for common surnames, recall 0.980 | main.ipynb @ f38cebd (validation), @ 74d8a97 (test) | cristiano (validation, #182), jonas (test, #45) |
+| 1 | Sun 15 Nov | The matcher (score 0.5 or more) | 130 unconfirmed, 9 for common surnames, recall 0.952 | 534 unconfirmed, 112 for common surnames, recall 0.918 | main.ipynb @ f38cebd (validation), @ 74d8a97 (test) | cristiano (validation, #182), jonas (test, #45) |
 
 ### Tiny world check (a code check, not a result)
 The three baselines on the tiny world's 5 hand-made query companies (`tests/tiny_world.py`). One of them fails within 24 months: TW000002, the phoenix. These numbers show the code behaves the way the tiny world was built to show. They say nothing about real companies.
@@ -68,6 +69,22 @@ The 50 pairs were spread over the three groups on purpose, so "24 of 50" is not 
 
 Source: `notebooks/cristiano_calibration.ipynb`, merged with pull request #174.
 
+**The same 50 pairs, checked by a person (jonas, Sun 15 Nov, card #46).** Blind: a page made by `real_slice.handcheck_html`, in pair-id order, with no group, band, match score or AI verdict. It shows the two records side by side: the director's pseudonym (the same pseudonym means the same name), whether the two names match after normalising, birth month and year, nationality, postcode area, company and dates, and the co-directors' pseudonyms. The verdicts, by pair id only: `notebooks/jonas_handcheck.csv`.
+
+| Which method links the pair | Pairs | Same person | Two people | Same as the AI |
+|---|---|---|---|---|
+| Both | 24 | 24 | 0 | 24 of 24 |
+| The same-name rule, not the matcher | 25 | 0 | 25 | 24 of 24, plus 1 the AI left unsure |
+| The matcher only | 1 | 1 | 0 | the AI left it unsure |
+| All | 50 | 25 | 25 | 48 of the 48 the AI decided |
+
+- **The person agrees with the AI on all 48 pairs it decided, and settles the 2 it left unsure:** the same-name pair is two people, the matcher-only pair is one person.
+- **On these 50 pairs the person's verdict matches the matcher's call every time:** the matcher links the 25 pairs judged one person and leaves out the 25 judged two people. The same-name rule also links the 25 two-people pairs, and misses the matcher-only pair. The pairs were spread over the groups on purpose, so these are counts, not rates.
+- **So the 24 sampled links that both methods make and the register doesn't confirm were each judged one person under two officer ids,** which is why precision against the register is a lower bound.
+- **Still not independent evidence:** the person saw pseudonyms, not names, and the same kind of evidence the matcher leans on, above all birth month and year. One person checked each pair once.
+
+Groups as `handcheck_sample` defines them, recomputed with `main.ipynb`'s steps in a scratch script on the merged crawl; they give the AI table above exactly.
+
 ### The matcher against the baselines, on validation (card #170)
 **Validation, not test:** the 1,552 companies formed Oct–Dec 2021, from the merged crawl (#159), under the main (stricter) label. Each method links a validation company's director to a record at an earlier insolvent company. The register confirms a link when both records have the same officer id. Printed by `notebooks/main.ipynb` @ f38cebd (#182), section "Evaluation: which earlier insolvent companies does each method find?". Copied from the saved outputs by jonas (with Claude), Sun 12:50.
 
@@ -89,18 +106,44 @@ Source: `notebooks/cristiano_calibration.ipynb`, merged with pull request #174.
 - **On links to any earlier record** (not only insolvent ones), the same picture: 832 unconfirmed links by the same-name rule against 261 by the matcher (195 against 23 for common surnames), precision 0.383 against 0.663, and the matcher misses 13 of the 527 confirmed links.
 
 ## Final result
-Filled in after feature freeze, from the one test-set run.
+Filled in after feature freeze, from the one test-set run: `notebooks/main.ipynb` @ 74d8a97 with `OPEN_TEST = True`, section "The test set, opened once (card #45)", run once on Sun 15 Nov 14:11 (jonas). The 6,847 test companies were formed in 2022, and nothing above was built or chosen on them; 65 of them failed (main label). Links to an earlier insolvent company, as printed:
 
-- **Baseline:**
-- **Our model:**
-- **In plain words:**
+| Test | Links | Confirmed (same officer id) | Not confirmed (different ids) | Confirmed links it misses | Precision vs the register | Recall vs the register | Companies linked |
+|---|---|---|---|---|---|---|---|
+| Same name (baseline) | 1,836 | 299 | 1,537 | 6 | 0.163 | 0.980 | 909 |
+| Officer links | 305 | 305 | 0 | 0 | 1.000 | 1.000 | 169 |
+| Matcher (score 0.5 or more) | 814 | 280 | 534 | 25 | 0.344 | 0.918 | 348 |
+
+- **Baseline:** the same-name rule makes 1,537 links to an earlier insolvent company that the register doesn't confirm, 442 of them for common surnames, at a recall against the register of 0.980.
+- **Our model:** the matcher makes 534 unconfirmed links, 112 of them for common surnames, at a recall of 0.918: it misses 25 of the 305 confirmed links, against 6 for the same-name rule.
+- **In plain words:** on companies it never saw, the matcher raises far fewer links the register can't back up than matching by name, most of all for common surnames, and pays for it with some confirmed links missed. A link is a reason to check a director before giving credit, not a forecast: with or without one, about 1% of the test companies failed, for every method.
+
+**Does a link go with failure on the test set?** As printed:
+
+| Method | Failed, linked to an earlier insolvent company | Failed, not linked |
+|---|---|---|
+| Same name | 9 of 909: 1% (1–2%) | 56 of 5,938: 1% (1–1%) |
+| Officer links | 1 of 169: 1% (0–3%) | 64 of 6,678: 1% (1–1%) |
+| Matcher | 3 of 348: 1% (0–3%) | 62 of 6,499: 1% (1–1%) |
+
+On links to any earlier record (not only insolvent ones), the same picture: 3,284 unconfirmed links by the same-name rule against 1,172 by the matcher (933 against 189 for common surnames), precision 0.336 against 0.582, recall 0.985 against 0.968.
 
 ## By group
 The main metric for each group on the test set. Hackathon rule: say so if it's uneven.
 
-| Group | Examples | Baseline | Our model |
-|---|---|---|---|
-| | | | |
+The groups are the director's surname band (`name_commonness`: rare, medium, common). Test companies formed in 2022, links to an earlier insolvent company, printed by the same test-set run as the Final result.
+
+| Surname band | Confirmed links (same officer id) | Same name (baseline): not confirmed | Matcher: not confirmed | Confirmed, missed by the matcher |
+|---|---|---|---|---|
+| Rare | 1 | 0 | 0 | 1 |
+| Medium | 285 | 1,095 | 422 | 22 |
+| Common | 19 | 442 | 112 | 2 |
+| All | 305 | 1,537 | 534 | 25 |
+
+- **Uneven for the same-name rule:** its unconfirmed links sit in the medium and common bands (1,095 and 442) and none in the rare band, where a surname seen once matches no one. The matcher makes 422 and 112 there.
+- **The matcher's misses:** 22 of 285 confirmed links in the medium band, 2 of 19 in the common band, and the only confirmed link in the rare band (1 of 1).
+- **Small groups:** the rare band has 1 confirmed link and the common band 19, so the missed-link counts there are noise.
+- **On links to any earlier record,** the same pattern: the same-name rule makes 2,351 and 933 unconfirmed links in the medium and common bands, against 982 and 189 for the matcher (which also makes 1 in the rare band); the matcher misses 1 of 1, 51 of 1,533 and 2 of 155 confirmed links in the rare, medium and common bands.
 
 ### False flags by name-commonness band, on validation (card #106)
 **Validation, not test:** the 1,552 companies formed Oct–Dec 2021, from the merged crawl (#159), under the main (stricter) label. The false-flag rate is false flags / companies that didn't fail. A company's band is the commonest surname band among its directors on record when it was formed (`company_bands`, bands from `name_commonness`); one company has no director on record and is left out. Printed by `false_flags_by_band` in `src/evaluate.py`, in `notebooks/main.ipynb` @ f38cebd (#182), the section "The figures".
@@ -162,3 +205,7 @@ What we did not test, and who it might not work for.
 - The label counts a dissolution within 24 months only after real accounts were filed. A company that traded but never filed is missed, and a company closed by its owners with no debts still counts as failed: the register's profile doesn't say why a company was dissolved. The label before it (any dissolution) mostly counted companies that never filed anything and probably never traded: 95% of the early dissolutions among the 2021 training companies (phantodevc, #19). It turned the signal upside down, because experienced directors file their accounts. The first label (liquidation or administration only) had too few cases: 16 in all of 2021.
 - The matcher learns from the register's officer ids: the same id counts as the same person, different ids as two people. The register sometimes gives one person two officer ids, so some "two people" labels are wrong, and the matcher is taught to miss exactly those people. 50 such pairs were judged by an AI at the user's request, not by hand (card #89, in the matcher section above), and we judge the method at the decision level against the officer-links baseline. Code: `labelled_pairs` in `src/resolve.py`.
 - The decision layer can't flag any company with the failure line fitted on the crawl. Under the main label the line is nearly flat (1.4% to 1.8%) and under CLEAR, so every company with director records is cleared: on failure alone it does what "flag nothing" does. Under the old label the line slopes down and every company gets NOT ENOUGH EVIDENCE. See the subsection The failure line, checked on validation (card #94), above.
+- The test run is judged against the register only. The links it doesn't confirm (534 by the matcher, 1,537 by the same-name rule) include people the register split across two officer ids, so precision against the register (0.344 and 0.163) is a lower bound. Nobody has looked at a test pair: the hand checks (#89, #46) used validation pairs.
+- On the test set the matcher misses more confirmed links than the same-name rule: 25 of 305 against 6 (recall 0.918 against 0.980).
+- The failure counts on the test set are small: 65 of the 6,847 test companies failed, 3 of them among the 348 the matcher links. With or without a link about 1% failed for every method, so the test set can't show whether a link changes the failure rate.
+- The adapter's known gaps are in the test run too: it skipped 27 director records whose resignation is dated before the appointment, and 6 companies are flagged insolvent with no insolvency file in the crawl.
