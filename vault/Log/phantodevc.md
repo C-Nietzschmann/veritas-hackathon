@@ -61,3 +61,27 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the sliders, tests and Demo cell, shipped the PR and drafted the note and this entry. I can explain how the sliders work.
 - **Next:** close #38 if the team agrees. Crawl part 2 keeps running.
 - **Blocked by:** nothing
+
+## 2026-11-14 14:04
+- **Task:** #113 Credits, #115 README, #102 flip in the interface, #114 pinned requirements, #105 name-commonness bands (cards on the board)
+- **Did:** Completed Credits (every library, Chow's rule, the AI tools, the Companies House licence checked on its official page) and closed #113. Wrote the README (PR #150, open until the fresh-run test #48); its run steps worked word for word in a fresh clone. Shipped #102 (PR #151): the match to check first is red in the picture, marked in the table, and named in one sentence by `show()`. Shipped #114 (PR #152): every library pinned. Shipped #105 (PR #153): `name_commonness` bands from counts only. Closed #38.
+- **Result:** `main` green. #37 at 2/2, #39 at 1/2, #50 at 2/3. Bands on my local crawl (2,223 director records): 737 rare, 1,245 medium, 241 common.
+- **AI used for:** Claude Code wrote the code, tests, Credits and README, checked the licence and the run steps, shipped the PRs and drafted the notes and this entry. I can explain each change.
+- **Next:** #48 fresh-run test on Sunday, then ship the README. Crawl part 2 keeps running.
+- **Blocked by:** nothing
+
+## 2026-11-14 14:28
+- **Task:** #62 count the positives (card on the board, parent #19), and #37 closed
+- **Did:** Counted failures and positives on my crawl sample (part 2 of 2021, first 482 query companies) with the team's adapter, label and split code; wrote the table in Idea under the slice and the rate limit in Credits. Closed #37 after both sub-tasks shipped.
+- **Result:** 173 of 482 failed within 24 months (only 2 by insolvency), and 7 positives (3 by officer id): well under the 50 the plan asks for. Estimate: about 3,400 companies for 50.
+- **AI used for:** Claude Code wrote the counting script (kept outside the repo), ran it, and drafted the Idea table, the card note and this entry.
+- **Next:** on the call: keep crawling, widen the years, or use the looser predecessor definition (#19 stays open for that). Crawl part 2 keeps running.
+- **Blocked by:** nothing
+
+## 2026-11-15 09:23
+- **Task:** #24 / #159 stop and upload my crawl, #19 count the positives on the merged data
+- **Did:** Stopped crawl part 2 of 2021 at 08:58 (a minute early) with 6,066 companies, uploaded `raw_phantodevc.zip` to the draft release and wrote it on #159. Downloaded cristiano's merged database and checked it (6,914 of 2021, 6,847 of 2022). Counted failures and positives on all of 2021 and posted them on #19 and in Idea.
+- **Result:** 2,305 of 6,914 failed (16 by insolvency). Positives: 76 by name and birth date, 22 by officer id. A predecessor goes with a lower failure rate: 10.7% against 33.9% by officer id.
+- **AI used for:** Claude Code ran the stop and upload at 09:00 as I asked, ran the counting script (kept outside the repo) and drafted the #19 comment, the Idea table and this entry.
+- **Next:** the call decides what the lower failure rate means for the line (#94) and the costs. #48 fresh-run test, then ship the README.
+- **Blocked by:** nothing

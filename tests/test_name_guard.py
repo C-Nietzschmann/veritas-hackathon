@@ -52,6 +52,21 @@ def test_only_unmasked_people_count_as_real_names():
     assert name_guard.real_names(mentions) == ["HARROW, Daniel"]
 
 
+def test_a_name_with_no_letter_is_skipped(tmp_path):
+    # The register has a director named "."; searched for, it would match "sys.path" (#164).
+    mentions = pd.DataFrame({"kind": ["person", "person"], "name": [".", "HARROW, Daniel"],
+                             "display_name": ["Person 1", "Person 2"]})
+    assert name_guard.real_names(mentions) == ["HARROW, Daniel"]
+    nb = write_notebook(tmp_path / "nb.ipynb", "ok", source="sys.path.insert(0, '..')")
+    assert name_guard.find_names(nb, name_guard.real_names(mentions)) == []
+
+
 def test_reads_the_real_notebook():
     # The guard can read main.ipynb's cells and saved outputs.
     assert len(name_guard.notebook_texts(name_guard.NOTEBOOK)) > 0
+
+
+def test_a_name_with_no_letter_is_skipped(tmp_path):
+    # The register has a director whose name is written "."; it must not match the ".." in a path.
+    nb = write_notebook(tmp_path / "nb.ipynb", "ok", source='sys.path.insert(0, "..")  # see notes..')
+    assert name_guard.find_names(nb, ["."]) == []

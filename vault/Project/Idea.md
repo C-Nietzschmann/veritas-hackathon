@@ -55,6 +55,34 @@ Checked: it downloads from a public URL inside a notebook ☐ · it has enough e
 
 **Slice (chosen 08:00, see Plan):** construction (SIC 41–43), companies formed in 2021 and 2022. Card #19 counts the positives first: if fewer than about 50 young companies fail within 24 months *and* have a director with an earlier insolvent company, we widen the years.
 
+**Positives counted (card #62, Sat 14:27, phantodevc's crawl: part 2 of 2021, the first 482 query companies):**
+
+| | Jan–Sep 2021 (train) | Oct–Dec 2021 (validation) | All |
+|---|---|---|---|
+| Companies | 380 | 102 | 482 |
+| Failed within 24 months (insolvent or dissolved, the label since #144) | 139 | 34 | 173 |
+| … of those, liquidation or administration | 2 | 0 | 2 |
+| A director with an earlier insolvent company, same officer id | 8 | 2 | 10 |
+| … or same name and birth month and year | 19 | 6 | 25 |
+| **Positives**: failed and such a director, same officer id | 3 | 0 | **3** |
+| **Positives**: failed and such a director, same name and birth date | 6 | 1 | **7** |
+
+So far 7 positives (3 by officer id), well under 50. At about 1.5% of companies, 50 needs roughly 3,400 companies (about 8,000 by officer id): an estimate from a small sample, not a measurement. 2022 isn't crawled yet. Counted with the team's adapter, `label_failures` and `split`; "earlier insolvent" means liquidation or administration before the company was formed, among the companies the crawl reached.
+
+**Positives on the merged 2021 data (card #19, Sun 09:20, cristiano's merged database from #159: all 6,914 query companies of 2021; 2022 left out, it is the test set):** same counting as above.
+
+| | Jan–Sep 2021 (train) | Oct–Dec 2021 (validation) | All |
+|---|---|---|---|
+| Companies | 5,362 | 1,552 | 6,914 |
+| Failed within 24 months (insolvent or dissolved) | 1,778 | 527 | 2,305 |
+| … of those, liquidation or administration | 15 | 1 | 16 |
+| A director with an earlier insolvent company, same officer id | 164 | 42 | 206 |
+| … or same name and birth month and year | 362 | 107 | 469 |
+| **Positives**: failed and such a director, same officer id | 18 | 4 | **22** |
+| **Positives**: failed and such a director, same name and birth date | 62 | 14 | **76** |
+
+76 positives by the loose match, past the 50 the plan asks for, so the years stay as they are; 22 by officer id. Validation is thin (14). **A predecessor goes with a lower failure rate, not a higher one:** 10.7% (22 of 206) with one by officer id against 33.9% without, and 16.2% (76 of 469) against 34.4% by the loose match. The team decides on the call what this means for the failure line (#94), the costs and the write-up.
+
 ## Model
 - **Baselines (three):** flag nothing; same name means same person (the hard merge); and Companies House officer links only, which is what a careful supplier sees on the website today.
 - **First real model:** entity resolution that scores pairs of people (name, birth month and year, postcode, nationality) with a calibrated probability, trained on officer ids as labels and never as a feature. Then P(insolvent predecessor) = 1 − ∏(1 − pᵢ) over the candidate matches, a straight line from that to P(fail), and the cost-based decision layer.

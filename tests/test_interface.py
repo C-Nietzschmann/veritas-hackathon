@@ -152,3 +152,37 @@ def test_moving_a_slider_moves_the_decision_and_reset_brings_it_back():
     reset.click()
     assert summary.value == interface.cost_summary("TW000002", matches["TW000002"], LINE, COSTS,
                                                    decide.decide, decide.thresholds)
+
+
+# --- #102 what to check first ---------------------------------------------------------
+
+def flip_of(query):
+    return decisions.set_index("query").loc[query, "flip"]
+
+
+def test_the_flip_match_is_drawn_red_and_marked_check_first():
+    fig = interface.draw_graph("TW000002", mentions, claims, matches["TW000002"], "FLAG", flip_of("TW000002"))
+    assert "red" in [l.get_color() for l in fig.axes[0].get_lines()]
+    assert any("check this first" in t for t in texts(fig))
+
+
+def test_the_table_marks_the_flip_row():
+    table = interface.evidence_table("TW000002", mentions, claims, matches["TW000002"], flip_of("TW000002"))
+    assert list(table.loc[table["check first"] == "yes", "line"]) == ["dashed (guess)"]
+
+
+def test_the_sentence_gives_the_match_number_and_names_no_person():
+    sentence = interface.flip_sentence(matches["TW000002"], flip_of("TW000002"))
+    assert sentence.startswith("Check first: match 0 (with TW000001)")
+    assert "reject=[0]" in sentence and "Daniel" not in sentence and "Harrow" not in sentence
+
+
+def test_no_flip_means_no_sentence_and_no_red_line():
+    assert interface.flip_sentence(matches["TW000007"], None) is None
+    fig = interface.draw_graph("TW000002", mentions, claims, matches["TW000002"], "FLAG")
+    assert "red" not in [l.get_color() for l in fig.axes[0].get_lines()]
+
+
+def test_show_prints_the_flip_sentence(capsys):
+    interface.show("TW000002", mentions, claims, matches, decisions)
+    assert "Check first: match 0" in capsys.readouterr().out

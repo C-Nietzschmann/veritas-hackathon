@@ -226,8 +226,9 @@ def decide(query, matches, line, costs):
         evidence = f"No director of {query} matches anyone who ran a company that went insolvent before it was formed"
     else:
         best = matches.loc[matches["p"].idxmax()]
+        # p is an estimate (from the matcher, a stand-in or a what-if), never a checked fact: say so.
         evidence = (f"{query} may share a director with {best['predecessor']}, an earlier company that "
-                    f"went insolvent ({best['p']:.0%} sure it's the same person)")
+                    f"went insolvent (an estimated {best['p']:.0%} chance it's the same person)")
     reason = f"{evidence}: its {chance:.0%} chance of failing within two years is {IN_WORDS[decision]}."
 
     # 37.2: say what to check first. By company number only, like the rest of the reason.

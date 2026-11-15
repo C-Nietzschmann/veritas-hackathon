@@ -10,7 +10,8 @@ __pycache__/
 *.pyc
 
 # big data / model files: link or download in code instead
-data/raw/
+# **/ also catches notebooks/data/raw/, where a notebook would write if it used a relative path
+**/data/raw/
 *.pt
 *.pth
 *.ckpt

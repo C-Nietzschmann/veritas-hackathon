@@ -17,6 +17,19 @@ Newest row at the bottom. One row per experiment.
 |---|---|---|---|---|---|---|
 | 0 | | Baseline: | | | | |
 
+### Tiny world check (a code check, not a result)
+The three baselines on the tiny world's 5 hand-made query companies (`tests/tiny_world.py`). One of them fails within 24 months: TW000002, the phoenix. These numbers show the code behaves the way the tiny world was built to show. They say nothing about real companies.
+
+Printed by `score_methods` in `src/evaluate.py`, and pinned by `tests/test_score.py::test_the_baselines_on_the_tiny_world` @ fedf96b (merged in #130, jonas, Sat 13:52).
+
+| Baseline | Flags | False flags | Misses | Precision | Recall |
+|---|---|---|---|---|---|
+| Flag nothing | 0 | 0 | 1 | none (nothing flagged) | 0 |
+| Same name | 3 | 2 | 0 | 0.33 | 1 |
+| Officer links | 0 | 0 | 1 | none (nothing flagged) | 0 |
+
+Validation numbers follow once the crawl (#24) is in.
+
 ## Final result
 Filled in after feature freeze, from the one test-set run.
 
@@ -30,6 +43,19 @@ The main metric for each group on the test set. Hackathon rule: say so if it's u
 | Group | Examples | Baseline | Our model |
 |---|---|---|---|
 | | | | |
+
+### False flags by name-commonness band, on validation (card #106)
+**Validation, not test:** the 1,552 companies formed Oct–Dec 2021, from the merged crawl (#159). The false-flag rate is false flags / companies that didn't fail. A company's band is the commonest surname band among its directors on record when it was formed (`company_bands`, bands from `name_commonness`); one company has no director on record and is left out. Printed by `false_flags_by_band` in `src/evaluate.py`, from a scratch run of the same steps as `notebooks/jonas_real.ipynb` (costs 10/2/1, seed 42), phantodevc, Sun 10:18.
+
+| Band | Companies | Didn't fail | Same name: false flags | Officer links: false flags | Ours (formula): false flags |
+|---|---|---|---|---|---|
+| Rare surname | 420 | 232 | 0 of 232 (0%) | 0 of 232 (0%) | 0 of 232 (0%) |
+| Medium | 990 | 693 | 26 of 693 (3.8%) | 8 of 693 (1.2%) | 0 of 693 (0%) |
+| Common surname | 141 | 100 | 9 of 100 (9.0%) | 0 of 100 (0%) | 0 of 100 (0%) |
+
+- **Uneven, as the claim expects, for the same-name rule:** its false-flag rate grows with how common the surname is, from 0% to 3.8% to 9.0%. The rare band can't be falsely flagged by name at all: a surname seen once in the data matches no one.
+- **Ours flags nothing, so its zeros say nothing yet.** The failure line slopes down (34.1% without a predecessor, 14.4% with one, fitted on 5,362 training companies), so every validation company lands between CLEAR (10%) and FLAG (50%): 1,552 of 1,552 are NOT ENOUGH EVIDENCE. See the comments on #19.
+- The counts are small: 9 false flags in the common band.
 
 ## Where it fails
 From reading 10 to 20 wrong predictions.
