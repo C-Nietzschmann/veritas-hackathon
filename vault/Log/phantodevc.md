@@ -134,7 +134,7 @@ Up: [[Log]]
 - **Next:** if `main.ipynb` changes after the 2022 run (#45), run the same three lines once more before 18:00.
 - **Blocked by:** nothing
 
-## 2026-11-15 14:55
+## 2026-11-15 14:39
 - **Task:** submission readiness check; #187 Bring the README up to date with the decisions
 - **Did:** Ran three read-only audits (submission checklist, credits and privacy, numbers against `main.ipynb`). Fixed the README (warning as the output, score not probability, saved outputs from the real crawl, current team workflow) and pinned pytest in requirements (PR #188, shipped). Added Obsidian, gh and the AI worker names to Credits, and which companies the predecessor rates count to Idea. Posted the rest on #59 for its owners.
 - **Result:** no number in the notes contradicts the notebook's saved outputs. Blocks 18:00: the repo is private, the write-up is empty, nobody holds #51 and #52. For the team: real names and emails in commit author metadata.
@@ -142,7 +142,7 @@ Up: [[Log]]
 - **Next:** whatever the team needs before 18:00.
 - **Blocked by:** nothing
 
-## 2026-11-15 15:35
+## 2026-11-15 14:57
 - **Task:** a judge's read of the project and a stress test of the matcher (for the write-up, #46)
 - **Did:** Ran `main.ipynb`'s cells 0–28 in a scratch copy with extra cells on the validation companies: a "same name and same birth month and year" rule next to the matcher, the matcher's weights, and one record of each of the 730 confirmed pairs altered (typos, dropped middle names, birth date off or missing, moved). 2022 stayed closed. Posted the tables on #46.
 - **Result:** the name + birth rule makes 138 unconfirmed links and finds 83 of 84 confirmed ones; the matcher 130 and 80, and all its 130 are also the rule's. Altered records still linked by the matcher: surname typo 56.4%, first-name typo 81.0% (same-name rule under 5%), middle names dropped 32.3%, birth month one off 0%.
