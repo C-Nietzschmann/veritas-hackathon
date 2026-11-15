@@ -3,11 +3,13 @@
 Up: [[Decisions]]
 
 - **Date:** 2026-11-15 11:20
-- **Decided by:** cristiano, after phantodevc's analysis on card #19. jonas and phantodevc: confirm or change it on the call before the 14:00 freeze.
-- **Status:** proposed
+- **Decided by:** cristiano, Sun 11:55, after phantodevc's analysis on card #19. There was no call: the team left the decision to cristiano.
+- **Status:** decided
 
 ## Decision
-The main failure label becomes the stricter one: a company failed if, within 24 months, it went into liquidation or administration, or it was struck off **after filing at least one set of accounts that were not dormant**. The headline moves to the matcher (phantodevc's plan B on card #19).
+1. **The main failure label is the stricter one.** A company failed if, within 24 months, it went into liquidation or administration, or it was struck off **after filing at least one set of accounts that were not dormant**. The write-up shows the old label next to it.
+2. **The headline is the matcher** (phantodevc's plan B on card #19), which is our own question in Idea: does keeping identity uncertainty cut false matches for common names without missing real ones? The evidence: calibration (#88), the hand-checked pairs (#89) and the results by name commonness.
+3. **The decision layer stays as it is** until the freeze. It now clears nearly every company, and the write-up reports that as the honest result: on our data an insolvent predecessor does not predict that a young company fails.
 
 ## Why
 - **The current label mostly counts companies that never started.** On 2021, 95% of the companies struck off within 24 months never filed a set of accounts (phantodevc, #19). A company that never traded leaves no supplier unpaid, and our user is a supplier.
@@ -36,9 +38,9 @@ The alternatives we didn't take:
 - **Insolvency within 36–48 months.** The 2021 outcomes would run into 2025 and deep into the test year.
 
 ## What it changes
-- **Code (#171, pull request):** `label_failures(mentions, traded=adapter.companies_that_traded(raw))` gives the stricter label. The default is unchanged, so nothing that runs today changes until the call says so.
+- **Code:** `label_failures(mentions, traded=adapter.companies_that_traded(raw))` gives the stricter label (#171). `real_slice.slice_from_raw` and `load_slice` use it from #175, so `main.ipynb` and `jonas_real.ipynb` get it with no change of their own. The tiny world keeps the old label, because its companies file no accounts. `failure_dates` (the predecessors' side table) keeps the old label too.
 - **The headline (plan B, #19):** the main result is the matcher. Does it find a director's earlier insolvent company better than the officer-id and exact-name baselines, with fewer false flags for common names? Checked on the hand-checked pairs (#89).
 - **The output:** a due-diligence warning ("this director probably ran an earlier company that went insolvent: check before giving credit") instead of a failure probability.
-- **The failure line (#94):** with about 1.5% failures in both groups, P(fail) stays far under 10% for every company. So CLEAR fires for nearly everyone and FLAG never does. The decision layer has to take its FLAG from the predecessor probability, or the write-up shows P(fail) only as a side result.
+- **The failure line (#94):** with about 1.5% failures in both groups, P(fail) stays far under 10% for every company. So CLEAR fires for nearly everyone and FLAG never does, and "flag nothing" ties with our method on the failure metrics. We don't move FLAG onto the predecessor probability: the officer-links baseline would then be right by definition (the alternative Idea already rejected).
 - **The write-up:** all three labels with their counts, and this finding as the honest answer to "where does it fail".
-- **Still open for the call:** who switches `real_slice.py` (jonas) and `main.ipynb` (#170) to the stricter label, and who rewords Idea and the decision text.
+- **Idea, the README and the write-up (#46):** say "failed" as defined here, name the matcher as the main result, and put this finding under "where does it fail".

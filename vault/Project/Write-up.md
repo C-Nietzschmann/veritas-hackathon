@@ -5,6 +5,12 @@ Start at feature freeze (Sun 14:00). Draft it ourselves first, then let others a
 
 Budget: about 450 words, one page. If it doesn't fit, cut words, not font size. No names, no school.
 
+**Fixed by the decision of Sun 15 Nov 11:55** (A strike-off counts only after real accounts). Draft around these points and don't contradict them:
+- **"Failed"** means liquidation or administration, or a strike-off after filing real (not dormant) accounts, within 24 months of incorporation. One sentence in How it works.
+- **The main result is the matcher:** calibration (#88), the hand-checked pairs (#89), and false matches by name commonness. It leads Results.
+- **Where it fails:** on our data an insolvent predecessor did not predict failure, so the decision layer clears nearly every company. Say it plainly. Also say what we tried first (any strike-off counted, which mostly counted companies that never traded) and why we changed it.
+- **Numbers** only from [[Evaluation]].
+
 ---
 
 **Project name** · **Track** · **Team** (the official template asks for names. Round 1 is blind and the repo goes public, so the README carries only the team name; names go on the form and in the uploaded PDF if we upload one)

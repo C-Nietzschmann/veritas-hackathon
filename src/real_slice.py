@@ -60,17 +60,20 @@ def build_evidence(raw):
     return mentions, claims
 
 
-def make_labels(mentions, numbers):
+def make_labels(mentions, numbers, traded=None):
     """The labels table for these company numbers, in this order (ev.LABEL_COLS).
 
     failed is the team's label (evaluate.label_failures). split is "train", "validation"
     or "test" (evaluate.split), and None for a company formed outside 2021-2022.
+    traded: the companies that filed real accounts (adapter.companies_that_traded). Given,
+    a strike-off counts only for them: the stricter label, the main label since #175
+    (decision note "A strike-off counts only after real accounts").
     """
     companies = mentions[mentions["kind"] == "company"].set_index("company_number").loc[numbers]
     labels = pd.DataFrame({
         "company_id": numbers,
         "formed_on": companies["incorporated_on"].to_numpy(),
-        "failed": evaluate.label_failures(mentions).loc[numbers].to_numpy(),
+        "failed": evaluate.label_failures(mentions, traded=traded).loc[numbers].to_numpy(),
         "split": None,
     }, columns=ev.LABEL_COLS)
     # split() gives three tables: write each one's name next to its companies
@@ -97,7 +100,7 @@ def slice_from_raw(raw, numbers):
         elif number in no_insolvency_file:
             left_out[number] = "insolvency file missing"
     keep = [number for number in numbers if number not in left_out]
-    return mentions, claims, make_labels(mentions, keep), left_out
+    return mentions, claims, make_labels(mentions, keep, adapter.companies_that_traded(raw)), left_out
 
 
 def load_slice(raw_dir="data/raw", done_file=DONE_FILE):
