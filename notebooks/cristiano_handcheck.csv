@@ -1,0 +1,51 @@
+pair_id,verdict,judged_by,reason
+01fbe0053c328883,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+03b04c39490dc26f,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+06e42263c856e26b,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area, a shared co-director"
+090b3abbd62f0588,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+15ee793118f04450,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+1885ec4a7b0d7fbd,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+1bc8e4f2cdf29f7d,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+20f27adb3c2ffe74,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area, a shared co-director"
+3450bddaa486a0b2,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+38a9d82f53d35a03,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+3e136431aad08276,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+49aa902537f8a39e,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, a shared co-director"
+50a65f299df45062,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+50de071451a3d7ce,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+5250555dcb4db6f2,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+552d323f8899233a,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+5d010f1b2b08ee34,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+61f206a9f091dc55,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+7024af2c006488c7,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+787f357f6764669e,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+799a537842028209,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area"
+7d22c88e7a2cfed7,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+82dfb8e7c6c1035f,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+832bc60d29a91310,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+8ed4ab1bd6019d71,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+90eee3697b5d8e7a,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area"
+996897b10757e725,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+9b459e137f8b25ca,unsure,"AI (Claude Opus 5.5), at the user's request","birth year one apart with the same month, and nationality differs: could be a typing error or two people"
+9d1d9c955ba7811b,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+a02041173008584e,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+a2324eb1c3a05cc2,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+a6bb524526028e55,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area"
+ab9f1181a19d0f82,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area, same non-British nationality"
+b1d7049200edf081,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+b363b02eba3790e2,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, a shared co-director"
+b763556136689783,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+ba47efccac8063be,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same non-British nationality"
+c0b0dbddfb390d3c,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+c14943182dcbcaf8,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+c35fa2ddf2408b8b,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+c8e13b5407238daf,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+d0f162d89dfbf606,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area"
+d166ebcaae048422,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area"
+d27a13f2dd1c8f40,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area"
+d8ed07f5dcdae57c,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year, same postcode area, a shared co-director"
+d9141bb7dd965559,unsure,"AI (Claude Opus 5.5), at the user's request","names differ after normalising, same birth month and year, neighbouring postcode areas: the sheet can't tell"
+dab680f261a0420a,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+ec5ee553b27dd7be,no,"AI (Claude Opus 5.5), at the user's request",birth month and year differ
+ee7a2171523c63f0,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
+f92211cf6ec68b59,yes,"AI (Claude Opus 5.5), at the user's request","same name, same birth month and year"
