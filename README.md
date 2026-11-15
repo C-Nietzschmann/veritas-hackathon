@@ -4,6 +4,12 @@
 
 *This project is a prototype and is not financial advice.*
 
+**Our main result is the matcher.** A name match is not proof, so the model works out, with a probability, whether a director is the same person who ran an earlier company. The question is whether that cuts false alarms for people with common names without missing real cases.
+
+**What "fails" means here:** within 24 months of being formed, the company goes into liquidation or administration, or is struck off the register after filing real (not dormant) accounts. Most young companies that are struck off never filed anything and probably never traded, so they left no supplier unpaid. We don't count them.
+
+**What we found on the way:** on our 2021 data, a director with an earlier insolvent company did not make a young company more likely to fail. So the tool clears nearly every company. That is the honest answer from the data, not a bug. Counts and reasons: [the decision note](vault/Decisions/A%20strike-off%20counts%20only%20after%20real%20accounts.md).
+
 **See it without running anything:** open [`notebooks/main.ipynb`](notebooks/main.ipynb) on GitHub. It reads top to bottom: problem, data, baseline, model, evaluation, demo.
 
 ## Run it
