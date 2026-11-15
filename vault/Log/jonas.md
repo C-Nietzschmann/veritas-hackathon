@@ -186,3 +186,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) in VS Code downloaded and checked the merged zip, set up the kernel, ran the notebook once, built the blind page, compared my verdicts with the AI's, drafted the Evaluation text, the "What it shows" cell and the "How it works" note, and shared the work, at my request. The 50 verdicts are mine.
 - **Next:** share the person-check file with #46 and write the write-up; record the video (#47); fresh-run test (#48) at about 16:30–17:00. Tell cristiano that `main.ipynb`'s own hand-check sample (cell 31) is not the 50 pairs the AI judged: they share only 8.
 - **Blocked by:** nothing
+
+## 2026-11-15 15:14
+- **Task:** #193 Person-check the 50 AI-judged pairs
+- **Did:** Created and started #193. Rewrote `notebooks/jonas_handcheck.csv` as UTF-8 without BOM with LF line endings (header `pair_id,verdict`, my 50 verdicts unchanged) and added `**/data/` to `.gitignore`, so all of `data/` stays out of git. Shipped both through pull request #194.
+- **Result:** #193 closed with its "How it works" note, and CI on `main` passed. Evaluation's hand-check section points to the file.
+- **AI used for:** Claude Code (Opus 5.5) in VS Code created the card, changed the file's format and the ignore line, shipped them and drafted the "How it works" note, at my request. The verdicts are mine.
+- **Next:** write-up (#46), video (#47), first submission (#51) at 18:00.
+- **Blocked by:** nothing
