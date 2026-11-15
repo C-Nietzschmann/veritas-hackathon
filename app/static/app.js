@@ -38,9 +38,8 @@ function drawEngine() {
     <div class="step" id="step-${i}">
       <b class="run"></b>
       <div class="step-head mono"><span>0${i + 1} <i>/</i> <b>${title}</b></span><span class="state">Waiting</span></div>
-      <div class="step-value">—</div>
+      <div class="step-row"><div class="step-value">—</div>${i === 2 ? '<div class="bars"></div>' : ""}</div>
       <div class="step-note"></div>
-      ${i === 2 ? '<div class="bars"></div>' : ""}
     </div>`).join("");
 }
 
@@ -72,7 +71,8 @@ async function runStep(i, step) {
   cell.querySelector(".step-note").textContent = step.note;
   if (step.scores) {   // the matcher's scores for every proposed pair, highest first
     const bars = cell.querySelector(".bars");
-    const shown = step.scores.slice(0, 16);   // the 16 highest, enough to see the shape
+    const fit = Math.floor((bars.clientWidth + 3) / 8);       // a bar is 5px plus a 3px gap: only as many as fit beside the score
+    const shown = step.scores.slice(0, Math.min(16, fit));   // the highest ones, at most 16, enough to see the shape
     bars.innerHTML = shown.map((s) => `<b class="${s >= 0.5 ? "hot" : ""}"></b>`).join("");
     requestAnimationFrame(() => bars.querySelectorAll("b").forEach((b, k) => {
       b.style.height = `${Math.max(3, shown[k] * 46)}px`;
