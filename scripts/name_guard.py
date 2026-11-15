@@ -66,10 +66,12 @@ def real_names(mentions):
     """The names of person mentions that are not safe to show.
 
     The tiny world's names are invented, so there display_name equals name and they are skipped.
+    A "name" with no letter (the register has one that is just ".") is no one's name, and as a
+    search it would match every "x.y" in the notebook, so it is skipped too.
     """
     people = mentions[mentions["kind"] == "person"]
     unsafe = people[people["name"] != people["display_name"]]
-    return sorted(set(unsafe["name"].dropna()))
+    return sorted(n for n in set(unsafe["name"].dropna()) if any(ch.isalpha() for ch in n))
 
 
 def main():
