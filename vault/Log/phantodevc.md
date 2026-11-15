@@ -125,3 +125,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code read the notebook outputs, wrote the Evaluation sections and the card note, and drafted this entry. I can explain both results.
 - **Next:** #48 real fresh-run at 17:00.
 - **Blocked by:** nothing
+
+## 2026-11-15 14:20
+- **Task:** #48 Run the fresh-run test
+- **Did:** Fresh clone of `main` @ 74d8a97, new venv, then the three lines in Notebook Workflow. Ran it twice: as the card asks (no data, tiny world) and once more with only the crawl put in `data/raw`.
+- **Result:** both ran top to bottom with no error: 29 s on the tiny world, 5.1 min on the real slice. Every saved output matched `main` cell for cell, except the run time. Nothing broke, so no new cards. Closed #48.
+- **AI used for:** Claude Code ran the clone, the install and both runs, compared the outputs, and wrote the card comment and this entry, at my request.
+- **Next:** if `main.ipynb` changes after the 2022 run (#45), run the same three lines once more before 18:00.
+- **Blocked by:** nothing
