@@ -30,6 +30,21 @@ Printed by `score_methods` in `src/evaluate.py`, and pinned by `tests/test_score
 
 Validation numbers follow once the crawl (#24) is in.
 
+### Blocking recall, on validation (card #85)
+Blocking is the cheap rule that proposes which pairs of person records the matcher compares: the same surname and first initial, or the same birth month and year with a similar surname (`candidate_pairs` in `src/resolve.py`). A true pair it never proposes can never be matched (ADR-003), so we count how many of the register's own links it keeps. A true pair is two records with the same officer id.
+
+| Split | Same-officer-id pairs | Kept by blocking | Recall |
+|---|---|---|---|
+| Train | 103,870 | 103,835 | 99.97% |
+| Validation | 730 | 724 | 99.18% |
+
+- **The rule stays as it is:** the card's bar for loosening it was a recall under about 90%.
+- **What it costs:** 263,601 candidate pairs out of 2,165,181,915 possible, from 65,806 person records. Blocking took 26.4 s on the real slice (one run, Sun 15 Nov, cristiano's computer).
+- **What it can't see:** a person the register split across two officer ids has no label, so this number says nothing about whether blocking keeps those pairs.
+- **Not looked at:** why the 6 validation pairs were dropped.
+
+Source: printed by `notebooks/main.ipynb` @ f38cebd (#182), section "Model", on the merged crawl (#159) with the 2022 companies' files dropped. Recounted with the same steps in a scratch script on Sun 15 Nov, which gave the same counts and the timing.
+
 ### The matcher on validation: calibration (#88) and hand check (#89)
 Is the matcher's `p` a probability? ADR-004 asks for this check before we call it one. Checked on the 9,171 validation pairs of the full local crawl, which the matcher never learned from. Label 1 is the same officer id, label 0 different ids.
 

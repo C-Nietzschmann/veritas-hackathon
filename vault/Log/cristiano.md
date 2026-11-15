@@ -55,3 +55,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code weighed the options against our data, made the change and its test, updated the decision note, and wrote the card texts, the messages and this entry, at my request.
 - **Next:** the README and the write-up (#46) say "failed" as in the note and lead with the matcher. `failure_dates` still uses the old label.
 - **Blocked by:** nothing
+
+## 2026-11-15 13:40
+- **Task:** #30 build blocking and pair features, with its sub-tasks #83 and #85 (cards on the board)
+- **Did:** Closed the paperwork on blocking. The code has been on `main` since pull request #137, but #83 and #85 were still marked blocked on the crawl, and the recall number was only in the notebook's output. Wrote the subsection "Blocking recall, on validation (card #85)" in Evaluation and recounted it with a scratch script that loads the slice the way `main.ipynb` does (2022 files dropped).
+- **Result:** blocking keeps 724 of 730 same-officer-id pairs on validation (99.18%) and 103,835 of 103,870 on train (99.97%), the same counts as `main.ipynb` @ f38cebd. It proposes 263,601 candidate pairs from 65,806 person records in 26.4 s. The rule is not loosened: the bar was a recall under about 90%.
+- **AI used for:** Claude Code checked the cards against the code and the notebook, ran the recount, wrote the Evaluation subsection, the closing comments on the cards and this entry, at my request.
+- **Next:** the switch in `main.ipynb` that opens 2022 for jonas's one test run (#45), and the main metric in Evaluation.
+- **Blocked by:** nothing
