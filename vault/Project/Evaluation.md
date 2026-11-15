@@ -33,9 +33,10 @@ Validation numbers follow once the crawl (#24) is in.
 ### The matcher on validation: calibration (#88) and hand check (#89)
 Is the matcher's `p` a probability? ADR-004 asks for this check before we call it one. Checked on the 9,171 validation pairs of the full local crawl, which the matcher never learned from. Label 1 is the same officer id, label 0 different ids.
 
-- **Brier score:** 0.028, against a bar of 0.184 from always answering the training share of label 1 (0.41).
+- **Brier score:** 0.028, against a bar of 0.184 from always answering the training share of label 1 (0.41). Label 1 is much rarer among the validation pairs (730 of 9,171, 8%): always answering that share would score 0.073, worked out from those two counts. So the fairer comparison is 0.028 against 0.073.
 - **Too sure at the top:** in the bin 0.6–0.8, 365 of 651 pairs have the same officer id (56%, interval 52–60%) at a mean `p` of 0.74. In the bin 0.8–1, 349 of 415 do (84%, interval 80–87%) at a mean `p` of 0.95.
 - **Verdict:** `p` is a score, not a probability. The two top bins sit clearly below the diagonal.
+- **A cause this check can't rule out:** the matcher learned from pairs where label 1 is common (41%) and is checked on pairs where it is rare (8%). A model fitted on the first mix gives a `p` that is too high on the second. So the gap in the top bins may come from that mismatch, and not only from label error or a matcher that is too sure. Not tested.
 
 **Hand check (#89): judged by an AI (Claude Opus 5.5) at the user's request, not by hand.** 50 pairs with different officer ids that the same-name rule or the matcher links, sampled as in `jonas_real.ipynb` (seed 42). The rule: the same name and the same birth month and year gives yes; a different birth month or year gives no; evidence both ways gives unsure. The verdicts, by pair id only: `notebooks/cristiano_handcheck.csv`.
 
@@ -48,7 +49,9 @@ Is the matcher's `p` a probability? ADR-004 asks for this check before we call i
 
 The "two people" pairs already get a `p` of at most 0.006, or none, so they don't touch the gap in the top bins. The "same person" pairs have a `p` from 0.720 to 0.947: if the AI is right, part of the gap is label error, one person under two officer ids. But the agreement is partly built in: the rule leans on birth month and year, and the matcher can't reach a `p` of 0.5 without the same birth month and year (weight 6.16, its largest after name similarity). So this is not independent evidence that the matcher is right. A person still has to look at the 2 unsure pairs and spot-check others.
 
-Source: `notebooks/cristiano_calibration.ipynb` on branch task-88 (pull request number to follow).
+The 50 pairs were spread over the three groups on purpose, so "24 of 50" is not a rate of anything. Card #89 asked for 50 pairs with a high `p`; only 25 of these have a `p` of 0.5 or more (the 24 both methods link and the 1 only the matcher links).
+
+Source: `notebooks/cristiano_calibration.ipynb`, merged with pull request #174.
 
 ## Final result
 Filled in after feature freeze, from the one test-set run.
