@@ -218,3 +218,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai, Opus 5.5) built the demo app and the video earlier at my request; in this session it re-applied the film's styling, tested the page, and opened and merged the pull request, at my request.
 - **Next:** post #47's "How it works" note; final submission (#52).
 - **Blocked by:** nothing
+
+## 2026-11-15 22:20
+- **Task:** #201 Fix the matcher card's bars covering its score
+- **Did:** On my screen the matcher card's score bars sat on top of "top score": they were pinned to the card's right edge at a fixed width. The bars now sit in a row beside the score and the page draws only as many as fit there (at most 16, as before), so a narrower screen shows fewer bars instead of covering the text.
+- **Result:** no overlap at 1280, 1536 and 1920 px wide (headless browser, 28 pairs scored); at 1920 px the card looks as in the video.
+- **AI used for:** Claude (claude.ai, Opus 5.5) found the cause from my screenshot, made the change, tested it at three widths and shipped it, at my request.
+- **Next:** final submission (#52).
+- **Blocked by:** nothing

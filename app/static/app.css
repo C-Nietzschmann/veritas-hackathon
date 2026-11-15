@@ -124,8 +124,10 @@ h1 { margin: 10px 0 0; font-weight: 700; font-size: 66px; line-height: .92; lett
 .step.done .run { transform: scaleX(1); }
 .step.alert .step-value { color: var(--signal); }
 .step.alert .run { background: var(--signal); }
-.step .bars { position: absolute; right: 22px; bottom: 40px; display: flex; align-items: flex-end; gap: 3px; height: 46px; }
-.step .bars b { width: 5px; background: var(--ink); height: 2px; transition: height .5s cubic-bezier(.2, .7, .2, 1); }
+.step-row { display: flex; align-items: flex-end; gap: 16px; }   /* the score, then the bars in whatever room is left */
+.step-row .step-value { flex: none; white-space: nowrap; }
+.step .bars { flex: 1; min-width: 0; display: flex; justify-content: flex-end; align-items: flex-end; gap: 3px; height: 46px; overflow: hidden; }
+.step .bars b { flex: none; width: 5px; background: var(--ink); height: 2px; transition: height .5s cubic-bezier(.2, .7, .2, 1); }
 .step .bars b.hot { background: var(--signal); }
 
 /* --- Evidence graph and inspector -------------------------------------------------------- */
