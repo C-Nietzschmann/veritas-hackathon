@@ -71,3 +71,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the decision note, the Evaluation line, the Modules row, the card note and this entry, at my request. The choice of metric is mine.
 - **Next:** card #185, the switch in `main.ipynb` that opens 2022 for jonas's run. The `crawl-data` draft release is deleted once jonas confirms on #159 that he has the merged data.
 - **Blocked by:** nothing
+
+## 2026-11-15 14:00
+- **Task:** #185 the switch in `main.ipynb` that opens the 2022 test set (card on the board), for jonas's run of #45
+- **Did:** Added the section "The test set, opened once (card #45)" before the Demo, with `OPEN_TEST = False`. Turned on, it loads the crawl with the 2022 companies, scores their pairs with the matcher trained above and prints the Evaluation tables for them. The code that built `validation_links` and the failure-next-to-link table became two functions (`held_out_links`, `failure_by_link`), so validation and test go through the same code. The 2022 companies were not opened.
+- **Result:** pull request #186 is open, not merged: I read it first. With the switch off the notebook ran top to bottom on the merged crawl and every code cell prints what it printed before, except two Demo cells that now use the wording of #180. With the switch on and the validation companies as a stand-in (a scratch copy), the five new tables are identical to the five validation tables. 314 tests pass, 1 skipped.
+- **AI used for:** Claude Code designed and wrote the switch and the two functions, ran the notebook both ways, compared the outputs, opened the pull request and wrote the card and this entry, at my request.
+- **Next:** read #186 and merge it, then jonas runs #45 once. Loading the 2022 files from the new cell has not been run: his run is the first. After it, a short "What it shows" cell goes under the tables.
+- **Blocked by:** nothing
