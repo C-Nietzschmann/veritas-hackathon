@@ -93,3 +93,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote the code, tests and scratch scripts, ran them, shipped the PRs and drafted the notes, comments and this entry. I can explain each change.
 - **Next:** #48 real run at 17:00 (better by someone who didn't write the notebook); #107 and #108 once main.ipynb runs on real data.
 - **Blocked by:** the team's choice on #19 (what we claim), and who moves main.ipynb to real data
+
+## 2026-11-15 11:07
+- **Task:** #107 and #108 figures (parent #42); new card #170 for cristiano
+- **Did:** Added `pr_figure`, `false_flag_figure` and `reliability_figure` to `src/interface.py` with tests, and drew them under Evaluation in main.ipynb (PR #173, closes both cards). Created #170 "Run main.ipynb on the real slice" and tagged cristiano on it (not assigned, per the claiming rule).
+- **Result:** #42 at 3/3. The figures show the tiny world for now and redraw on real data once #170 is done. 310 tests pass.
+- **AI used for:** Claude Code wrote the figure functions, tests and cells, checked the pictures, shipped the PR and drafted the notes and this entry. I can explain each change.
+- **Next:** #48 real fresh-run at 17:00; close #42 once the figures show real data.
+- **Blocked by:** #19 decision and #170
