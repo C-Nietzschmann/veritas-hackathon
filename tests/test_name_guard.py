@@ -55,3 +55,9 @@ def test_only_unmasked_people_count_as_real_names():
 def test_reads_the_real_notebook():
     # The guard can read main.ipynb's cells and saved outputs.
     assert len(name_guard.notebook_texts(name_guard.NOTEBOOK)) > 0
+
+
+def test_a_name_with_no_letter_is_skipped(tmp_path):
+    # The register has a director whose name is written "."; it must not match the ".." in a path.
+    nb = write_notebook(tmp_path / "nb.ipynb", "ok", source='sys.path.insert(0, "..")  # see notes..')
+    assert name_guard.find_names(nb, ["."]) == []

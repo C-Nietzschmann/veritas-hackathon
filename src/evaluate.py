@@ -198,3 +198,59 @@ def name_commonness(mentions):
     bands[(counts == 1).to_numpy()] = "rare"
     bands[(counts >= common_at).to_numpy()] = "common"
     return bands
+
+
+# --- 39.2 False flags per name-commonness band (card #106) ----------------------------
+
+BANDS = ["rare", "medium", "common"]   # from the least to the most common surname
+
+
+def company_bands(mentions, claims, bands):
+    """Each company's band: the most common band among its directors on record when it was formed.
+
+    `bands` is name_commonness(mentions), one band per person mention. A company with one
+    director in "common" is "common", however rare the others are: a common name is where a
+    false match can come from. Only directors appointed on or before the formation date count,
+    as in the decision layer (ADR-001). A company with no such director gets no band.
+    Returns a Series indexed by company_number, named "name_band".
+    """
+    companies = mentions[mentions["kind"] == "company"].set_index("mention_id")
+    edges = ev.observed_graph(claims)
+    edges = edges[edges["relation"] == "director_of"]
+    formed = ev.parse_dates(edges["object"].map(companies["incorporated_on"]))
+    edges = edges[ev.parse_dates(edges["valid_from"]) <= formed]
+    rank = edges["subject"].map(bands).map({band: i for i, band in enumerate(BANDS)})
+    best = rank.groupby(edges["object"]).max().dropna()
+    result = best.map(dict(enumerate(BANDS)))
+    result.index = result.index.map(companies["company_number"])
+    return result.rename("name_band")
+
+
+def false_flags_by_band(decisions, labels, bands):
+    """Our main claim as a table: how often each method flags a company that didn't fail, per band.
+
+    `decisions` may hold several methods (ours and the baselines); `labels` is the labels
+    table; `bands` is company_bands(...), one band per company number. Only companies in
+    all three count. The false-flag rate is false flags / companies that didn't fail: of the
+    honest companies in a band, the share a method wrongly flagged. The counts sit next to
+    every rate, so a rate built on a handful of companies shows as such. None when a band has
+    no company that didn't fail.
+    """
+    ev.check_columns(decisions, "decisions")
+    ev.check_columns(labels, "labels")
+    both = decisions.merge(labels[["company_id", "failed"]], left_on="query", right_on="company_id")
+    both["band"] = both["query"].map(bands)
+    both = both[both["band"].notna()]
+    honest = ~both["failed"].astype(bool)
+    flagged = both["decision"] == "FLAG"
+    rows = []
+    for method in decisions["method"].unique():
+        for band in BANDS:
+            here = (both["method"] == method) & (both["band"] == band)
+            not_failed = int((here & honest).sum())
+            false_flags = int((here & honest & flagged).sum())
+            rows.append(dict(method=method, band=band, companies=int(here.sum()), not_failed=not_failed,
+                             flags=int((here & flagged).sum()), false_flags=false_flags,
+                             false_flag_rate=false_flags / not_failed if not_failed else None))
+    return pd.DataFrame(rows, columns=["method", "band", "companies", "not_failed", "flags",
+                                       "false_flags", "false_flag_rate"])
