@@ -117,3 +117,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code made the change, the test and the comments, shipped the PR and drafted the note and this entry. I can explain it.
 - **Next:** #48 real fresh-run at 17:00; close #42 once #182 merges.
 - **Blocked by:** nothing
+
+## 2026-11-15 11:59
+- **Task:** #92 one identity against the formula; the #106 table on the new label
+- **Did:** Worked out #92 from main.ipynb's failure line and wrote it in Evaluation; replaced my band table with the numbers main.ipynb prints on the stricter label (@ f38cebd). #19 and #42 were already closed by the team.
+- **Result:** same name falsely flags 0% / 3.6% / 10.1% from rare to common surnames, and every baseline flag is a false flag. Formula and one identity both clear everything: the line (1.4% to 1.8%) is under CLEAR for any P(predecessor).
+- **AI used for:** Claude Code read the notebook outputs, wrote the Evaluation sections and the card note, and drafted this entry. I can explain both results.
+- **Next:** #48 real fresh-run at 17:00.
+- **Blocked by:** nothing
