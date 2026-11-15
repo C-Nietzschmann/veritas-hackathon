@@ -4,9 +4,9 @@ Fill this in before kickoff. Your handle is your initials or a nickname, in lowe
 
 | Handle | Role | Owns | Leads these rubric points |
 |---|---|---|---|
-| _handle_ | **Model lead** | Model choice, training, `src/` model code | Technical execution (30) |
-| _handle_ | **Data and evaluation lead** | Dataset, train/test split, metrics, Evaluation, Credits | Testing and honesty (15) |
-| _handle_ | **Product and story lead**, also **coordinator** | Demo notebook or app, Write-up, Demo Script, the submission | Communication (15), Impact (20) |
+| not assigned | **Model lead** | Model choice, training, `src/` model code | Technical execution (30) |
+| not assigned | **Data and evaluation lead** | Dataset, train/test split, metrics, Evaluation, Credits | Testing and honesty (15) |
+| not assigned | **Product and story lead**, also **coordinator** | Demo notebook or app, Write-up, Demo Script, the submission | Communication (15), Impact (20) |
 
 **This weekend we work without fixed roles:** everyone claims their own cards, in the order in Plan (decided Sat 08:10, see Decisions).
 
@@ -30,5 +30,3 @@ Write when you are offline (sleep, meals, family, sport) so nobody waits for you
 | Handle | Saturday | Sunday |
 |---|---|---|
 | phantodevc | Always online | Always online |
-| | | |
-| | | |

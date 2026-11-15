@@ -16,9 +16,21 @@ __pycache__/
 *.pth
 *.ckpt
 *.h5
+# crawl logs and the zipped crawls (they hold real people's names): never in git
+*.log
+*.zip
 
 # OS
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# editors, test cache and AI-tool working folders
+.pytest_cache/
+.vscode/
+.idea/
+.claude/worktrees/
+.claude/settings.local.json
 
 # Obsidian: the repo folder is the vault. Shared settings are tracked,
 # per-person window state and look-and-feel are not.

@@ -2,7 +2,7 @@
 
 Veritas AI International High School Hackathon. 48 hours, team of 3, fully remote.
 
-**Phase:** Pre-kickoff
+**Phase:** Freeze
 <!-- The coordinator changes this line: Pre-kickoff → Scope → Skeleton → Build → Freeze → Submit → Done -->
 
 | Moment | Our time (CET) | Official (ET) |

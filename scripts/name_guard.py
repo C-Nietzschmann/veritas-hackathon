@@ -1,10 +1,10 @@
-"""Guard: no real director's name may reach GitHub inside main.ipynb (card #112).
+"""Guard: no real director's name may reach GitHub inside a notebook (card #112).
 
 Run it before pushing the notebook (scripts/check.sh does this for you):
     .venv/bin/python scripts/name_guard.py
 
 It reads every real name from the raw data on this computer (data/raw, never in git)
-and searches everything saved in the notebook for them: the cells and their outputs.
+and searches everything saved in each notebook in notebooks/ for them: the cells and their outputs.
 Exit code 0 = no real name found, 1 = found one (the lines say where).
 """
 
@@ -15,6 +15,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK = ROOT / "notebooks" / "main.ipynb"
+# Every notebook in the repo is public, so every one is searched, not only main.ipynb.
+NOTEBOOKS = sorted((ROOT / "notebooks").glob("*.ipynb"))
 RAW_DIR = ROOT / "data" / "raw"
 
 
@@ -92,10 +94,13 @@ def main():
     officers = {path.relative_to(ROOT).as_posix(): path.read_bytes()
                 for path in sorted((RAW_DIR / "officers").glob("*.json"))}
     mentions, _ = ingest.officers_to_evidence(officers)
-    found = find_names(NOTEBOOK, real_names(mentions))
-    for number, name in found:
-        print(f"  x real name in notebooks/main.ipynb, cell {number}: {name}. Show display_name instead")
-    return 1 if found else 0
+    names = real_names(mentions)
+    found_one = False
+    for notebook in NOTEBOOKS:
+        for number, name in find_names(notebook, names):
+            print(f"  x real name in notebooks/{notebook.name}, cell {number}: {name}. Show display_name instead")
+            found_one = True
+    return 1 if found_one else 0
 
 
 if __name__ == "__main__":

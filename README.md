@@ -13,7 +13,7 @@
 **See it without running anything:** open [`notebooks/main.ipynb`](notebooks/main.ipynb) on GitHub. It reads top to bottom: problem, data, baseline, model, evaluation, demo. The outputs saved there come from our real Companies House crawl.
 
 ## Run it
-You need Python 3.10 or newer. A fresh clone has no crawl, so the notebook runs on a small hand-made "tiny world" with invented companies and people: no API key, no download, and its numbers differ from the saved ones:
+You need Python 3.12 or newer. A fresh clone has no crawl, so the notebook runs on a small hand-made "tiny world" with invented companies and people: no API key, no download, and its numbers differ from the saved ones:
 ```bash
 git clone https://github.com/C-Nietzschmann/veritas-hackathon.git && cd veritas-hackathon
 python3 -m venv .venv && . .venv/bin/activate

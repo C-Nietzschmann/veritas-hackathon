@@ -8,9 +8,7 @@ Hackathon rule: public datasets, open-source libraries and pre-trained models ar
 | Companies House public data API: company profiles, officer and appointment lists, insolvency records, advanced company search, officer search | https://developer.company-information.service.gov.uk/ | Not the Open Government Licence: the register is published under statute (section 47 of the Copyright, Designs and Patents Act 1988). Companies House says: "We impose no rules or requirements on how the information on the public register is used" ([Companies House data products](https://www.gov.uk/guidance/companies-house-data-products); [FOI disclosure 362](https://assets.publishing.service.gov.uk/media/5a7f6e7f40f0b6230268f75c/Disc_Log_362__Enquiry_regarding_Companies_House_Free_Company_Data_Product-ver0.2.pdf) confirms it is not OGL). Checked 14 Nov: the API has no separate licence. Rate limit: 600 requests per 5 minutes per key ([developer guidelines](https://developer.company-information.service.gov.uk/developer-guidelines)), shared by every part of the crawl. The same page says users must follow data protection and copyright law, which is why names, birth dates and postcodes are masked in every output (#49). Credited as the source | Company profiles, insolvency cases, officer and appointment lists of UK construction companies, and the officers who share a director's name: the raw data behind the mentions, the claims and the failure label (crawler #24, adapter #25) |
 
 ## Pre-trained models
-| Name | Link | Licence | Used for |
-|---|---|---|---|
-| | | | |
+None. The matcher is a logistic regression we train ourselves on the crawl (`src/resolve.py`).
 
 ## Libraries
 The usual ones (numpy, pandas, scikit-learn, PyTorch and so on) are listed in `requirements.txt`. List here anything unusual or central to the project.

@@ -46,16 +46,20 @@ check_file() {
 }
 
 scan() {
-  git ls-files -c -o --exclude-standard | while IFS= read -r f; do check_file "$f"; done
+  # core.quotepath=off: git otherwise writes a name with an accent as "Caf\303\251.md".
+  # That is not the file's name, so the file was not found and was skipped without a word.
+  git -c core.quotepath=off ls-files -c -o --exclude-standard | while IFS= read -r f; do check_file "$f"; done
 }
 
 problems=$(scan)
 
-# Real directors' names in main.ipynb (#112). Only where the raw data and the project's
+# Real directors' names in the notebooks (#112). Only where the raw data and the project's
 # Python are on this computer: GitHub has neither, so there it is skipped.
 if [ -d data/raw ] && [ -x .venv/bin/python ]; then
   names=$(.venv/bin/python scripts/name_guard.py) || problems="$problems
 $names"
+else
+  echo "  (name guard skipped: it needs data/raw and .venv in this folder)"
 fi
 
 if [ -n "$problems" ]; then
