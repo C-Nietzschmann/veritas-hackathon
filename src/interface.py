@@ -15,6 +15,7 @@ import io
 
 import pandas as pd
 from matplotlib.figure import Figure
+from sklearn.metrics import precision_recall_curve
 
 from src import evidence as ev
 
@@ -280,12 +281,134 @@ def show(query, mentions, claims, matches, decisions):
         print(sentence)
     fig = draw_graph(query, mentions, claims, links, row["decision"], flip)
     table = evidence_table(query, mentions, claims, links, flip)
-    try:                # in a notebook, show both; elsewhere just return them
-        from IPython.display import Image, display
-        png = io.BytesIO()
-        fig.savefig(png, format="png", dpi=100, bbox_inches="tight")   # a picture GitHub can show
-        display(Image(png.getvalue()))
+    display_png(fig)
+    try:                # in a notebook, show the table too; elsewhere just return it
+        from IPython.display import display
         display(table)
     except ImportError:
         pass
     return row, fig, table
+
+
+def display_png(fig):
+    """Show a figure in the notebook as a PNG, so it is saved as a picture GitHub can show.
+    Outside a notebook it does nothing."""
+    try:
+        from IPython.display import Image, display
+    except ImportError:
+        return
+    png = io.BytesIO()
+    fig.savefig(png, format="png", dpi=100, bbox_inches="tight")
+    display(Image(png.getvalue()))
+
+
+# --- 42 The static figures for the notebook (cards #107, #108) -------------------------
+
+# One colour per method, the same in every figure.
+METHOD_COLORS = {"formula": "#2a78d6", "same_name": "#d6542a", "officer_links": "#52514e", "flag_nothing": "#a8a7a2"}
+GRID = "#e5e4e0"
+
+
+def tidy(ax):
+    """The same light look for every figure: a faint grid, no box on top and right."""
+    ax.grid(color=GRID, linewidth=0.5)
+    ax.set_axisbelow(True)
+    ax.spines[["top", "right"]].set_visible(False)
+
+
+def pr_figure(decisions, labels, scores):
+    """#107: precision against recall, ours against the baselines.
+
+    A method that gives p_fail (ours) gets a curve: precision and recall at every threshold.
+    Every method's actual decisions are one point, from scores = evaluate.score_methods(...).
+    A method that flags nothing has no precision, so it has no point: the caption names it.
+    The dashed line is the share of companies that failed: what flagging at random gives.
+    """
+    fig = Figure(figsize=(6, 4.5))
+    ax = fig.subplots()
+    both = decisions.merge(labels[["company_id", "failed"]], left_on="query", right_on="company_id")
+    for method, part in both.groupby("method", sort=False):
+        part = part[part["p_fail"].notna()]
+        failed = part["failed"].astype(bool)
+        if failed.nunique() < 2:   # a curve needs failed and not failed companies with a p_fail
+            continue
+        precision, recall, _ = precision_recall_curve(failed, part["p_fail"].astype(float))
+        ax.plot(recall, precision, color=METHOD_COLORS.get(method, "#000000"), linewidth=1.5,
+                label=f"{method}: every threshold")
+    no_point = []
+    for _, row in scores.iterrows():
+        if pd.isna(row["precision"]):
+            no_point.append(row["method"])
+            continue
+        ax.scatter(row["recall"], row["precision"], s=60, zorder=3, color=METHOD_COLORS.get(row["method"], "#000000"),
+                   label=f"{row['method']}: its decisions ({row['flags']} flags)")
+    share = labels.loc[labels["company_id"].isin(both["query"]), "failed"].astype(bool).mean()
+    ax.axhline(share, linestyle="--", linewidth=1, color=METHOD_COLORS["flag_nothing"])
+    ax.text(1.0, share, f"random: {share:.0%}", ha="right", va="bottom", fontsize=9, color="#52514e")
+    ax.set(xlim=(-0.02, 1.02), ylim=(-0.02, 1.05), xlabel="recall: share of failed companies flagged",
+           ylabel="precision: share of flags that failed", title="Who gets flagged, and how often rightly")
+    ax.legend(fontsize=8, loc="upper right", frameon=False)
+    tidy(ax)
+    if no_point:
+        fig.text(0.01, -0.02, "No point (flags nothing, so no precision): " + ", ".join(no_point),
+                 fontsize=8, color="#52514e")
+    return fig
+
+
+def false_flag_figure(table):
+    """#108: the false-flag rate per name-commonness band, one bar per method.
+
+    table = evaluate.false_flags_by_band(...). Each bar carries its count, false flags out of
+    companies that didn't fail, so a rate built on a few companies shows as such. A band with
+    no honest company has no rate: its bar is left out and marked "no companies".
+    """
+    fig = Figure(figsize=(7, 4))
+    ax = fig.subplots()
+    bands = list(dict.fromkeys(table["band"]))
+    methods = list(dict.fromkeys(table["method"]))
+    width = 0.8 / len(methods)
+    labelled = set()   # each method in the legend once, at its first bar
+    empty = set()      # bands already marked as having no rate
+    for i, method in enumerate(methods):
+        part = table[table["method"] == method].set_index("band").reindex(bands)
+        for j, band in enumerate(bands):
+            x = j - 0.4 + width * (i + 0.5)
+            rate, n = part.loc[band, "false_flag_rate"], part.loc[band, "not_failed"]
+            if pd.isna(rate):
+                if band not in empty:   # one note per band, in its middle
+                    ax.text(j, 2, "no companies that didn't fail", ha="center", va="bottom", fontsize=8, color="#52514e")
+                    empty.add(band)
+                continue
+            ax.bar(x, rate * 100, width, color=METHOD_COLORS.get(method, "#000000"),
+                   label=None if method in labelled else method)
+            labelled.add(method)
+            ax.text(x, rate * 100, f"{int(part.loc[band, 'false_flags'])}/{int(n)}", ha="center", va="bottom", fontsize=7)
+    ax.set_xticks(range(len(bands)), [f"{band} surname" for band in bands])
+    ax.set_xlim(-0.5, len(bands) - 0.5)   # room for every band, even one with no bars
+    ax.set(ylabel="false flags, % of companies that didn't fail", title="False flags by how common the surname is")
+    ax.legend(fontsize=8, frameon=False)
+    tidy(ax)
+    return fig
+
+
+def reliability_figure(p, same, bins=(0, 0.2, 0.4, 0.6, 0.8, 1.0)):
+    """#108: is the matcher's p a probability? One dot per bin of p: its mean p against the share of
+    pairs that really are the same person (same officer id). On the dashed line, p means what it says.
+
+    p: the matcher's p for held-out pairs; same: 1 or 0 for the same pairs, in the same order.
+    Each dot is labelled with its number of pairs. Empty bins have no dot.
+    """
+    points = pd.DataFrame({"p": list(p), "same": list(same)})
+    points["bin"] = pd.cut(points["p"], list(bins), include_lowest=True)
+    table = points.groupby("bin", observed=True).agg(pairs=("p", "size"), mean_p=("p", "mean"), share=("same", "mean"))
+    fig = Figure(figsize=(5, 5))
+    ax = fig.subplots()
+    ax.plot([0, 1], [0, 1], linestyle="--", linewidth=1, color="#52514e")
+    ax.scatter(table["mean_p"], table["share"], s=60, zorder=3, color=METHOD_COLORS["formula"])
+    for x, y, n in zip(table["mean_p"], table["share"], table["pairs"]):
+        ax.annotate(f"{n} pair" + ("s" if n != 1 else ""), (x, y), textcoords="offset points",
+                    xytext=(8, 4), fontsize=9, color="#52514e")
+    ax.set(xlim=(-0.02, 1.02), ylim=(-0.02, 1.05), xlabel="mean p in the bin",
+           ylabel="share of pairs that are the same person", title="Matcher calibration")
+    tidy(ax)
+    return fig
