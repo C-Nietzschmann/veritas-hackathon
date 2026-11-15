@@ -26,6 +26,8 @@ The usual ones (numpy, pandas, scikit-learn, PyTorch and so on) are listed in `r
 | ipywidgets | https://github.com/jupyter-widgets/ipywidgets | The cost sliders and Reset button in the notebook's Demo (#104). Agreed on the team call before adding it. |
 | Jupyter | https://jupyter.org | Runs `notebooks/main.ipynb` locally |
 | pytest | https://pytest.org | The tests in `tests/`, run on every push |
+| Obsidian | https://obsidian.md | Reading and linking the notes in `vault/` (a tool for the team, not part of the model) |
+| GitHub CLI (`gh`) and GitHub Actions | https://cli.github.com | The task board, pull requests and the checks on every push (`scripts/task.sh`, `.github/workflows/`) |
 
 ## Code and ideas from elsewhere
 Tutorials, papers, or snippets we adapted. Link and one line on what we took.
@@ -37,4 +39,5 @@ Tutorials, papers, or snippets we adapted. Link and one line on what we took.
 Which assistants we used and what for. Summarised from the "AI used for" lines in `Log/`.
 - **Claude (claude.ai, Anthropic)**: drafted the plan, decisions and cards from our concept; wrote code and tests at our request (schema, tiny world, as-of view, baselines, scoring, decision-layer fixes); reviewed pull requests and drafted review comments and "How it works" notes.
 - **Claude Code (Anthropic), models Claude Opus 5.5 and Claude Fable 5.2**: wrote code and tests at our request (crawler, adapter fixes, label, masking, name guard, interface, what-if and sliders), ran the crawl and the notebook, judged the 50 hand-check pairs at our request (#89, marked as AI verdicts in `notebooks/cristiano_handcheck.csv` and Evaluation), checked API facts on the web, opened and merged our pull requests after we read the code, and drafted log entries.
+- **"AI worker-1" and "AI Review Worker"**: the names under which AI agents did and reviewed some of cristiano's cards (for example in `notebooks/cristiano_calibration.ipynb` and Evaluation). Which assistant and model they ran on: cristiano to confirm.
 - Our rules for AI help: a team member reads the code before it is merged, the task's owner confirms its "How it works" note, and every number in Evaluation comes from code that was run, never from an AI's guess.
