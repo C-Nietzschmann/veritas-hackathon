@@ -8,7 +8,7 @@ Hackathon rule: public datasets, open-source libraries and pre-trained models ar
 | Companies House public data API: company profiles, officer and appointment lists, insolvency records, advanced company search, officer search | https://developer.company-information.service.gov.uk/ | Not the Open Government Licence: the register is published under statute (section 47 of the Copyright, Designs and Patents Act 1988). Companies House says: "We impose no rules or requirements on how the information on the public register is used" ([Companies House data products](https://www.gov.uk/guidance/companies-house-data-products); [FOI disclosure 362](https://assets.publishing.service.gov.uk/media/5a7f6e7f40f0b6230268f75c/Disc_Log_362__Enquiry_regarding_Companies_House_Free_Company_Data_Product-ver0.2.pdf) confirms it is not OGL). Checked 14 Nov: the API has no separate licence. Rate limit: 600 requests per 5 minutes per key ([developer guidelines](https://developer.company-information.service.gov.uk/developer-guidelines)), shared by every part of the crawl. The same page says users must follow data protection and copyright law, which is why names, birth dates and postcodes are masked in every output (#49). Credited as the source | Company profiles, insolvency cases, officer and appointment lists of UK construction companies, and the officers who share a director's name: the raw data behind the mentions, the claims and the failure label (crawler #24, adapter #25) |
 
 ## Pre-trained models
-None. The matcher is a logistic regression we train ourselves on the crawl (`src/resolve.py`).
+None in the project itself. The matcher is a logistic regression we train ourselves on the crawl (`src/resolve.py`). The demo video's narration voice comes from a pre-trained text-to-speech model: see "Demo app and video" below.
 
 ## Libraries
 The usual ones (numpy, pandas, scikit-learn, PyTorch and so on) are listed in `requirements.txt`. List here anything unusual or central to the project.
@@ -31,11 +31,12 @@ The usual ones (numpy, pandas, scikit-learn, PyTorch and so on) are listed in `r
 Tutorials, papers, or snippets we adapted. Link and one line on what we took.
 - Chow's rule for when to abstain: C. K. Chow, "On optimum recognition error and reject tradeoff", IEEE Transactions on Information Theory 16(1), 1970. We used it to turn the three costs into the CLEAR and FLAG thresholds (`decide.thresholds`, ADR-004).
 - Companies House `api-enumerations` (https://github.com/companieshouse/api-enumerations): its `constants.yml` list, used to check the insolvency case types and date types the adapter counts.
+- The problem figure in the demo video (3,841 construction insolvencies in the 12 months to July 2026, the most of any industry): Insolvency Service figures, as reported by PBC Today, "Construction insolvencies still higher than any other sector" (https://www.pbctoday.co.uk/news/hr-skills-news/construction-insolvencies-still-higher-than-any-other-sector/164929/). Not a result of ours and not in Evaluation.
 - The Wilson score interval: E. B. Wilson, "Probable inference, the law of succession, and statistical inference", Journal of the American Statistical Association 22(158), 1927. We used it for the 95% intervals around failure rates and calibration shares (`real_slice.wilson`, card #36).
 
 ## AI tools
 Which assistants we used and what for. Summarised from the "AI used for" lines in `Log/`.
-- **Claude (claude.ai, Anthropic)**: drafted the plan, decisions and cards from our concept; wrote code and tests at our request (schema, tiny world, as-of view, baselines, scoring, decision-layer fixes); reviewed pull requests and drafted review comments and "How it works" notes.
+- **Claude (claude.ai, Anthropic)**: drafted the plan, decisions and cards from our concept; wrote code and tests at our request (schema, tiny world, as-of view, baselines, scoring, decision-layer fixes); reviewed pull requests and drafted review comments and "How it works" notes; edited the write-up from jonas's draft and checked its numbers against Evaluation (#46).
 - **Claude Code (Anthropic), models Claude Opus 5.5 and Claude Fable 5.2**: wrote code and tests at our request (crawler, adapter fixes, label, masking, name guard, interface, what-if and sliders), ran the crawl and the notebook, judged the 50 hand-check pairs at our request (#89, marked as AI verdicts in `notebooks/cristiano_handcheck.csv` and Evaluation), checked API facts on the web, opened and merged our pull requests after we read the code, and drafted log entries.
 - **"AI worker-1" and "AI Review Worker"**: the names under which AI agents did and reviewed some of cristiano's cards (for example in `notebooks/cristiano_calibration.ipynb` and Evaluation). Which assistant and model they ran on: cristiano to confirm.
 - Our rules for AI help: a team member reads the code before it is merged, the task's owner confirms its "How it works" note, and every number in Evaluation comes from code that was run, never from an AI's guess.
@@ -50,6 +51,7 @@ Added with the demo app. The app runs on this computer only (`python app/server.
 | Inter, via Fontsource | https://rsms.me/inter/ | SIL Open Font License 1.1 | The demo app's and the video's type (`app/static/fonts/`) |
 | IBM Plex Mono, via Fontsource | https://github.com/IBM/plex | SIL Open Font License 1.1 | Labels and code in the demo app and the video |
 | Kokoro-82M (pre-trained text-to-speech model), run with kokoro-onnx | https://huggingface.co/hexgrad/Kokoro-82M | Apache-2.0 | The demo video's narration voice |
+| ElevenLabs text-to-speech (voice "Luke") | https://elevenlabs.io | Commercial service, used under its terms | A second narration take of the same script, generated on Sun evening. Which of the two takes the uploaded video uses: cristiano to confirm |
 | "Deep Techno Ambience" (Mixkit, track 134) | https://mixkit.co/free-stock-music/ | Mixkit License (Stock Music Free License, no attribution required) | The demo video's background music |
 
 AI: Claude (claude.ai, Anthropic), model Claude Opus 5.5, built the demo app (`app/`) and recorded and edited the demo video at jonas's request.

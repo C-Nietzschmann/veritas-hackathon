@@ -226,3 +226,11 @@ Up: [[Log]]
 - **AI used for:** Claude (claude.ai, Opus 5.5) found the cause from my screenshot, made the change, tested it at three widths and shipped it, at my request.
 - **Next:** final submission (#52).
 - **Blocked by:** nothing
+
+## 2026-11-15 22:40
+- **Task:** #52 Submit the final version (the review before it)
+- **Did:** Final review of what the judges see, on main @ 8662cda. Fresh clone: `pytest -q` 323 passed, 1 skipped; `scripts/check.sh` ok; `main.ipynb` ran top to bottom on the tiny world with no error; the demo app started. No names, emails or private links in the files. Evaluation now holds three numbers the write-up uses: the 13,761 companies and the 96% (1,713 of 1,778), both as `main.ipynb` prints them, and the recall intervals (`real_slice.wilson` on 280 and 299 of 305). Credits now names the source of the video's 3,841 figure, the ElevenLabs take next to the Kokoro one, and the write-up editing. Write-up holds the text I submitted as a PDF, with handles instead of names.
+- **Result:** every number in the write-up is found in Evaluation. Nothing outside `vault/` changed.
+- **AI used for:** Claude (claude.ai, Fable 5.2) ran the checks, worked out the intervals, made the three note changes and wrote this entry, at my request. The write-up text is mine.
+- **Next:** submit the final version on the form (#52); then no pushes until Wed 18 Nov. Open for the team: cristiano confirms which voice take the video uses and which tool "AI worker-1" ran on; `main.ipynb` prints the warning example's real company numbers (cells 55, 58, 60).
+- **Blocked by:** nothing
