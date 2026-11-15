@@ -149,3 +149,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code wrote and ran the scratch cells, read the outputs and wrote the #46 comment and this entry, at my request.
 - **Next:** jonas and cristiano decide what goes into the notebook and the write-up.
 - **Blocked by:** nothing
+
+## 2026-11-15 15:09
+- **Task:** #191 Add the name and birth baseline and the stress test
+- **Did:** Wrote `src/stress.py` (the rule "same name and same birth month and year", and a stress test that rewrites one record of each confirmed validation pair) with 6 tests, and added six cells to `main.ipynb`. Ran the new cells in a copy that stops before the test section, so 2022 was not opened again. Shipped as PR #192; added the tables to Evaluation and the module to Modules.
+- **Result:** the rule makes 138 unconfirmed links and finds 83 of 84 confirmed ones; the matcher 130 and 80. Still linked after a change: first-name typo 81.0% (same-name rule 2.6%), surname typo 57.7% (5.8%), middle names dropped 32.3%, birth month one off 0%.
+- **AI used for:** Claude Code wrote the code, tests, cells, Evaluation rows and this entry, at my request. I read the code before it shipped.
+- **Next:** the write-up (#46, jonas) can lead with these. Flagged to cristiano and jonas: `OPEN_TEST = True` is saved on main.
+- **Blocked by:** nothing

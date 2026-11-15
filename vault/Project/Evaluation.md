@@ -105,6 +105,36 @@ Groups as `handcheck_sample` defines them, recomputed with `main.ipynb`'s steps 
 - **Precision vs the register is a lower bound:** some unconfirmed links are one person under two ids (#89). How many is unknown until a person checks them.
 - **On links to any earlier record** (not only insolvent ones), the same picture: 832 unconfirmed links by the same-name rule against 261 by the matcher (195 against 23 for common surnames), precision 0.383 against 0.663, and the matcher misses 13 of the 527 confirmed links.
 
+### A harder baseline and a stress test, on validation (card #191)
+`notebooks/main.ipynb` @ d0b0052, section "A harder baseline, and a stress test" (phantodevc, Sun 15 Nov). Validation only. Added after the test set was opened (#45): the rule has nothing to fit, no other number changed, and 2022 was not run again.
+
+**A rule with nothing learned: same name and same birth month and year.** Links to an earlier insolvent company:
+
+| Method | Links | Confirmed (same officer id) | Not confirmed | Recall vs the register | Companies linked |
+|---|---|---|---|---|---|
+| Same name | 458 | 83 | 375 | 0.988 | 219 |
+| Officer links | 84 | 84 | 0 | 1.000 | 42 |
+| Matcher | 210 | 80 | 130 | 0.952 | 105 |
+| Name + birth rule | 221 | 83 | 138 | 0.988 | 108 |
+
+For common surnames: the rule 11 unconfirmed and 18 of 18 confirmed, the matcher 9 and 16 of 18. On the register's own records the rule does as well as the matcher.
+
+**Stress test.** One record of each of the 730 confirmed validation pairs is rewritten (seed 42), then the pair is asked again. Share still linked:
+
+| Change to one record | Blocking still proposes it | Matcher | Same-name rule |
+|---|---|---|---|
+| Nothing changed | 99.2% | 97.9% | 98.4% |
+| Moved (new postcode) | 99.2% | 97.8% | 98.4% |
+| Typo in the first name | 99.2% | 81.0% | 2.6% |
+| Typo in the surname | 74.1% | 57.7% | 5.8% |
+| Middle names dropped | 99.2% | 32.3% | 29.6% |
+| Birth month one off | 98.9% | 0.0% | 98.4% |
+| Birth date missing | 98.9% | 0.0% | 98.4% |
+| New surname | 0.0% | 0.0% | 0.0% |
+
+- **Where the matcher is better:** misspelt names. **Where it is worse:** a wrong or missing birth date, and dropped middle names lose two thirds of the pairs.
+- **Where this could be wrong:** the changes are made up by us, not found in the register, so they show what the matcher can stand, not how often each happens.
+
 ## Final result
 Filled in after feature freeze, from the one test-set run: `notebooks/main.ipynb` @ 74d8a97 with `OPEN_TEST = True`, section "The test set, opened once (card #45)", run once on Sun 15 Nov 14:11 (jonas). The 6,847 test companies were formed in 2022, and nothing above was built or chosen on them; 65 of them failed (main label). Links to an earlier insolvent company, as printed:
 
