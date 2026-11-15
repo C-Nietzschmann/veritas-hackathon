@@ -470,3 +470,20 @@ def test_the_hand_check_page_escapes_what_it_shows():
     sample = real_slice.handcheck_sample(links, evaluate.name_commonness(mentions), n=50)
     page = real_slice.handcheck_html(real_slice.handcheck_sheet(sample, mentions, claims))
     assert "Harrow &amp; Sons &lt;Build&gt; Ltd" in page and "<Build>" not in page
+
+
+def test_the_slice_counts_a_strike_off_only_after_real_accounts():
+    # TW000003 formed 2021-06-01 and struck off 12 months later, with no accounts filed:
+    # failed by the old label, not by the stricter main label (#175).
+    raw = adapter.load_raw(SAMPLE)
+    path = next(p for p in raw if p.endswith("company/TW000003.json"))
+    profile = json.loads(raw[path])
+    profile.update(date_of_creation="2021-06-01", date_of_cessation="2022-06-01")
+    raw[path] = json.dumps(profile).encode()
+    mentions, _, labels, _ = real_slice.slice_from_raw(raw, ["TW000003"])
+    assert evaluate.label_failures(mentions).loc["TW000003"]
+    assert not labels.loc[0, "failed"]
+    # With real accounts filed, the same strike-off is a failure.
+    profile["accounts"] = {"last_accounts": {"made_up_to": "2022-03-31", "type": "micro-entity"}}
+    raw[path] = json.dumps(profile).encode()
+    assert real_slice.slice_from_raw(raw, ["TW000003"])[2].loc[0, "failed"]
