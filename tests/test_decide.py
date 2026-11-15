@@ -276,3 +276,31 @@ def test_a_match_that_flips_both_ways_is_reported_as_not_the_same_person():
     assert decide("Q", unsure, LINE, COSTS)["decision"] == "NOT ENOUGH EVIDENCE"
     found = flip(unsure, LINE, COSTS)
     assert (found["if_same_person"], found["becomes"]) == (False, "CLEAR")
+
+
+# --- Card #132: directorships only (follow-up from the baselines review, #127) -----------
+
+def with_relation(claims, subject, company, relation):
+    """The claims with one appointment's relation changed, for example to "controls"."""
+    claims = claims.copy()
+    claims.loc[(claims["subject"] == subject) & (claims["object"] == company), "relation"] = relation
+    return claims
+
+
+def test_controlling_the_earlier_company_is_not_running_it():
+    # Regression: the old Daniel Harrow record (p1) only controls Harrow Build Ltd, it doesn't direct it.
+    mentions, claims, truth = tiny_world()
+    key = truth["mention"]
+    for relation, expected in [("director_of", 1), ("controls", 0)]:
+        changed = with_relation(claims, key["p1"], key["TW000001"], relation)
+        assert len(candidate_matches("TW000002", mentions, changed, hand_made_pairs(truth))) == expected
+
+
+def test_controlling_the_query_company_is_not_directing_it():
+    # Regression: the phoenix (p2) only controls Harrow Build Services. Its other director,
+    # Ruth Okafor (p8), is still on record and matches nobody: an empty table, not None.
+    mentions, claims, truth = tiny_world()
+    key = truth["mention"]
+    for relation, expected in [("director_of", 1), ("controls", 0)]:
+        changed = with_relation(claims, key["p2"], key["TW000002"], relation)
+        assert len(candidate_matches("TW000002", mentions, changed, hand_made_pairs(truth))) == expected
