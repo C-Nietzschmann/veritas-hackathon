@@ -31,3 +31,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code ran and restarted the crawl, wrote the merge and check scripts (scratch files, not in the repo), merged the zips, ran the loading check, and wrote the card texts and this entry, at my request.
 - **Next:** jonas and phantodevc download `raw_merged.zip` and confirm on #159. Then I delete the draft release, which must be gone before the repo is public, and close #159 with its "How it works" note.
 - **Blocked by:** nothing
+
+## 2026-11-15 09:27
+- **Task:** #162 add the script that merges the crawls into one data/raw (card on the board)
+- **Did:** Put the merge script into the repo as `src/merge_crawls.py`, with one test on made-up files. It reuses the crawler's `save`, `finished_companies` and `mark_finished`. I confirmed I can explain it before the merge.
+- **Result:** pull request #163 is merged. 295 tests pass, 1 skipped. Run on the three real zips into an empty folder, it rebuilt the merged folder of #159 file for file: 251,181 files and the same `query_companies.csv`.
+- **AI used for:** Claude Code wrote the script and its test from the scratch version that did the merge, ran the tests and the rebuild, opened and merged the pull request, and wrote the card texts and this entry, at my request.
+- **Next:** jonas and phantodevc load `raw_merged.zip` (steps on #159). `vault/Project/Modules.md` does not list the new file yet.
+- **Blocked by:** nothing
