@@ -194,3 +194,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code (Opus 5.5) in VS Code created the card, changed the file's format and the ignore line, shipped them and drafted the "How it works" note, at my request. The verdicts are mine.
 - **Next:** write-up (#46), video (#47), first submission (#51) at 18:00.
 - **Blocked by:** nothing
+
+## 2026-11-15 15:40
+- **Task:** #196 Update three outdated text cells in main.ipynb (agreed with cristiano in the team chat)
+- **Did:** Fixed three markdown cells in `main.ipynb`: the hand-check cell now says the judged pairs were drawn in `cristiano_calibration.ipynb` (8 of 50 overlap with the notebook's own sample); "Where it fails" item 2 reports the verdicts of #89 and #46 with their caveats; item 7 says 2022 ran once (#45). Also re-ran the fresh-run test on a clean clone of `main` @ 803a8fa: no error in 12 s (posted on #48).
+- **Result:** pull request #197, merged as 8b3bfab; checks green; #196 closed with its "How it works" note.
+- **AI used for:** Claude (claude.ai, Opus 5.5) wrote the three texts from Evaluation's numbers, which I approved, opened and merged the pull request, and ran the fresh-run test, at my request.
+- **Next:** the write-up (#46), then the demo video (#47) and the submissions (#51, #52).
+- **Blocked by:** nothing
