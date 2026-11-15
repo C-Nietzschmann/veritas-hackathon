@@ -69,6 +69,17 @@ def test_label_counts_a_dissolution_within_24_months():
     assert evaluate.label_failures(mentions, window_months=12).sum() == 1
 
 
+def test_stricter_label_counts_a_dissolution_only_after_real_accounts():
+    mentions = table([
+        company("TW100021", "2021-01-15", dissolved="2022-06-14"),   # struck off, filed real accounts: failed
+        company("TW100022", "2021-01-15", dissolved="2022-06-14"),   # struck off, never filed: not failed
+        company("TW100023", "2021-01-15", insolvent="2021-11-15"),   # insolvent counts with or without accounts
+    ])
+    assert evaluate.label_failures(mentions, traded={"TW100021"}).to_dict() == {
+        "TW100021": True, "TW100022": False, "TW100023": True}
+    assert evaluate.label_failures(mentions).sum() == 3   # the default label is unchanged
+
+
 def test_a_date_not_written_as_iso_stops_instead_of_being_guessed():
     # 01/10/2021 is 1 October in the UK. Guessed month-first it is 10 January:
     # a validation company would land in train, and a month-25 failure would count.

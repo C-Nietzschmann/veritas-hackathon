@@ -149,6 +149,22 @@ def companies_missing_insolvency(raw):
     return missing
 
 
+def companies_that_traded(raw):
+    """The numbers of the companies that filed at least one set of accounts that were not dormant (#171).
+
+    For the stricter failure label (label_failures(..., traded=...)): a company struck off
+    without ever filing real accounts most likely never traded, so it left no supplier unpaid.
+    Read from the profile's last accounts, the latest set filed. A young company has filed
+    one set at most, so the latest is the only one.
+    """
+    traded = set()
+    for path, number, raw_bytes in files_in(raw, "company"):
+        last = (json.loads(raw_bytes).get("accounts") or {}).get("last_accounts") or {}
+        if last.get("made_up_to") and last.get("type") != "dormant":
+            traded.add(number)
+    return traded
+
+
 def companies_to_mentions(raw):
     """One company mention per company profile file (#74).
 
