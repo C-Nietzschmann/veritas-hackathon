@@ -85,3 +85,11 @@ Up: [[Log]]
 - **AI used for:** Claude Code ran the stop and upload at 09:00 as I asked, ran the counting script (kept outside the repo) and drafted the #19 comment, the Idea table and this entry.
 - **Next:** the call decides what the lower failure rate means for the line (#94) and the costs. #48 fresh-run test, then ship the README.
 - **Blocked by:** nothing
+
+## 2026-11-15 10:40
+- **Task:** #106 false flags per band, #115 README, #48 fresh-run dry run; closed parents #39 and #50
+- **Did:** Built `company_bands` and `false_flags_by_band` in `src/evaluate.py` (PR #167), ran ours and the three baselines on the 1,552 merged validation companies and wrote the table in Evaluation under By group. Fixed the name guard: a director written "." matched punctuation. Diagnosed why a predecessor goes with fewer failures and posted the fix options on #19. Dry-ran the fresh-run test, then shipped the README (PR #150).
+- **Result:** same name falsely flags 0% / 3.8% / 9.0% from rare to common surnames; ours flags nothing (all NOT ENOUGH EVIDENCE, the line slopes down). main.ipynb runs from a fresh clone in 32 s. #39 and #50 closed.
+- **AI used for:** Claude Code wrote the code, tests and scratch scripts, ran them, shipped the PRs and drafted the notes, comments and this entry. I can explain each change.
+- **Next:** #48 real run at 17:00 (better by someone who didn't write the notebook); #107 and #108 once main.ipynb runs on real data.
+- **Blocked by:** the team's choice on #19 (what we claim), and who moves main.ipynb to real data
